@@ -1,0 +1,136 @@
+<#macro page_asidemenu>
+    <ul class="navbar-nav navbar-sidenav maincolor" id="exampleAccordion">
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+          <a class="nav-link" href="be_homepage">
+            <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Components">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseComponents" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-wrench"></i>
+            <span class="nav-link-text">Courses</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="collapseComponents">
+            <li>
+              <a href="be_addcourse">Add course</a>
+            </li>
+            <li>
+              <a href="be_listcourses">List of courses</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Components">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseComponentsUsers" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-wrench"></i>
+            <span class="nav-link-text">Users</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="collapseComponentsUsers">
+            <li>
+              <a href="be_adduser">Add user</a>
+            </li>
+            <li>
+              <a href="be_listusers">List of users</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+</#macro>
+
+<#macro page_topmenu>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="be_updateprofile">
+            <i class="fa fa-user"></i>Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="fe_logout">
+            <i class="fa fa-fw fa-sign-out"></i>Logout</a>
+        </li>
+      </ul>
+</#macro>
+
+<#macro page_body>
+Nothing to show
+</#macro>
+ 
+<#macro script>
+<!-- No script -->
+</#macro>
+
+      
+<#macro display_page>
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Backend</title>
+  
+  <link href="templates/styles/normalize.css" rel="stylesheet" type="text/css">
+  <!-- Bootstrap core CSS-->
+  <link href="templates/backend/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <!-- Custom fonts for this template-->
+  <link href="templates/backend/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Page level plugin CSS-->
+  <link href="templates/backend/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet" type="text/css">
+  <!-- Custom styles for this template-->
+  <link href="templates/backend/css/sb-admin.css" rel="stylesheet" type="text/css">
+  <link href="styles/constants.css" rel="stylesheet" type="text/css">
+  <link href="templates/backend/css/custom.css" rel="stylesheet" type="text/css">
+</head>
+
+<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  <!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-dark maincolor fixed-top" id="mainNav">
+    <a class="navbar-brand" href="#">Welcome!</a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+        <@page_topmenu/>
+        <@page_asidemenu/>
+    </div>
+  </nav>
+  <div class="content-wrapper">
+    <div class="container-fluid">
+      
+        
+        <@page_body/>
+        
+        
+      </div>
+    </div>
+    <!-- /.container-fluid-->
+    <!-- /.content-wrapper-->
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fa fa-angle-up"></i>
+    </a>
+    
+    <!-- Bootstrap core JavaScript-->
+    <script src="templates/backend/vendor/jquery/jquery.min.js"></script>
+    <script src="templates/backend/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="templates/backend/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- Page level plugin JavaScript-->
+    <script src="templates/backend/vendor/datatables/jquery.dataTables.js"></script>
+    <script src="templates/backend/vendor/datatables/dataTables.bootstrap4.js"></script>
+    <!-- Custom scripts for all pages-->
+    <script src="templates/backend/js/sb-admin.min.js"></script>
+    <!-- Custom scripts for this page-->
+    <script src="templates/backend/js/sb-admin-datatables.min.js"></script>
+    
+    <script>
+    <@script/>
+    </script>
+    
+  </div>
+</body>
+
+</html>
+</#macro>

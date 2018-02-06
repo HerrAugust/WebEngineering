@@ -1,0 +1,53 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <h2 class="subtitle">Edit course of ${course.name}</h2>
+    <p class="subtitle">Academic Year: Current (${academic_year})</p>
+    <#if course.module??><p class="subtitle">Module with: ${academic_year}</p></#if>
+    <#if course.preparatory??><p class="subtitle">Preparatory for: ${academic_year}</p></#if>
+    <#if course.same_as??><p class="subtitle">Same as: ${academic_year}</p></#if>
+
+    <div id="alert" class="alert alert-danger hidden" role="alert">
+      Nothing to show
+    </div>
+
+    <h3 class="subtitle">Insert the <b>basic information:</b></h3>
+    <form id="form_adduser" class="subtitle moreabove" method="post" action="be_editcourse?action=coursebase">
+        <input type="hidden" name="coursecode" value="${course.code}"/>
+        <div class="form-group">
+            <label for="ssd">SSD:</label>
+            <select name="ssd" id="ssd" class="form-control" >
+                <#if course.SSD != "">
+                <option value="${course.SSD}" selected>${course.SSD}</option>
+                </#if>
+                <option value="inf-01">INF-01</option>
+                <option value="bio-09">BIO-09</option>
+                <option value="eng-02">ENG-02</option>
+                <option value="eng-05">ENG-05</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="language">Language:</label>
+            <select name="language" id="language" class="form-control" >
+                <option value="ita" <#if course.language != "" && course.language == "ita">selected</#if>>Italian</option>
+                <option value="eng" <#if course.language != "" && course.language == "eng">selected</#if>>English</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="semester">Semester:</label>
+            <select name="semester" class="form-control" id="semester">
+                <option value="1" <#if course.semester == 1>selected="selected"</#if>>1 - Winter</option>
+                <option value="2" <#if course.semester == 2>selected="selected"</#if>>2 - Summer</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Save and continue</button>
+    </form>
+</div>
+</#macro>
+
+<#macro script>
+<!-- This page must work also without JS -->
+</#macro>
+
+<@display_page/>

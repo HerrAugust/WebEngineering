@@ -1,0 +1,112 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <h2 class="subtitle">Courses</h2>
+
+    <div id="alert" class="alert alert-danger hidden" role="alert">
+      Nothing to show
+    </div>
+
+    <#if courses??>
+    <table class="table" id="be_homepage_table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Teacher</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+
+            <#list courses as course>
+            <tr>
+              <th scope="row">${course.code}</th>
+              <td>${course.name}</td>
+              <td>
+                  
+                  <ul>
+                      TODO PROF GIA ASSEGNATI. USARE DB!!
+                  </ul>
+                <select>
+                    <option value="-1">Nobody</option>
+                    <#if teachers??>
+                    <#list teachers as teacher>
+                    <option value="${teacher.id}">${teacher.lastname}, ${teacher.name}</option>
+                    </#list>
+                    </#if>
+                </select>
+                <button class="button_assign" type="button" class="btn btn-warning">Assign</button>
+              </td>
+              <td>
+                  <ul class="ul_no_dots">
+                      <li><i class="fa fa-pencil" aria-hidden="true"></i> Edit</li>
+                      <li><a href="deletecourse?action=deletecourse&coursecode=${course.code!"none"}"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</a></li>
+                  </ul>
+              </td>
+            </tr>
+            </#list>
+
+      </tbody>
+    </table>
+    <#else>
+    <div class="alert alert-info" role="alert">
+        No course entered yet
+    </div>
+    </#if>
+</div>
+</#macro>
+
+<#macro script>
+$(document).ready(function(){
+    let alert = $('#alert');
+    
+    function showAlert(message, color, tobeshown) {
+        alert.removeClass("alert-warning").removeClass("alert-success").removeClass("alert-danger").removeClass("alert-info");
+        let newtype = "alert-warning";
+        switch(color) {
+            case "green": newtype = "alert-success"; break;
+            case "blue": newtype = "alert-info"; break;
+            case "red": newtype = "alert-danger"; break;
+            default: newtype = "alert-warning"; break;
+        }
+        alert.addClass(newtype);
+        
+        alert.html(message);
+        
+        if(tobeshown) {
+            alert.removeClass("hidden");
+        }
+        else {
+            alert.addClass("hidden");
+        }
+    }
+    
+    // Button Assign clicked: assign course to teacher
+    $(".button_assign").click(function(){
+        showAlert("","",false);
+        let coursecode = "";
+        let teacherid = -1;
+        
+        // find course code
+        coursecode = $(this).parent().parent().children().get(0).innerHTML;
+        
+        // find teacher's id
+        teacherid = $(this).parent().parent().children().get(2).children[0].selectedOptions[0].attributes.value.value;
+        
+        $.post( "be_homepage", {'action': 'assigncourseteacher', 'coursecode': coursecode, 'teacherid': teacherid })
+        .done(function(res) {
+            let text = res;
+            if(res == "ok")
+                text = "Course "+ coursecode + " assigned to teacher";
+            showAlert(text, res == "ok" ? "green" : "red", true);
+        })
+        .fail(function() {
+            showAlert( "error", red, true );
+        })
+    });
+});
+</#macro>
+
+<@display_page/>

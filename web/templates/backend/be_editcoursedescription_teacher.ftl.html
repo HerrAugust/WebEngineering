@@ -1,0 +1,142 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <h2 class="subtitle">Edit course of ${course.name}</h2>
+    <p class="subtitle">Academic Year: Current (${academic_year})</p>
+
+    <div id="alert" class="alert alert-danger hidden" role="alert">
+      Nothing to show
+    </div>
+
+    <div>
+        <div class="left percent50">
+            <h3 class="subtitle"><b>Course description and notes:</b></h3>
+            <form id="left" class="subtitle moreabove" method="post" action="be_editcourse?action=coursedescription">
+                <input type="hidden" name="coursecode" value="${course.code}"/>
+                <div class="form-group">
+                    <label for="prerequisites">Prerequisites:</label>
+                    <input type="text" class="form-control" value="${course.prerequisites}" name="prerequisites"/>
+                </div>
+                <div class="form-group">
+                    <label for="learning_outcomes">Learning outcomes:</label>
+                    <input type="text" class="form-control" value="${course.learning_outcomes}" name="learning_outcomes"/>
+                </div>
+                <div class="form-group">
+                    <label for="assessment_method">Assessment method:</label>
+                    <input type="text" class="form-control" value="${course.assessment_method}" name="assessment_method"/>
+                </div>
+                <div class="form-group">
+                    <label for="teaching_method">Teaching method:</label>
+                    <input type="text" class="form-control" value="${course.teaching_method}" name="teaching_method"/>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes:</label>
+                    <input type="text" class="form-control" value="${course.notes}" name="notes"/>
+                </div>
+                <div class="form-control">
+                    <input type="file" name="images[]" id="images" multiple />
+                </div>
+            </form>
+        </div>
+        <div class="right percent50">
+            <h3 class="subtitle"><b>Descrizione del corso e note:</b></h3>
+            <form id="right" class="subtitle moreabove" method="post" action="be_editcourse?action=coursedescription">
+                <div class="form-group">
+                    <label for="prerequisites_ita">Prerequisiti:</label>
+                    <input type="text" class="form-control" value="${course.prerequisites_ita}" name="prerequisites_ita"/>
+                </div>
+                <div class="form-group">
+                    <label for="learning_outcomes_ita">Risultati del corso:</label>
+                    <input type="text" class="form-control" value="${course.learning_outcomes_ita}" name="learning_outcomes_ita"/>
+                </div>
+                <div class="form-group">
+                    <label for="assessment_method_ita">Modalit&agrave; d'esame:</label>
+                    <input type="text" class="form-control" value="${course.assessment_method_ita}" name="assessment_method_ita"/>
+                </div>
+                <div class="form-group">
+                    <label for="teaching_method_ita">Modalit&agrave; d'insegnamento:</label>
+                    <input type="text" class="form-control" value="${course.teaching_method_ita}" name="teaching_method_ita"/>
+                </div>
+                <div class="form-group">
+                    <label for="notes_ita">Note:</label>
+                    <input type="text" class="form-control" value="${course.notes_ita}" name="notes_ita"/>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div>
+        <button id="button_back" onclick="goBack()" class="btn btn-danger">Back to base course info</button>
+        <button id="button_submit" class="btn btn-success">Save and finish</button>
+    </div>
+    
+</div>
+</#macro>
+
+<#macro script>
+<!-- This page must work with only a minimum of JS -->
+$(document).ready(function(){
+    let alert = $('#alert');
+
+    function showAlert(message, color, tobeshown) {
+        alert.removeClass("alert-warning").removeClass("alert-success").removeClass("alert-danger").removeClass("alert-info");
+        let newtype = "alert-warning";
+        switch(color) {
+            case "green": newtype = "alert-success"; break;
+            case "blue": newtype = "alert-info"; break;
+            case "red": newtype = "alert-danger"; break;
+            default: newtype = "alert-warning"; break;
+        }
+        alert.addClass(newtype);
+        
+        alert.html(message);
+        
+        if(tobeshown) {
+            alert.removeClass("hidden");
+        }
+        else {
+            alert.addClass("hidden");
+        }
+    }
+    
+    function goBack() {
+        window.history.back();
+    }
+    
+    // I doubt this is achievable without JS
+    $('#button_submit').click(function(e) {
+        e.preventDefault();
+        var formdata = new FormData($('form')[0]); // this also includes images
+        console.log(formdata);
+        formdata.append('learning_outcomes_ita', $('input[name=learning_outcomes_ita]')[0].value);
+        formdata.append('prerequisites_ita', $('input[name=prerequisites_ita]')[0].value);
+        formdata.append('assessment_method_ita', $('input[name=assessment_method_ita]')[0].value);
+        formdata.append('teaching_method_ita', $('input[name=teaching_method_ita]')[0].value);
+        formdata.append('notes_ita',$('input[name=notes_ita]')[0].value);
+        console.log(formdata);
+        
+        let url = "be_editcourse?action=coursedescription";
+        
+        $.ajax({
+            url:    url,
+            method: "POST",
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
+            data: formdata
+        })
+        .fail(function(res) {
+            showAlert(res, "alert-danger", true);
+        })
+        .done(function(res) {
+            //alert(res);
+            if(res != "ok") {
+                showAlert(res, "alert-danger", true);
+            }
+        });
+    });
+
+});
+</#macro>
+
+<@display_page/>

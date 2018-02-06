@@ -1,0 +1,59 @@
+.maincolor {
+   background-color: #c0392b !important;
+}
+
+.secondarycolor {
+    background-color: #f1c40f !important;
+}
+
+#maincontent .centered {
+    width: 40%;
+    margin: auto;
+    display: block;
+}
+
+#maincontent .hidden {
+    display: none;
+}
+
+#maincontent .textcentered {
+    text-align: center;
+}
+
+#maincontent .morebelow {
+    margin-top: 20px;
+}
+
+#maincontent .moreabove {
+    margin-bottom: 20px;
+}
+
+#maincontent .moreright {
+    margin-left: 20px;
+}
+
+#maincontent .moreleft {
+    margin-right: 20px;
+}
+
+body {
+    height: 100%;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.percent50 {
+    width: 50%;
+}

@@ -1,0 +1,65 @@
+#mainNav.navbar-dark .navbar-collapse .navbar-sidenav {
+    background-color: #c0392b;
+}
+
+#mainNav.navbar-dark .navbar-collapse .navbar-sidenav > .nav-item > .nav-link {
+    color: #fff;
+}
+
+
+#mainNav.navbar-dark .navbar-collapse .navbar-sidenav .nav-link-collapse::after {
+    color: #fff;
+}
+
+#mainNav.navbar-dark .navbar-collapse .navbar-sidenav > .nav-item .sidenav-second-level > li > a {
+    color: #fff;
+}
+
+#page-top.fixed-nav.sticky-footer.bg-dark nav#mainNav.navbar.navbar-expand-lg.navbar-dark.maincolor.fixed-top {
+    background-color: #c0392b;
+}
+
+#be_homepage_table, #table_listusers {
+    width: 80%;
+    margin: auto;
+}
+
+#be_homepage_table .ul_no_dots {
+    list-style-type: none;
+    margin-left: -36px;
+    cursor: pointer;
+}
+
+button {
+     cursor: pointer;
+}
+
+.subtitle {
+    margin-left: 20%;
+}
+
+#maincontent select {
+    width: 50%;
+}
+
+/** Title + search bar on the right **/
+.title_search {
+    width: 60%;
+    margin: auto;
+}
+
+.title_search input[type=search]  {
+    float: right;
+    margin-top: 8px;
+    border-radius: 5px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    border: none;
+    border: solid 1px #ccc;
+}
+
+.title_search .subtitle {
+    margin-left:0px;
+    display: inline
+}

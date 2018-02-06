@@ -1,0 +1,96 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <div class="title_search">
+        <h2 class="subtitle">List of users</h2>
+        <input type="search" placeholder="Search..."/>
+    </div>
+
+    <div id="alert" class="alert alert-danger hidden" role="alert">
+      Nothing to show
+    </div>
+
+    <#if users??>
+    <table class="table moreabove" id="table_listusers">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Lastname</th>
+          <th>Language</th>
+          <th>Type</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+
+            <#list users as user>
+            <tr>
+              <th scope="row">${user.id}</th>
+              <td>${user.name}</td>
+              <td>${user.lastname}</td>
+              <td><#if user.language == "eng">English<#else>Italian</#if></td>
+              <td>${user.type}</td>
+              <td>${user.email}</td>
+              <td>
+                  <ul class="ul_no_dots">
+                      <li><a href="be_listusers?action=edituser&userid=${user.id!"-1"}"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a></li>
+                      <li><a href="be_listusers?action=deleteuser&userid=${user.id!"-1"}"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</a></li>
+                  </ul>
+              </td>
+            </tr>
+            </#list>
+
+      </tbody>
+    </table>
+    <#else>
+    <div class="alert alert-info" role="alert">
+        No user entered yet
+    </div>
+    </#if>
+</div>
+</#macro>
+
+<#macro script>
+$(document).ready(function(){
+    let alert = $('#alert');
+    
+    function showAlert(message, color, tobeshown) {
+        alert.removeClass("alert-warning").removeClass("alert-success").removeClass("alert-danger").removeClass("alert-info");
+        let newtype = "alert-warning";
+        switch(color) {
+            case "green": newtype = "alert-success"; break;
+            case "blue": newtype = "alert-info"; break;
+            case "red": newtype = "alert-danger"; break;
+            default: newtype = "alert-warning"; break;
+        }
+        alert.addClass(newtype);
+        
+        alert.html(message);
+        
+        if(tobeshown) {
+            alert.removeClass("hidden");
+        }
+        else {
+            alert.addClass("hidden");
+        }
+    }
+    
+    var $rows = $('table tr');
+    $('input[type=search]').keyup(function() {
+        let val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+        
+        $rows.show().filter(function() {
+            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+            return !~text.indexOf(val);
+        }).hide();
+        
+        $('table thead tr').show();
+    });
+    
+});
+</#macro>
+
+<@display_page/>

@@ -1,0 +1,495 @@
+package it.univaq.webengineering.data.impl;
+
+import it.univaq.webengineering.data.model.Teacher;
+import it.univaq.webengineering.framework.data.DataLayerException;
+import it.univaq.webengineering.data.model.Course;
+import java.io.InputStream;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import it.univaq.webengineering.data.model.WebengineeringDataLayer;
+import it.univaq.webengineering.framework.data.DataLayerMysqlImpl;
+import java.sql.Connection;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author Giuseppe Della Penna
+ */
+public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl implements WebengineeringDataLayer {
+
+    private PreparedStatement sTeacherByEmailPassword;
+    private PreparedStatement sTeacherByEmail;
+    private PreparedStatement sCourseByCode;
+    private PreparedStatement sCourses;
+    
+    private PreparedStatement dCourse;
+    
+    private PreparedStatement sTeachers;
+    private PreparedStatement iCourseTeacher;
+    private PreparedStatement dCourseTeacher;
+    private PreparedStatement sTeacherByID;
+    private PreparedStatement sCourseByID;
+    private PreparedStatement iTeacher;
+    private PreparedStatement dTeacher;
+    private PreparedStatement iCourse;
+    private PreparedStatement sCourseByCodeAndName;
+    private PreparedStatement uTeacher_withPassword;
+    private PreparedStatement uTeacher;
+    private PreparedStatement sCoursesOfTeacher;
+    private PreparedStatement uCourseDescription;
+    private PreparedStatement uCourseBasicInfo;
+    private PreparedStatement sTeacherByCourse;
+
+    public WebengineeringDataLayerMysqlImpl(DataSource datasource) throws SQLException, NamingException {
+        super(datasource);
+    }
+
+    @Override
+    public void init() throws DataLayerException {
+        try {
+            super.init();
+
+            //precompile all the queries uses in this class
+            sTeacherByEmailPassword  = connection.prepareStatement("SELECT * FROM teacher WHERE email=? and password=?");
+            sTeacherByEmail          = connection.prepareStatement("SELECT id, name, lastname, language, type, photo, email FROM teacher WHERE email=?");
+            sTeacherByCourse         = connection.prepareStatement("SELECT teacher.id, teacher.name, teacher.lastname, teacher.language, teacher.type, teacher.photo, teacher.email from teacher join teach on teacher.id = teach.teacher_id where teach.course_id = ?");
+            sTeachers                = connection.prepareStatement("SELECT id FROM teacher");
+            sTeacherByID             = connection.prepareStatement("SELECT * FROM teacher WHERE id=?");
+            sCourseByCode = connection.prepareStatement("SELECT * FROM course WHERE code=?");
+            sCourseByID = connection.prepareStatement("SELECT * FROM course WHERE id=?");
+            sCourses  = connection.prepareStatement("SELECT id FROM course");
+            sCourseByCodeAndName = connection.prepareStatement("SELECT * FROM course WHERE code=? AND name=?");
+            sCoursesOfTeacher = connection.prepareStatement("SELECT * FROM course JOIN teach ON course.id=teach.course_id JOIN teacher ON teacher.id=teach.teacher_id WHERE teacher.id=?");
+            
+            iTeacher = connection.prepareStatement("INSERT INTO teacher(name, lastname, language, type, email, password) VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+            iCourse = connection.prepareStatement("INSERT INTO course(code, name) VALUES(?,?)", Statement.RETURN_GENERATED_KEYS);
+            iCourseTeacher = connection.prepareStatement("INSERT INTO teach(course_id, teacher_id) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
+                   
+            dTeacher = connection.prepareStatement("DELETE FROM teacher WHERE id=?");
+            dCourse = connection.prepareStatement("DELETE FROM course WHERE code=?");
+            dCourseTeacher = connection.prepareStatement("DELETE FROM teach WHERE course_id=?");
+            
+            uTeacher = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=? WHERE id=?");
+            uTeacher_withPassword = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, password=? WHERE id=?");
+            uCourseBasicInfo = connection.prepareStatement("UPDATE course SET ssd=?,language=?,semester=? WHERE id=?");
+            uCourseDescription = connection.prepareStatement("UPDATE course SET prerequisites=?,learning_outcomes=?,assessment_method=?,teaching_method=?,notes=?,prerequisites_ita=?,learning_outcomes_ita=?,assessment_method_ita=?,teaching_method_ita=?,notes_ita=? WHERE id=?");
+
+            //iArticle = connection.prepareStatement("INSERT INTO article (title,text,authorID,issueID,page) VALUES(?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+
+        } catch (SQLException ex) {
+            throw new DataLayerException("Error initializing the data layer", ex);
+        }
+    }
+    
+    public boolean existTeacherByEmail(String email) {
+        try {
+            sTeacherByEmail.setString(1, email);
+            if(!sTeacherByEmail.executeQuery().next())
+                return false;
+        }catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean insertTeacher(Teacher t) {
+        try {
+            iTeacher.setString(1, t.getName());
+            iTeacher.setString(2, t.getLastname());
+            iTeacher.setString(3, t.getLanguage());
+            iTeacher.setString(4, t.getType());
+            iTeacher.setString(5, t.getEmail());
+            iTeacher.setString(6, t.getPassword());
+            iTeacher.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
+        return true;
+    }
+    
+    public boolean deleteTeacher(int id) {
+        try {
+            dTeacher.setInt(1, id);
+            dTeacher.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
+        return true;
+    }
+    
+    public Teacher createTeacher(ResultSet rs) {
+        TeacherImpl r = new TeacherImpl(this);;
+        try {
+            r.setId(rs.getInt("id"));
+            r.setEmail(rs.getString("email"));
+            r.setLanguage(rs.getString("language"));
+            r.setName(rs.getString("name"));
+            r.setLastname(rs.getString("lastname"));
+            r.setType(rs.getString("type"));
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return r;
+    }
+
+    public Teacher getTeacher(String email, String password) {
+        try {
+            sTeacherByEmailPassword.setString(1, email);
+            sTeacherByEmailPassword.setString(2, password);
+            try (ResultSet rs = sTeacherByEmailPassword.executeQuery()) {
+                if (rs.next()) {
+                    return createTeacher(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+    
+    public Teacher getTeacher(String email) {
+        try {
+            sTeacherByEmail.setString(1, email);
+            try (ResultSet rs = sTeacherByEmail.executeQuery()) {
+                if (rs.next()) {
+                    return createTeacher(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+    
+    public Teacher getTeacher(int teacherid) {
+        try {
+            sTeacherByID.setInt(1, teacherid);
+            try (ResultSet rs = sTeacherByID.executeQuery()) {
+                if (rs.next()) {
+                    return createTeacher(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+    
+    public List<Teacher> getTeachers() {
+        List<Teacher> teachers = new LinkedList<>();
+        try {
+            try (ResultSet rs = sTeachers.executeQuery()) {
+                while (rs.next()) {
+                     teachers.add(getTeacher(rs.getInt("id")));
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return teachers;
+    }
+    
+    public boolean updateTeacher(Teacher t) {
+        try {
+            if(t.getPassword().equals("")) {
+                uTeacher.setString(1, t.getName());
+                uTeacher.setString(2, t.getLastname());
+                uTeacher.setString(3, t.getLanguage());
+                uTeacher.setString(4, t.getEmail());
+                uTeacher.setInt(5, t.getId());
+                uTeacher.executeUpdate();
+            }
+            else {
+                uTeacher_withPassword.setString(1, t.getName());
+                uTeacher_withPassword.setString(2, t.getLastname());
+                uTeacher_withPassword.setString(3, t.getLanguage());
+                uTeacher_withPassword.setString(4, t.getEmail());
+                uTeacher_withPassword.setString(5, t.getPassword());
+                uTeacher_withPassword.setInt(6, t.getId());
+                uTeacher_withPassword.executeUpdate();
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
+        return true;
+    }
+    
+    public boolean assignCourse(Course course, Teacher teacher) {
+        try {
+            dCourseTeacher.setInt(1, course.getId());
+            iCourseTeacher.setInt(1, course.getId());
+            iCourseTeacher.setInt(2, teacher.getId());
+            dCourseTeacher.executeUpdate();
+            iCourseTeacher.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
+    
+    public Course createCourse(ResultSet rs) {
+        CourseImpl r = new CourseImpl(this);;
+        try {
+            r.setId(rs.getInt("id"));
+            r.setSemester(rs.getInt("semester"));
+            r.setCode(rs.getString("code"));
+            r.setAcademic_year(rs.getString("academic_year"));
+            r.setName(rs.getString("name"));
+            r.setForum(rs.getString("forum"));
+            r.setLanguage(rs.getString("language"));
+            r.setSSD(rs.getString("ssd"));
+            r.setPrerequisites(rs.getString("prerequisites"));
+            r.setLearning_outcomes(rs.getString("learning_outcomes"));
+            r.setAssessment_method(rs.getString("assessment_method"));
+            r.setTeaching_method(rs.getString("teaching_method"));
+            r.setSyllabus(rs.getString("syllabus"));
+            r.setHomepage(rs.getString("homepage"));
+            r.setForum(rs.getString("forum"));
+            r.setNotes(rs.getString("notes"));
+            
+            r.setPrerequisites_ita(rs.getString("prerequisites_ita"));
+            r.setAssessment_method_ita(rs.getString("assessment_method_ita"));
+            r.setTeaching_method_ita(rs.getString("teaching_method_ita"));
+            r.setLearning_outcomes_ita(rs.getString("learning_outcomes_ita"));
+            r.setNotes_ita(rs.getString("notes_ita"));
+            r.setSyllabus_ita(rs.getString("syllabus_ita"));
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return r;
+    }
+    
+    public void deleteCourse(String code) {
+        try {
+            dCourse.setString(1, code);
+            try (ResultSet rs = dCourse.executeQuery()) {
+                
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    // According to both code and name
+    public boolean existCourse(Course c) {
+        try {
+            sCourseByCodeAndName.setString(1, c.getCode());
+            sCourseByCodeAndName.setString(2, c.getName());
+            if(!sCourseByCodeAndName.executeQuery().next())
+                return false;
+        }catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
+    
+    public Course getCourse(String code) {
+        try {
+            sCourseByCode.setString(1, code);
+            try (ResultSet rs = sCourseByCode.executeQuery()) {
+                if (rs.next()) {
+                    return createCourse(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+    
+    public Course getCourse(int courseid) {
+        try {
+            sCourseByID.setInt(1, courseid);
+            try (ResultSet rs = sCourseByID.executeQuery()) {
+                if (rs.next()) {
+                    return createCourse(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+    
+    public List<Course> getCourses(Teacher teacher) {
+        List<Course> courses = new LinkedList<>();
+        try {
+            if(teacher == null ) { // you are an admin and you want all the courses
+                try (ResultSet rs = sCourses.executeQuery()) {
+                    while (rs.next()) {
+                        courses.add(getCourse(rs.getInt("id")));
+                    }
+                }
+                
+                // Order courses alfabetically
+                courses.sort(Comparator.comparing(Course::getName));
+                
+                // Assign teachers to courses
+                for(Course c : courses) {
+                    sTeacherByCourse.setInt(1, c.getId());
+                    try (ResultSet rs = sTeacherByCourse.executeQuery()) {
+                        List<Teacher> teachers = new LinkedList<>();
+                        while (rs.next()) {
+                            teachers.add(createTeacher(rs));
+                        }
+                        c.setTeachers(teachers);
+                    }
+                }
+            }
+            else {
+                sCoursesOfTeacher.setInt(1, teacher.getId());
+                try (ResultSet rs = sCoursesOfTeacher.executeQuery()) {
+                    while (rs.next()) {
+                        courses.add(getCourse(rs.getInt("id")));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return courses;
+    }
+    
+    public List<Course> getCoursesByFilters(String name, String language, String semester, String academic_year, String SSD) {
+        List<Course> temp = this.getCourses(null);
+        List<Course> courses = new LinkedList<>();
+        
+                // initially all courses are admitted. Then, filter out the ones that don't satisfy criteria
+        for(Course cur : temp) {
+            if(name != null && !name.equals("")) {
+                // course admitted at first. Then, check if it's filtered out if both its names and teachers'names don't match name
+                if(cur.getName().toLowerCase().contains(name)) {
+                    courses.add(cur);
+                    continue;
+                }
+                boolean admitted = false;
+                for(Teacher t : cur.getTeachers())
+                    if(t.getName().toLowerCase().contains(name) || t.getLastname().toLowerCase().contains(name)) {
+                        admitted = true;
+                        break;
+                    }
+                if(!admitted)
+                    continue;
+            }
+            
+            if(language != null && !language.equals("any")) {
+                if(!cur.getLanguage().equals(language))
+                    continue;
+            }
+            
+            if(semester != null && !semester.equals("any")) {
+                if(cur.getSemester() != Integer.parseInt(semester))
+                    continue;
+            }
+            
+            if(academic_year != null && !academic_year.equals("any")) {
+                if(!cur.getAcademic_year().equals(academic_year))
+                    continue;
+            }
+            
+            if(SSD != null && !SSD.equals("any")) {
+                if(!cur.getSSD().equals(SSD.toUpperCase()))
+                    continue;
+            }
+            
+            courses.add(cur);
+        }
+        
+        return courses;
+    }
+    
+    public boolean insertCourse(Course c) {
+        try {
+            iCourse.setString(1, c.getCode());
+            iCourse.setString(2, c.getName());
+            iCourse.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
+        return true;
+    }
+    
+    public boolean updateCourseBaseInfo(Course c) {
+        // uCourseBasicInfo = connection.prepareStatement("UPDATE course SET ssd=?,language=?,semester=? WHERE id=?");
+        try {
+            uCourseBasicInfo.setString(1, c.getSSD());
+            uCourseBasicInfo.setString(2, c.getLanguage());
+            uCourseBasicInfo.setInt(3, c.getSemester());
+            uCourseBasicInfo.setInt(2, c.getId());
+            uCourseBasicInfo.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
+        return true;
+    }
+    
+    public boolean updateCourseDescription(Course c) {
+        // uCourseDescription = connection.prepareStatement("UPDATE course SET requirements=?,learning_outcomes=?,assessment_method=?,teaching_method=?,notes=?,requirements_ita=?,learning_outcomes_ita=?,assessment_method_ita=?,teaching_method_ita=?,notes_ita=? WHERE id=?");
+        try {
+            uCourseDescription.setString(1, c.getPrerequisites());
+            uCourseDescription.setString(2, c.getLearning_outcomes());
+            uCourseDescription.setString(3, c.getAssessment_method());
+            uCourseDescription.setString(4, c.getTeaching_method());
+            uCourseDescription.setString(5, c.getNotes());
+            uCourseDescription.setString(6, c.getPrerequisites_ita());
+            uCourseDescription.setString(7, c.getLearning_outcomes_ita());
+            uCourseDescription.setString(8, c.getAssessment_method_ita());
+            uCourseDescription.setString(9, c.getTeaching_method_ita());
+            uCourseDescription.setString(10, c.getNotes_ita());
+            uCourseDescription.setInt(11, c.getId());
+            uCourseDescription.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
+        return true;
+    }
+    
+    @Override
+    public void destroy() {
+        //also closing PreparedStamenents is a good practice...
+        try {
+            sTeacherByEmailPassword.close();
+            sTeacherByEmail.close();
+            sCourseByCode.close();
+            
+            
+            dCourse.close();
+        } catch (SQLException ex) {
+            //
+        }
+        super.destroy();
+    }
+}

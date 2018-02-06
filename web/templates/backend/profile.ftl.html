@@ -1,0 +1,109 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <h2 class="subtitle">Edit Profile</h2>
+
+    <div id="alert" class="alert alert-danger hidden" role="alert">
+      Nothing to show
+    </div>
+
+    <form id="form_adduser" class="centered moreabove" method="post" action="be_updateprofile">
+        <div class="form-group">
+            <input type="hidden" class="form-control" id="id" name="id" value="${teacher.id}"/>
+        </div>
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" name="name" value="${teacher.name}" placeholder="Giuseppe" required/>
+        </div>
+        <div class="form-group">
+            <label for="lastname">Lastname:</label>
+            <input type="text" class="form-control" id="lastname" name="lastname"  value="${teacher.lastname}" placeholder="Della Penna" required/>
+        </div>
+        <div class="form-group">
+            <label for="language">Language:</label>
+            <select>
+                <option value="ita" <#if teacher.language == "ita"> selected</#if>>Italian</option>
+                <option value="eng" <#if teacher.language == "eng"> selected</#if>>English</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email"  value="${teacher.email}" placeholder="email@univaq.it" required/>
+        </div>
+        <hr/>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password..."/>
+        </div>
+        <div class="form-group">
+            <label for="password2">Repeat password:</label>
+            <input type="password" class="form-control" id="password2" name="password2" placeholder="Password..."/>
+        </div>
+        <button type="submit" class="btn btn-success centered moreabove" name="login">Save</button>
+    </form>
+</div>
+</#macro>
+
+<#macro script>
+$(document).ready(function(){
+    let alert = $('#alert');
+    
+    function showAlert(message, color, tobeshown) {
+        alert.removeClass("alert-warning").removeClass("alert-success").removeClass("alert-danger").removeClass("alert-info");
+        let newtype = "alert-warning";
+        switch(color) {
+            case "green": newtype = "alert-success"; break;
+            case "blue": newtype = "alert-info"; break;
+            case "red": newtype = "alert-danger"; break;
+            default: newtype = "alert-warning"; break;
+        }
+        alert.addClass(newtype);
+        
+        alert.html(message);
+        
+        if(tobeshown) {
+            alert.removeClass("hidden");
+        }
+        else {
+            alert.addClass("hidden");
+        }
+    }
+    
+    // Button Assign clicked: assign course to teacher
+    $("form").on( "submit", function( event ) {
+        event.preventDefault();
+        showAlert("","",false);
+        
+        // if the teacher/admin wants to change password, check he confirmed it well
+        if($('#password')[0].value != "" && $('#password2')[0].value != "" && $('#password')[0].value != $('#password2')[0].value) {
+            showAlert("Passwords not equal", "red", true);
+            window.scrollTo(0,0);
+            return;
+        }
+        
+        let language = $("form select")[0].selectedOptions[0].attributes.value.value;
+        let formdata = $(this).serialize() + "&language=" + language + "&action=updateprofile";
+        console.log(formdata);
+        
+        $.ajax(
+        {
+            url: "be_updateprofile", 
+            type: "post",
+            data: formdata
+        })
+        .done(function(res) {
+            let text = res;
+            if(res == "ok")
+                if(language == "eng")   {text = "Profile updated!";}
+                else                    {text = "Profilo aggiornato!";}
+            showAlert(text, res == "ok" ? "green" : "red", true);
+        })
+        .fail(function() {
+            showAlert( "error", red, true );
+        })
+    });
+});
+</#macro>
+
+<@display_page/>

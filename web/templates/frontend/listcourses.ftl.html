@@ -1,0 +1,101 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <h2 class="subtitle">Our courses</h2>
+
+    <div id="alert" class="alert alert-danger hidden" role="alert">
+      Nothing to show
+    </div>
+    
+    <h5>Filters</h5>
+    <form id="filterform" action="fe_courses?action=filter" method="post">
+        <div class="form-row">
+            <div class="col">
+                <label for="input_name">Course/Prof. name: </label>
+                <input type="text" id="input_name" name="name" class="form-control" placeholder="Course/Prof. name">
+            </div>
+            <div class="col">
+                <label for="input_language">Language: </label>
+                <select id="input_language" name="language" form="filterform" class="form-control">
+                    <option value="any" selected>Any</option>
+                    <option value="ita">Italian</option>
+                    <option value="eng">English</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="input_semester">Semester: </label>
+                <select id="input_semester" name="semester" form="filterform" class="form-control">
+                    <option value="any" selected>Any</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="input_year">Academic Year: </label>
+                <select id="input_year" name="academic_year" form="filterform" class="form-control">
+                    <option value="any" selected>Any</option>
+                    <#list academic_years as ay>
+                    <option value="${ay}">${ay}</option>
+                    </#list>
+                </select>
+            </div>
+            <div class="col">
+                <label for="input_SSD">Sector: </label>
+                <select id="input_SSD" name="SSD" form="filterform" class="form-control">
+                    <option value="any" selected>Any</option>
+                    <option value="inf-01">INF-01</option>
+                    <option value="bio-09">BIO-09</option>
+                    <option value="eng-02">ENG-02</option>
+                    <option value="eng-05">ENG-05</option>
+                </select>
+            </div>
+            <div class="col">
+                <input value="Filter" type="submit" class="form-control">
+            </div>
+        </div>
+    </form>
+
+    <#if courseslist??>
+    <table class="table morebelow" id="fe_courses_table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Teachers</th>
+          <th>Lang.</th>
+          <th>Semester</th>
+          <th>Field</th>
+        </tr>
+      </thead>
+      <tbody>
+
+            <#list courseslist as course>
+            <tr>
+              <th scope="row">${course.code}</th>
+              <td>${course.name}</td>
+              <td>
+                <#list course.teachers as teacher>
+                ${teacher.lastname}, ${teacher.name}<br/>
+                </#list>
+              </td>
+              <td>${course.language}</td>
+              <td>${course.semester}</td>
+              <td>${course.SSD}</td>
+            </#list>
+
+      </tbody>
+    </table>
+    <#else>
+    <div class="alert alert-info" role="alert">
+        No course entered yet
+    </div>
+    </#if>
+</div>
+</#macro>
+
+<#macro script>
+
+</#macro>
+
+<@display_page/>
