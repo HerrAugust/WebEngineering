@@ -1,0 +1,40 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<!-- Page Content -->
+    <div id="maincontent" class="container">
+
+        <h2 class="morebelow">${course.name}</h2>
+        <image id="logo" src="images/logo.png" alt="photo of professor"/>
+        
+        <h5>Basic data</h5>
+        <form id="form_details">
+            <div class="form-group row">
+                <label for="code" class="col-sm-2 col-form-label"><b>Code </b></label>
+                <input readonly type="text" id="code" value="${course.code}" class="form-control-plaintext">
+            </div>
+                
+            <div class="form-group row">
+                <label for="SSD" class="col-sm-2 col-form-label"><b>SSD </b></label>
+                <input readonly id="SSD" value="${course.SSD}" class="form-control-plaintext">
+            </div>
+        </form>
+        
+        <h5>Course description</h5>
+        <form id="form_details">
+            <div class="form-group row">
+                <label for="code" class="col-sm-2 col-form-label"><b>Code </b></label>
+                <input readonly type="text" id="code" value="${course.code}" class="form-control-plaintext">
+            </div>
+                
+            <div class="form-group row">
+                <label for="SSD" class="col-sm-2 col-form-label"><b>SSD </b></label>
+                <input readonly id="SSD" value="${course.SSD}" class="form-control-plaintext">
+            </div>
+        </form>
+
+    </div>
+    <!-- /.container -->
+</#macro>
+
+<@display_page/>

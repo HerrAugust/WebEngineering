@@ -70,20 +70,21 @@ public class FE_Courses extends WebengineeringBaseController {
     
     private void action_details_teacher(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, TemplateManagerException {
         // Needed to support double language (ita/eng)
-        String url = "frontend/listcourses.ftl.html";
+        String url = "frontend/professor_details.ftl.html";
         String switchlang = "ITA";
-        String title = "Courses";
+        String title = "Professor's details";
+        int id = Integer.parseInt(request.getParameter("id"));
         
         TemplateResult res = new TemplateResult(getServletContext());
         //add to the template a wrapper object that allows to call the stripslashes function
         //request.setAttribute("strip_slashes", new SplitSlashesFmkExt());
         if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
-            url = "backend/listcourses_ita.ftl.html";
+            url = "frontend/professor_details_ita.ftl.html";
             switchlang = "ENG";
-            title = "Corsi";
+            title = "Dettagli del professore";
         }
         request.setAttribute("page_title", title);
-        request.setAttribute("courses", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourses(null));
+        request.setAttribute("teacher", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(id));
         request.setAttribute("switchlang", switchlang);
         res.activate(url, request, response);
     }

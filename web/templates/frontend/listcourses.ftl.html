@@ -73,10 +73,10 @@
             <#list courseslist as course>
             <tr>
               <th scope="row">${course.code}</th>
-              <td>${course.name}</td>
+              <td><a href="fe_courses?action=details_course&id=${course.id}">${course.name}</a></td>
               <td>
                 <#list course.teachers as teacher>
-                ${teacher.lastname}, ${teacher.name}<br/>
+                <a href="fe_courses?action=details_teacher&id=${teacher.id}">${teacher.lastname}, ${teacher.name}<br/>
                 </#list>
               </td>
               <td>${course.language}</td>
