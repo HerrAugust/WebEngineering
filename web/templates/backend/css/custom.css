@@ -1,3 +1,4 @@
+
 #mainNav.navbar-dark .navbar-collapse .navbar-sidenav {
     background-color: #c0392b;
 }
@@ -35,7 +36,8 @@ button {
 }
 
 .subtitle {
-    margin-left: 20%;
+    width: 80%;
+    margin: auto;
 }
 
 #maincontent select {
@@ -44,7 +46,7 @@ button {
 
 /** Title + search bar on the right **/
 .title_search {
-    width: 60%;
+    width: 80%;
     margin: auto;
 }
 
@@ -62,4 +64,9 @@ button {
 .title_search .subtitle {
     margin-left:0px;
     display: inline
+}
+
+/* Aside menu */
+#exampleAccordion {
+    background-color: #a43434 !important;
 }

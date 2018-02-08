@@ -1,5 +1,6 @@
 package it.univaq.webengineering.data.impl;
 
+import it.univaq.webengineering.data.model.Book;
 import it.univaq.webengineering.data.model.Teacher;
 import it.univaq.webengineering.framework.data.DataLayerException;
 import it.univaq.webengineering.data.model.Course;
@@ -48,6 +49,12 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     private PreparedStatement uCourseDescription;
     private PreparedStatement uCourseBasicInfo;
     private PreparedStatement sTeacherByCourse;
+    private PreparedStatement sTeachersByCourse;
+    private PreparedStatement sBooksByCourse;
+    private PreparedStatement sCoursesPreparatory;
+    private PreparedStatement sCoursesSame_as;
+    private PreparedStatement sCourseModule;
+    private PreparedStatement dTeach;
 
     public WebengineeringDataLayerMysqlImpl(DataSource datasource) throws SQLException, NamingException {
         super(datasource);
@@ -64,11 +71,16 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             sTeacherByCourse         = connection.prepareStatement("SELECT teacher.id, teacher.name, teacher.lastname, teacher.language, teacher.type, teacher.photo, teacher.email from teacher join teach on teacher.id = teach.teacher_id where teach.course_id = ?");
             sTeachers                = connection.prepareStatement("SELECT id FROM teacher");
             sTeacherByID             = connection.prepareStatement("SELECT * FROM teacher WHERE id=?");
+            sTeachersByCourse        = connection.prepareStatement("SELECT * FROM teacher JOIN teach ON teach.teacher_id = teacher.id WHERE teach.course_id = ?");
             sCourseByCode = connection.prepareStatement("SELECT * FROM course WHERE code=?");
             sCourseByID = connection.prepareStatement("SELECT * FROM course WHERE id=?");
             sCourses  = connection.prepareStatement("SELECT id FROM course");
             sCourseByCodeAndName = connection.prepareStatement("SELECT * FROM course WHERE code=? AND name=?");
             sCoursesOfTeacher = connection.prepareStatement("SELECT * FROM course JOIN teach ON course.id=teach.course_id JOIN teacher ON teacher.id=teach.teacher_id WHERE teacher.id=?");
+            sBooksByCourse = connection.prepareStatement("SELECT * FROM book JOIN uses ON uses.book_id = book.id WHERE uses.course_id = ?");
+            sCoursesPreparatory = connection.prepareStatement("SELECT course.* FROM preparatory JOIN course ON preparatory.requires = course.id WHERE preparatory.course_id = ?");
+            sCoursesSame_as = connection.prepareStatement("SELECT b1.* FROM course as b1 JOIN course as b2 ON b1.same_as = b2.id WHERE b1.same_as = ?");
+            sCourseModule = connection.prepareStatement("SELECT b2.* FROM course as b1 JOIN course as b2 ON b1.module = b2.id WHERE b1.id= ?");
             
             iTeacher = connection.prepareStatement("INSERT INTO teacher(name, lastname, language, type, email, password) VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             iCourse = connection.prepareStatement("INSERT INTO course(code, name) VALUES(?,?)", Statement.RETURN_GENERATED_KEYS);
@@ -77,6 +89,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             dTeacher = connection.prepareStatement("DELETE FROM teacher WHERE id=?");
             dCourse = connection.prepareStatement("DELETE FROM course WHERE code=?");
             dCourseTeacher = connection.prepareStatement("DELETE FROM teach WHERE course_id=?");
+            dTeach = connection.prepareStatement("DELETE FROM teach WHERE course_id = ? and teacher_id = ?");
             
             uTeacher = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=? WHERE id=?");
             uTeacher_withPassword = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, password=? WHERE id=?");
@@ -207,6 +220,22 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         return teachers;
     }
     
+    public List<Teacher> getTeachers(Course course) {
+        List<Teacher> teachers = new LinkedList<>();
+        try {
+            sTeachersByCourse.setInt(1,course.getId());
+            try (ResultSet rs = sTeachersByCourse.executeQuery()) {
+                while (rs.next()) {
+                     teachers.add(getTeacher(rs.getInt("id")));
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return teachers;
+    }
+    
     public boolean updateTeacher(Teacher t) {
         try {
             if(t.getPassword().equals("")) {
@@ -285,9 +314,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     public void deleteCourse(String code) {
         try {
             dCourse.setString(1, code);
-            try (ResultSet rs = dCourse.executeQuery()) {
-                
-            }
+            dCourse.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -342,7 +369,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         try {
             if(teacher == null ) { // you are an admin and you want all the courses
                 try (ResultSet rs = sCourses.executeQuery()) {
-                    while (rs.next()) {
+                    while(rs.next()) {
                         courses.add(getCourse(rs.getInt("id")));
                     }
                 }
@@ -350,7 +377,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                 // Order courses alfabetically
                 courses.sort(Comparator.comparing(Course::getName));
                 
-                // Assign teachers to courses
+                // Assign teachers to courses and books
                 for(Course c : courses) {
                     sTeacherByCourse.setInt(1, c.getId());
                     try (ResultSet rs = sTeacherByCourse.executeQuery()) {
@@ -361,6 +388,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                         c.setTeachers(teachers);
                     }
                 }
+                
             }
             else {
                 sCoursesOfTeacher.setInt(1, teacher.getId());
@@ -491,5 +519,101 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             //
         }
         super.destroy();
+    }
+
+    public Book createBook(ResultSet rs) {
+        BookImpl r = new BookImpl(this);;
+        try {
+            r.setId(rs.getInt("id"));
+            r.setYear(rs.getInt("year"));
+            r.setAuthor(rs.getString("author"));
+            r.setPublisher(rs.getString("publisher"));
+            r.setTitle(rs.getString("title"));
+            r.setVolume(rs.getString("volume"));
+            r.setWeblink(rs.getString("weblink"));
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return r;
+    }
+    
+    public List<Book> getBooks(Course course) {
+        List<Book> books = new LinkedList<>();
+        try {
+            sBooksByCourse.setInt(1, course.getId());
+            try (ResultSet rs = sBooksByCourse.executeQuery()) {
+                while (rs.next()) {
+                    books.add(createBook(rs));
+                }
+            }
+        }
+        catch(SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return books;
+    }
+
+    @Override
+    public List<Course> getSame_as(Course course) {
+        List<Course> same_as = new LinkedList<>();
+        try {
+            sCoursesSame_as.setInt(1, course.getId());
+            try (ResultSet rs = sCoursesSame_as.executeQuery()) {
+                while (rs.next()) {
+                    same_as.add(createCourse(rs));
+                }
+            }
+        }
+        catch(SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return same_as;
+    }
+
+    @Override
+    public List<Course> getPreparatory(Course course) {
+        List<Course> courses = new LinkedList<>();
+        try {
+            sCoursesPreparatory.setInt(1, course.getId());
+            try (ResultSet rs = sCoursesPreparatory.executeQuery()) {
+                while (rs.next()) {
+                    courses.add(createCourse(rs));
+                }
+            }
+        }
+        catch(SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return courses;
+    }
+
+    @Override
+    public Course getModule(Course course) {
+        Course module = null;
+        try {
+            sCourseModule.setInt(1, course.getId());
+            try (ResultSet rs = sCourseModule.executeQuery()) {
+                while (rs.next()) {
+                    module = createCourse(rs);
+                }
+            }
+        }
+        catch(SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return module;
+    }
+
+    @Override
+    public boolean decouple_course(int course_id, int teacher_id) {
+        try {
+            dTeach.setInt(1, course_id);
+            dTeach.setInt(2, teacher_id);
+            dTeach.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
     }
 }

@@ -91,20 +91,27 @@ public class FE_Courses extends WebengineeringBaseController {
     
     private void action_details_course(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, TemplateManagerException {
         // Needed to support double language (ita/eng)
-        String url = "frontend/listcourses.ftl.html";
+        String url = "frontend/course_details.ftl.html";
         String switchlang = "ITA";
-        String title = "Courses";
+        String title = "Course details";
+        int id = Integer.parseInt(request.getParameter("id"));
         
         TemplateResult res = new TemplateResult(getServletContext());
         //add to the template a wrapper object that allows to call the stripslashes function
         //request.setAttribute("strip_slashes", new SplitSlashesFmkExt());
         if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
-            url = "backend/listcourses_ita.ftl.html";
+            url = "frontend/course_details_ita.ftl.html";
             switchlang = "ENG";
-            title = "Corsi";
+            title = "Dettagli del corso";
         }
+        Course course = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(id);
+        course.setTeachers(((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeachers(course));
+        course.setBooks(((WebengineeringDataLayer)request.getAttribute("datalayer")).getBooks(course));
+        course.setModule(((WebengineeringDataLayer)request.getAttribute("datalayer")).getModule(course));
+        course.setSame_as(((WebengineeringDataLayer)request.getAttribute("datalayer")).getSame_as(course));
+        course.setPreparatory(((WebengineeringDataLayer)request.getAttribute("datalayer")).getPreparatory(course));
         request.setAttribute("page_title", title);
-        request.setAttribute("courses", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourses(null));
+        request.setAttribute("course", course);
         request.setAttribute("switchlang", switchlang);
         res.activate(url, request, response);
     }

@@ -143,6 +143,25 @@ public class BE_EditCourse extends WebengineeringBaseController {
         action_error(request, response);
         return;
     }
+    
+    private void action_decouple_teacher(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = SecurityLayer.checkSession(request);
+        if(session != null) {
+            int teacher_id = Integer.parseInt(request.getParameter("teacher_id"));
+            int course_id = Integer.parseInt(request.getParameter("course_id"));
+            boolean success = ((WebengineeringDataLayer)request.getAttribute("datalayer")).decouple_course(course_id, teacher_id);
+            
+            if(!success) {
+                request.setAttribute("message", "Error while decoupling teacher and course");
+                action_error(request,response);
+                return;
+            }
+            response.sendRedirect("be_homepage");
+            return;
+        }
+        request.setAttribute("message", "You must be logged!");
+        action_error(request, response);
+    }
 
     @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -164,6 +183,9 @@ public class BE_EditCourse extends WebengineeringBaseController {
                     break;
                 case "coursebase":
                     action_savebaseinfo(request, response);
+                    break;
+                case "decouple_teacher":
+                    action_decouple_teacher(request,response);
                     break;
                 default:
                     action_default(request, response,1);

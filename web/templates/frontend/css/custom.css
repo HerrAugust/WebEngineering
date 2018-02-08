@@ -13,6 +13,7 @@
 
 #form_login {
     width: 50%;
+    margin: auto;
     margin-top: 90px;
 }
 
@@ -24,4 +25,25 @@
 /* Professor details */
 #form_details .form-group {
     margin-bottom: 0px;
+}
+
+/* Accordions */
+
+.panel-heading a {
+    font-size: 1rem;
+    color: black;
+}
+
+/* Carousel */
+#carousel {
+    float: right;
+    width: 30%;
+}
+
+#carousel .carousel-indicators li {
+    background-color: rgba(000,000,000,.5);
+}
+
+#carousel .carousel-indicators .active {
+    background-color: rgba(000,000,000,0.8);
 }

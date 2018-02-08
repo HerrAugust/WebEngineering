@@ -1,5 +1,6 @@
 package it.univaq.webengineering.data.impl;
 
+import it.univaq.webengineering.data.model.Book;
 import it.univaq.webengineering.data.model.Course;
 import it.univaq.webengineering.data.model.Image;
 import it.univaq.webengineering.data.model.Teacher;
@@ -21,6 +22,11 @@ public class CourseImpl implements Course {
     private String syllabus_ita = "";
     
     private List<Teacher> teachers = null;
+    private List<Book> books = null;
+    
+    private Course module = null;
+    private List<Course> same_as = null;
+    private List<Course> preparatory = null;
 
     public CourseImpl(WebengineeringDataLayer dl) {
         this.dl = dl;
@@ -114,7 +120,7 @@ public class CourseImpl implements Course {
 
     public void setAssessment_method(String am) {
         if(am == null) am = "";
-        this.assessment_method = assessment_method;
+        this.assessment_method = am;
     }
 
     public String getTeaching_method() {
@@ -226,5 +232,44 @@ public class CourseImpl implements Course {
     public void setSyllabus_ita(String s) {
         if(s == null) s = "";
         this.syllabus_ita = s;
+    }
+    
+    @Override
+    public List<Course> getPreparatory() {
+        return this.preparatory;
+    }
+    
+    @Override
+    public void setPreparatory(List<Course> s) {
+        this.preparatory = s;
+    }
+    @Override
+    public List<Course> getSame_as() {
+        return this.same_as;
+    }
+    
+    @Override
+    public void setSame_as(List<Course> s) {
+        this.same_as = s;
+    }
+    
+    @Override
+    public Course getModule() {
+        return this.module;
+    }
+    
+    @Override
+    public void setModule(Course s) {
+        this.module = s;
+    }
+    
+    @Override
+    public List<Book> getBooks() {
+        return this.books;
+    }
+    
+    @Override
+    public void setBooks(List<Book> b) {
+        this.books = b;
     }
 }

@@ -2,7 +2,7 @@
 
 <#macro page_body>
 <div id="maincontent">
-    <h2 class="subtitle">Edit course of ${course.name}</h2>
+    <h2 class="subtitle">Edit course of <i>${course.name}</i></h2>
     <p class="subtitle">Academic Year: Current (${academic_year})</p>
     <#if course.module??><p class="subtitle">Module with: ${academic_year}</p></#if>
     <#if course.preparatory??><p class="subtitle">Preparatory for: ${academic_year}</p></#if>
@@ -18,7 +18,7 @@
         <div class="form-group">
             <label for="ssd">SSD:</label>
             <select name="ssd" id="ssd" class="form-control" >
-                <#if course.SSD != "">
+                <#if course.SSD??>
                 <option value="${course.SSD}" selected>${course.SSD}</option>
                 </#if>
                 <option value="inf-01">INF-01</option>
@@ -30,15 +30,15 @@
         <div class="form-group">
             <label for="language">Language:</label>
             <select name="language" id="language" class="form-control" >
-                <option value="ita" <#if course.language != "" && course.language == "ita">selected</#if>>Italian</option>
-                <option value="eng" <#if course.language != "" && course.language == "eng">selected</#if>>English</option>
+                <option value="ita" <#if course.language?? && course.language != "" && course.language == "ita">selected</#if>>Italian</option>
+                <option value="eng" <#if course.language?? && course.language != "" && course.language == "eng">selected</#if>>English</option>
             </select>
         </div>
         <div class="form-group">
             <label for="semester">Semester:</label>
             <select name="semester" class="form-control" id="semester">
-                <option value="1" <#if course.semester == 1>selected="selected"</#if>>1 - Winter</option>
-                <option value="2" <#if course.semester == 2>selected="selected"</#if>>2 - Summer</option>
+                <option value="1" <#if course.semester?? && course.semester == 1>selected="selected"</#if>>1 - Winter</option>
+                <option value="2" <#if course.semester?? && course.semester == 2>selected="selected"</#if>>2 - Summer</option>
             </select>
         </div>
         <button type="submit" class="btn btn-success">Save and continue</button>

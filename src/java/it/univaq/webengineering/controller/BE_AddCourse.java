@@ -33,6 +33,7 @@ public class BE_AddCourse extends WebengineeringBaseController {
         // Needed to support double language (ita/eng)
         String url = "backend/addcourse.ftl.html";
         String switchlang = "ITA";
+        List<Teacher> teachers = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeachers();
         
         if(SecurityLayer.checkSession(request) == null) {
             request.setAttribute("message", "You must be logged in and be an admin!");
@@ -53,6 +54,7 @@ public class BE_AddCourse extends WebengineeringBaseController {
                 switchlang = "ENG"; 
             }
         }
+        request.setAttribute("teachers", teachers);
         request.setAttribute("switchlang", switchlang);
         res.activate(url, request, response);
     }
@@ -69,16 +71,18 @@ public class BE_AddCourse extends WebengineeringBaseController {
             t.setCode(code);
             
             String text = "Error while creating new course.";
-            if(((WebengineeringDataLayer)request.getAttribute("datalayer")).existCourse(t)) {
+            if(((WebengineeringDataLayer)request.getAttribute("datalayer")).existCourse(t) == false) {
                 boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertCourse(t);
+                t = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(code);
                 
                 // Assign course to teacher
                 if(teacherid != -1) {
                     Teacher teacher = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(teacherid);
                     res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).assignCourse(t, teacher);
                 }
-                if(res)
+                if(res) {
                     text = "ok";
+                }
             }
             else {
                 text += " Course with that code and name already exists. Change one of them.";
@@ -91,7 +95,6 @@ public class BE_AddCourse extends WebengineeringBaseController {
         }
         request.setAttribute("message", "You must be logged and be administrator!");
         action_error(request, response);
-        return;
     }
 
     @Override

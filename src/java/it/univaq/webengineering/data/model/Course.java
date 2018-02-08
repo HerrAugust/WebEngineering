@@ -36,6 +36,10 @@ public interface Course {
     
     List<Teacher> getTeachers();
     
+    List<Book> getBooks();
+    
+    void setBooks(List<Book> b);
+    
     void setTeachers(List<Teacher> l);
     
     void setId(int id);
@@ -79,6 +83,12 @@ public interface Course {
     public String getNotes_ita();
     
     public String getSyllabus_ita();
+   
+    public List<Course> getPreparatory();
+    
+    public List<Course> getSame_as();
+    
+    public Course getModule();
     
     public void setPrerequisites_ita(String s);
 
@@ -91,4 +101,10 @@ public interface Course {
     public void setNotes_ita(String s);
     
     public void setSyllabus_ita(String s);
+    
+    public void setSame_as(List<Course> c);
+    
+    public void setPreparatory(List<Course> c);
+    
+    public void setModule(Course c);
 }

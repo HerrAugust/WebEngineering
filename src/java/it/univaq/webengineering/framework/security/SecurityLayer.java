@@ -95,6 +95,11 @@ public class SecurityLayer {
             s.invalidate();
         }
     }
+    
+    public static void refreshPage(HttpServletResponse response) {
+        response.setContentType("text/html");
+        response.addHeader("Refresh", "5");
+    }
 
     //--------- DATA SECURITY ------------
     //questa funzione aggiunge un backslash davanti a

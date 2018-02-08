@@ -43,7 +43,8 @@ public class BE_Homepage extends WebengineeringBaseController {
             String email = (String)session.getAttribute("username");
             Teacher user = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
             if(user.isAdmin()) {
-                request.setAttribute("courses", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourses(null));
+                List<Course> courses = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourses(null);
+                request.setAttribute("courses", courses);
                 request.setAttribute("teachers", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeachers());
                 request.setAttribute("switchlang", switchlang);
                 
@@ -63,9 +64,12 @@ public class BE_Homepage extends WebengineeringBaseController {
             }
             res.activate(url, request, response);
         }
+        else { // user not logged in
+            response.sendRedirect("fe_login");
+        }
     }
     
-    private void action_deletecourse(HttpServletRequest request, HttpServletResponse response) {
+    private void action_deletecourse(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             String coursecode = request.getParameter("coursecode");
@@ -73,9 +77,7 @@ public class BE_Homepage extends WebengineeringBaseController {
             Teacher t = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
             if(t.getType() != null && t.getType().equals("admin") && coursecode != null) {
                 ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteCourse(coursecode);
-            }
-            else {
-                
+                response.sendRedirect("be_listcourses");
             }
         }
     }

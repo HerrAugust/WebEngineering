@@ -44,6 +44,7 @@ public class FE_Login extends WebengineeringBaseController {
                 // Set up session
                 SecurityLayer.createSession(request, teacher.getEmail(), teacher.getId());
                 request.setAttribute("switchlang", teacher.getLanguage());
+                response.sendRedirect("be_homepage");
             } else {
                 response.setContentType("text/plain");  // Set content type of the response so that jQuery knows what it can expect.
                 response.setCharacterEncoding("UTF-8"); // You want world domination, huh?

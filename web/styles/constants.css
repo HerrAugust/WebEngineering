@@ -36,14 +36,28 @@
     margin-right: 20px;
 }
 
-body {
+html,body {
     height: 100%;
+    min-height: 100%;
+    margin: 0;
+}
+
+/* Necessary to make footer go to bottom */
+#wrapper{
+    height: auto !important;
+    min-height: 100%;
+    margin: 0 auto -60px; /* 60px is the height of footer */
+}
+
+#wrapper:after {
+  content: "";
+  display: block;
+  height: 60px;
 }
 
 footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+    position: relative;
+    height: 60px;
 }
 
 .left {
