@@ -1,7 +1,9 @@
 package it.univaq.webengineering.framework.security;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Calendar;
+import java.util.Random;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -186,5 +188,12 @@ public class SecurityLayer {
 
     private static void checkNumberic(String s) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public static String generateRandomString7() {
+        byte[] array = new byte[7]; // length is bounded by 7
+        new Random().nextBytes(array);
+        String generatedString = new String(array, Charset.forName("UTF-8"));
+        return generatedString;
     }
 }

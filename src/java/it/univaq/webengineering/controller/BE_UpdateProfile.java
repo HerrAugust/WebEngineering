@@ -10,6 +10,7 @@ import it.univaq.webengineering.framework.result.TemplateResult;
 import it.univaq.webengineering.framework.result.SplitSlashesFmkExt;
 import it.univaq.webengineering.framework.result.TemplateManagerException;
 import it.univaq.webengineering.framework.security.SecurityLayer;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.ServletContext;
@@ -17,6 +18,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.tomcat.util.http.fileupload.FileItem;
+import org.apache.tomcat.util.http.fileupload.FileItemFactory;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.apache.tomcat.util.http.fileupload.RequestContext;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
+import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
 public class BE_UpdateProfile extends WebengineeringBaseController {
 
@@ -71,6 +78,38 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             String password2 = request.getParameter("password2");
             String email = request.getParameter("email");
             String type = request.getParameter("type");
+            
+            //store photo
+            String photoName = "", randomName = "";
+            String filePath = getServletContext().getInitParameter("file-upload"); 
+            if (ServletFileUpload.isMultipartContent(request)) {
+            try {
+                FileItemFactory fif = new DiskFileItemFactory();
+                ServletFileUpload sfo = new ServletFileUpload(fif);
+                List<FileItem> items = sfo.parseRequest((RequestContext) request);
+                for (FileItem item : items) {
+                    String fname = item.getFieldName();
+                    if (item.isFormField() && fname.equals("n") && !item.getString().isEmpty()) {
+                        request.setAttribute("n", item.getString());
+                    } else if (!item.isFormField() && fname.equals("f1")) {
+                        String namefile = item.getName();
+                        photoName = namefile;
+                        String contentType = item.getContentType();
+                        long size = item.getSize();
+                        if (size > 0 && !namefile.isEmpty()) {
+                            randomName = SecurityLayer.generateRandomString7();
+                            File target = new File(filePath + randomName);
+                            item.write(target);
+                        }
+                    }
+                }
+            } catch (FileUploadException ex) {
+                request.setAttribute("exception", ex);
+                action_error(request, response);
+            } catch (Exception ex) {
+                request.setAttribute("exception", ex);
+                action_error(request, response);
+            }
             
             if(!password.equals("") && !password.equals(password2))  {
                 request.setAttribute("message", "You did not confirm the new password well.");

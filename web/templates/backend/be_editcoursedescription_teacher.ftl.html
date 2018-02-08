@@ -16,23 +16,23 @@
                 <input type="hidden" name="coursecode" value="${course.code}"/>
                 <div class="form-group">
                     <label for="prerequisites">Prerequisites:</label>
-                    <input type="text" class="form-control" value="${course.prerequisites}" name="prerequisites"/>
+                    <textarea class="form-control" name="prerequisites">${course.prerequisites}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="learning_outcomes">Learning outcomes:</label>
-                    <input type="text" class="form-control" value="${course.learning_outcomes}" name="learning_outcomes"/>
+                    <textarea class="form-control" name="learning_outcomes">${course.learning_outcomes}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="assessment_method">Assessment method:</label>
-                    <input type="text" class="form-control" value="${course.assessment_method}" name="assessment_method"/>
+                    <textarea class="form-control" name="assessment_method">${course.assessment_method}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="teaching_method">Teaching method:</label>
-                    <input type="text" class="form-control" value="${course.teaching_method}" name="teaching_method"/>
+                    <textarea class="form-control" name="teaching_method">${course.teaching_method}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="notes">Notes:</label>
-                    <input type="text" class="form-control" value="${course.notes}" name="notes"/>
+                    <textarea class="form-control" name="notes">${course.notes}</textarea>
                 </div>
                 <div class="form-control">
                     <input type="file" name="images[]" id="images" multiple />
@@ -44,23 +44,23 @@
             <form id="right" class="subtitle moreabove" method="post" action="be_editcourse?action=coursedescription">
                 <div class="form-group">
                     <label for="prerequisites_ita">Prerequisiti:</label>
-                    <input type="text" class="form-control" value="${course.prerequisites_ita}" name="prerequisites_ita"/>
+                    <textarea class="form-control" name="prerequisites_ita">${course.prerequisites_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="learning_outcomes_ita">Risultati del corso:</label>
-                    <input type="text" class="form-control" value="${course.learning_outcomes_ita}" name="learning_outcomes_ita"/>
+                    <textarea class="form-control" name="learning_outcomes_ita">${course.learning_outcomes_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="assessment_method_ita">Modalit&agrave; d'esame:</label>
-                    <input type="text" class="form-control" value="${course.assessment_method_ita}" name="assessment_method_ita"/>
+                    <textarea class="form-control" name="assessment_method_ita">${course.assessment_method_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="teaching_method_ita">Modalit&agrave; d'insegnamento:</label>
-                    <input type="text" class="form-control" value="${course.teaching_method_ita}" name="teaching_method_ita"/>
+                    <textarea class="form-control" name="teaching_method_ita">${course.teaching_method_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="notes_ita">Note:</label>
-                    <input type="text" class="form-control" value="${course.notes_ita}" name="notes_ita"/>
+                    <textarea class="form-control" name="notes_ita">${course.notes_ita}</textarea>
                 </div>
             </form>
         </div>

@@ -472,7 +472,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             uCourseBasicInfo.setString(1, c.getSSD());
             uCourseBasicInfo.setString(2, c.getLanguage());
             uCourseBasicInfo.setInt(3, c.getSemester());
-            uCourseBasicInfo.setInt(2, c.getId());
+            uCourseBasicInfo.setInt(4, c.getId());
             uCourseBasicInfo.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);

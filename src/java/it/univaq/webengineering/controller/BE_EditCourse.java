@@ -67,6 +67,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         
         Course course = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(coursecode);
         request.setAttribute("course", course);
+        String i = super.getCurrentAcademicYear();
         request.setAttribute("academic_year", super.getCurrentAcademicYear());
         request.setAttribute("switchlang", switchlang);
         res.activate(url, request, response);
@@ -83,6 +84,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
             
             Course t = new CourseImpl(null);
             t.setId(courseid);
+            t.setCode(coursecode);
             t.setSSD(ssd);
             t.setSemester(semester);
             t.setLanguage(language);
@@ -92,7 +94,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
             if(res)
                 text = "ok";
                 
-            response.sendRedirect("be_editcourse?action=showBe_EditCourseDescription_teacher?courseid="+courseid);
+            response.sendRedirect("be_editcourse?action=showBe_EditCourseDescription_teacher&coursecode="+coursecode);
             return;
         }
         request.setAttribute("message", "You must be logged!");
@@ -135,7 +137,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
             if(res)
                 text = "ok";
             
-            request.setAttribute("message", "Course information saved");
+            request.setAttribute("message", text);
             response.sendRedirect("be_homepage");
             return;
         }
@@ -172,6 +174,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         try {
             if(request.getParameter("action") == null) {
                 action_default(request, response,1);
+                return; 
             }
             
             switch(request.getParameter("action")) {
