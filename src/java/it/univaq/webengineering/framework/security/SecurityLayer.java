@@ -190,10 +190,12 @@ public class SecurityLayer {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    public static String generateRandomString7() {
-        byte[] array = new byte[7]; // length is bounded by 7
-        new Random().nextBytes(array);
-        String generatedString = new String(array, Charset.forName("UTF-8"));
-        return generatedString;
+    public static String generateRandomString(int length) {
+        String a = "qwertyuiopasdfghjklzxcvbnm1234567890";
+        String rand = "";
+        Random r = new Random();
+        for(int i = 0 ; i < length; i++)
+            rand = rand + a.charAt(r.nextInt(a.length()));
+        return rand;
     }
 }

@@ -31,4 +31,8 @@ public interface Teacher {
     void setPassword(String password);
     
     boolean isAdmin();
+    
+    void setPhoto(Image i);
+    
+    Image getPhoto();
 }

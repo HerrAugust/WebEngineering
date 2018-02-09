@@ -4,6 +4,7 @@ import it.univaq.webengineering.data.model.Book;
 import it.univaq.webengineering.data.model.Teacher;
 import it.univaq.webengineering.framework.data.DataLayerException;
 import it.univaq.webengineering.data.model.Course;
+import it.univaq.webengineering.data.model.Image;
 import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,6 +56,11 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     private PreparedStatement sCoursesSame_as;
     private PreparedStatement sCourseModule;
     private PreparedStatement dTeach;
+    private PreparedStatement dImage;
+    private PreparedStatement iImage;
+    private PreparedStatement sImageByTeacher;
+    private PreparedStatement sImage;
+    private PreparedStatement sImagesByCourse;
 
     public WebengineeringDataLayerMysqlImpl(DataSource datasource) throws SQLException, NamingException {
         super(datasource);
@@ -81,17 +87,22 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             sCoursesPreparatory = connection.prepareStatement("SELECT course.* FROM preparatory JOIN course ON preparatory.requires = course.id WHERE preparatory.course_id = ?");
             sCoursesSame_as = connection.prepareStatement("SELECT b1.* FROM course as b1 JOIN course as b2 ON b1.same_as = b2.id WHERE b1.same_as = ?");
             sCourseModule = connection.prepareStatement("SELECT b2.* FROM course as b1 JOIN course as b2 ON b1.module = b2.id WHERE b1.id= ?");
+            sImage = connection.prepareStatement("SELECT * FROM image WHERE id = ?");
+            sImageByTeacher = connection.prepareStatement("SELECT image.* FROM teacher JOIN image ON teacher.photo = image.id WHERE teacher.id = ?");
+            sImagesByCourse = connection.prepareStatement("SELECT image.* FROM image JOIN course ON image.course_id = course.id WHERE course.id = ?");
             
             iTeacher = connection.prepareStatement("INSERT INTO teacher(name, lastname, language, type, email, password) VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             iCourse = connection.prepareStatement("INSERT INTO course(code, name) VALUES(?,?)", Statement.RETURN_GENERATED_KEYS);
             iCourseTeacher = connection.prepareStatement("INSERT INTO teach(course_id, teacher_id) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
+            iImage = connection.prepareStatement("INSERT INTO image(original_name, name_on_disk, path, course_id) VALUE(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
                    
             dTeacher = connection.prepareStatement("DELETE FROM teacher WHERE id=?");
             dCourse = connection.prepareStatement("DELETE FROM course WHERE code=?");
             dCourseTeacher = connection.prepareStatement("DELETE FROM teach WHERE course_id=?");
             dTeach = connection.prepareStatement("DELETE FROM teach WHERE course_id = ? and teacher_id = ?");
+            dImage = connection.prepareStatement("DELETE FROM image WHERE id = ?");
             
-            uTeacher = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=? WHERE id=?");
+            uTeacher = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, photo=? WHERE id=?");
             uTeacher_withPassword = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, password=? WHERE id=?");
             uCourseBasicInfo = connection.prepareStatement("UPDATE course SET ssd=?,language=?,semester=? WHERE id=?");
             uCourseDescription = connection.prepareStatement("UPDATE course SET prerequisites=?,learning_outcomes=?,assessment_method=?,teaching_method=?,notes=?,prerequisites_ita=?,learning_outcomes_ita=?,assessment_method_ita=?,teaching_method_ita=?,notes_ita=? WHERE id=?");
@@ -153,6 +164,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             r.setName(rs.getString("name"));
             r.setLastname(rs.getString("lastname"));
             r.setType(rs.getString("type"));
+            r.setPhoto(this.getImage(rs.getInt("photo")));
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -243,7 +255,11 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                 uTeacher.setString(2, t.getLastname());
                 uTeacher.setString(3, t.getLanguage());
                 uTeacher.setString(4, t.getEmail());
-                uTeacher.setInt(5, t.getId());
+                if(t.getPhoto().getId() != 0)
+                    uTeacher.setInt(5, t.getPhoto().getId());
+                else
+                    uTeacher.setNull(5, java.sql.Types.INTEGER);
+                uTeacher.setInt(6, t.getId());
                 uTeacher.executeUpdate();
             }
             else {
@@ -615,5 +631,108 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int insertImage(Image image) {
+        int id = 0;
+        try {
+            iImage.setString(1, image.getOriginal_name());
+            iImage.setString(2, image.getName_on_disk());
+            iImage.setString(3, image.getPath());
+            if(image.getCourse_id() != 0)
+                iImage.setInt(4, image.getCourse_id());
+            else
+                iImage.setNull(4, java.sql.Types.INTEGER);
+            iImage.executeUpdate();
+            
+            // get id
+            ResultSet rs = iImage.getGeneratedKeys();
+            if (rs.next()) {
+                id = (int) rs.getLong(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return id;
+    }
+    
+    private Image createImage(ResultSet rs) {
+        ImageImpl r = new ImageImpl(this);
+        try {
+            r.setId(rs.getInt("id"));
+            r.setOriginal_name(rs.getString("original_name"));
+            r.setName_on_disk(rs.getString("name_on_disk"));
+            r.setPath(rs.getString("path"));
+            if(rs.getInt("course_id") != 0)
+                r.setCourse_id(rs.getInt("course_id"));
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return r;
+    }
+
+    @Override
+    public Image getImageByTeacher(int teacher_id) {
+        try {
+            sImageByTeacher.setInt(1, teacher_id);
+            try (ResultSet rs = sImageByTeacher.executeQuery()) {
+                if (rs.next()) {
+                    return createImage(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
+    @Override
+    public void deleteImage(int id) {
+        try {
+            dImage.setInt(1, id);
+            dImage.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Override
+    public void deleteImageByTeacher(int teacher_id) {
+        Teacher teacher = this.getTeacher(teacher_id);
+        this.deleteImage(teacher.getPhoto().getId());
+    }
+
+    private Image getImage(int id) {
+        try{
+            sImage.setInt(1,id);
+            try (ResultSet rs = sImage.executeQuery();) {
+                if (rs.next()) {
+                    return createImage(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    @Override
+    public List<Image> getImagesByCourse(int courseid) {
+        List<Image> images = new LinkedList<>();
+        try {
+            sImagesByCourse.setInt(1, courseid);
+            try (ResultSet rs = sImagesByCourse.executeQuery()) {
+                while (rs.next()) {
+                    images.add(createImage(rs));
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return images;
     }
 }

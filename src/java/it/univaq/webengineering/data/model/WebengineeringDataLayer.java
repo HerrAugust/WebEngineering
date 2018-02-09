@@ -1,5 +1,6 @@
 package it.univaq.webengineering.data.model;
 
+import it.univaq.webengineering.data.impl.ImageImpl;
 import it.univaq.webengineering.framework.data.DataLayer;
 import it.univaq.webengineering.framework.data.DataLayerException;
 import java.io.InputStream;
@@ -39,4 +40,10 @@ public interface WebengineeringDataLayer extends DataLayer {
     public List<Course> getSame_as(Course course);
     public List<Course> getPreparatory(Course course);
     public Course getModule(Course course);
+
+    public Image getImageByTeacher(int teacher_id);
+    public void deleteImage(int id);
+    public void deleteImageByTeacher(int teacher_id);
+    public int insertImage(Image image);
+    public List<Image> getImagesByCourse(int id);
 }

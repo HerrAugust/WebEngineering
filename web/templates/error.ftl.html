@@ -10,7 +10,12 @@
         <div><a href="fe_homepage">Return to homepage</a></div>
         <h1>Error</h1>
         <p>The system encountered the following error while handling your request:</p>
+        <#if error??>
         <p><b>${error!"Unknown error"}</b></p>
+        </#if>
+        <#if exception??>
+        <p><b>${exception!"Unknown exception"}</b></p>
+        </#if>
         </div>
     </body>
 </html>

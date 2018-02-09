@@ -10,6 +10,7 @@ public class TeacherImpl implements Teacher {
 
     private int id;
     private String name, lastname, language, type, email, password;
+    private Image photo;
     protected WebengineeringDataLayer dl;
 
     public TeacherImpl(WebengineeringDataLayer dl) {
@@ -20,6 +21,7 @@ public class TeacherImpl implements Teacher {
         this.type = "";
         this.email = "";
         this.password = "";
+        this.photo = null;
     }
 
     @Override
@@ -81,6 +83,14 @@ public class TeacherImpl implements Teacher {
     
     public boolean isAdmin() {
         return this.getType().equals("admin");
+    }
+    
+    public Image getPhoto() {
+        return this.photo;
+    }
+    
+    public void setPhoto(Image i) {
+        this.photo = i;
     }
     
 }

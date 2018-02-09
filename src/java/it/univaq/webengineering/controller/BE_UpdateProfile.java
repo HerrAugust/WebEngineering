@@ -1,7 +1,9 @@
 package it.univaq.webengineering.controller;
 
+import it.univaq.webengineering.data.impl.ImageImpl;
 import it.univaq.webengineering.data.impl.TeacherImpl;
 import it.univaq.webengineering.data.model.Course;
+import it.univaq.webengineering.data.model.Image;
 import it.univaq.webengineering.data.model.Teacher;
 import it.univaq.webengineering.data.model.WebengineeringDataLayer;
 import it.univaq.webengineering.framework.data.DataLayerException;
@@ -13,11 +15,15 @@ import it.univaq.webengineering.framework.security.SecurityLayer;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 import org.apache.tomcat.util.http.fileupload.FileItem;
 import org.apache.tomcat.util.http.fileupload.FileItemFactory;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -25,6 +31,7 @@ import org.apache.tomcat.util.http.fileupload.RequestContext;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 
+@MultipartConfig
 public class BE_UpdateProfile extends WebengineeringBaseController {
 
     private void action_error(HttpServletRequest request, HttpServletResponse response) {
@@ -68,6 +75,7 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
     }
     
     private void action_updateprofile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String text = "";
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             int id = Integer.parseInt(request.getParameter("id"));
@@ -82,33 +90,23 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             //store photo
             String photoName = "", randomName = "";
             String filePath = getServletContext().getInitParameter("file-upload"); 
-            if (ServletFileUpload.isMultipartContent(request)) {
-            try {
-                FileItemFactory fif = new DiskFileItemFactory();
-                ServletFileUpload sfo = new ServletFileUpload(fif);
-                List<FileItem> items = sfo.parseRequest((RequestContext) request);
-                for (FileItem item : items) {
-                    String fname = item.getFieldName();
-                    if (item.isFormField() && fname.equals("n") && !item.getString().isEmpty()) {
-                        request.setAttribute("n", item.getString());
-                    } else if (!item.isFormField() && fname.equals("f1")) {
-                        String namefile = item.getName();
-                        photoName = namefile;
-                        String contentType = item.getContentType();
-                        long size = item.getSize();
-                        if (size > 0 && !namefile.isEmpty()) {
-                            randomName = SecurityLayer.generateRandomString7();
-                            File target = new File(filePath + randomName);
-                            item.write(target);
-                        }
+            boolean multipart = ServletFileUpload.isMultipartContent(request);
+            if (multipart) {
+                try {
+                    Part item = request.getPart("image");
+                    String namefile = item.getSubmittedFileName();
+                    photoName = namefile;
+                    long size = item.getSize();
+                    String imagetype = item.getContentType().split("/")[1];
+                    if (size > 0 && !namefile.isEmpty()) {
+                        randomName = SecurityLayer.generateRandomString(7) + "." + imagetype;
+                        //File target = new File(filePath + randomName);
+                        item.write(filePath + randomName);
                     }
+                } catch (ServletException ex) {
+                    request.setAttribute("exception", ex);
+                    action_error(request, response);
                 }
-            } catch (FileUploadException ex) {
-                request.setAttribute("exception", ex);
-                action_error(request, response);
-            } catch (Exception ex) {
-                request.setAttribute("exception", ex);
-                action_error(request, response);
             }
             
             if(!password.equals("") && !password.equals(password2))  {
@@ -117,6 +115,19 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
                 return;
             }
             
+            // Get previous profile photo (must be deleted from DB)
+            Teacher teacher = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(id);
+            Image oldImage = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getImageByTeacher(teacher.getId());
+            
+            // Save photo to DB
+            ImageImpl image = new ImageImpl(null);
+            image.setName_on_disk(randomName);
+            image.setOriginal_name(photoName);
+            image.setPath(filePath);
+            int photoid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertImage(image);
+            image.setId(photoid);
+            
+            // save teacher to DB
             Teacher t = new TeacherImpl(null);
             t.setId(id);
             t.setName(name);
@@ -124,18 +135,25 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             t.setLanguage(language);
             t.setEmail(email);
             t.setPassword(password);
+            t.setPhoto(image);
             
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).updateTeacher(t);
-            String text = "Error while updating info of Teacher.";
-            if(res)
-                text = "ok";
-                
-            response.setContentType("text/plain");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(text);
-            return;
+            text = "Error while updating info of Teacher.";
+            
+            // Delete old image from DB and disk
+            if(oldImage != null) {
+                ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteImage(oldImage.getId());
+                new File(oldImage.getPath() + oldImage.getName_on_disk()).delete();
+            }
+            
+            if(res) {
+                response.sendRedirect("fe_courses?action=details_teacher&id="+t.getId());
+                return;
+            }
         }
-        request.setAttribute("message", "You must be logged and be administrator!");
+        else
+            text = "You must be logged and be administrator!";
+        request.setAttribute("error", text);
         action_error(request, response);
         return;
     }

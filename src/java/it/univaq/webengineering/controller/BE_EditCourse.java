@@ -1,8 +1,10 @@
 package it.univaq.webengineering.controller;
 
 import it.univaq.webengineering.data.impl.CourseImpl;
+import it.univaq.webengineering.data.impl.ImageImpl;
 import it.univaq.webengineering.data.impl.TeacherImpl;
 import it.univaq.webengineering.data.model.Course;
+import it.univaq.webengineering.data.model.Image;
 import it.univaq.webengineering.data.model.Teacher;
 import it.univaq.webengineering.data.model.WebengineeringDataLayer;
 import it.univaq.webengineering.framework.data.DataLayerException;
@@ -11,13 +13,16 @@ import it.univaq.webengineering.framework.result.TemplateResult;
 import it.univaq.webengineering.framework.result.SplitSlashesFmkExt;
 import it.univaq.webengineering.framework.result.TemplateManagerException;
 import it.univaq.webengineering.framework.security.SecurityLayer;
+import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 @MultipartConfig
 public class BE_EditCourse extends WebengineeringBaseController {
@@ -118,6 +123,50 @@ public class BE_EditCourse extends WebengineeringBaseController {
             String notes_ita = request.getParameter("notes_ita");
             int courseid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(coursecode).getId();
             
+            List<String> photoNames = new LinkedList<>(), randomNames = new LinkedList<>();
+            String filePath = getServletContext().getInitParameter("file-upload"); // see web.conf file
+            try {
+                int i = 0;
+                while(true) {
+                    Part item = request.getPart("file-" + i++);
+                    if(item == null) break;
+                    String namefile = item.getSubmittedFileName();
+                    photoNames.add(namefile);
+                    long size = item.getSize();
+                    String imagetype = item.getContentType().split("/")[1];
+                    if (size > 0 && !namefile.isEmpty()) {
+                        randomNames.add(SecurityLayer.generateRandomString(7) + "." + imagetype);
+                        //File target = new File(filePath + randomName);
+                        item.write(filePath + randomNames.get(randomNames.size()-1));
+                    }
+                }
+            } catch (ServletException ex) {
+                request.setAttribute("exception", ex);
+                action_error(request, response);
+            }
+            
+            // Get previous profile photo (must be deleted from DB)
+            Course course = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(courseid);
+            List<Image> oldImages = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getImagesByCourse(course.getId());
+            
+            // Save photos to DB
+            List<Image> savedImages = new LinkedList<>();
+            for(int i = 0; i < randomNames.size(); i++) {
+                String randomName = randomNames.get(i);
+                String photoName = photoNames.get(i);
+                
+                ImageImpl image = new ImageImpl(null);
+                image.setName_on_disk(randomName);
+                image.setOriginal_name(photoName);
+                image.setPath(filePath);
+                image.setCourse_id(courseid);
+                int photoid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertImage(image);
+                image.setId(photoid);
+                
+                savedImages.add(image);
+            }
+            
+            // save course to DB
             Course t = new CourseImpl(null);
             t.setId(courseid);
             t.setCode(coursecode);
@@ -133,17 +182,30 @@ public class BE_EditCourse extends WebengineeringBaseController {
             t.setNotes_ita(notes_ita);
             
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).updateCourseDescription(t);
-            String text = "Error while saving the description of the course.";
-            if(res)
-                text = "ok";
+            String text = "ok";
+            if(!res)
+                text = "Error while saving the description of the course.";
             
-            request.setAttribute("message", text);
-            response.sendRedirect("be_homepage");
+            // delete old images of course
+            if(oldImages.isEmpty() == false) {
+                for(Image oldImage : oldImages) {
+                    ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteImage(oldImage.getId());
+                    new File(oldImage.getPath() + oldImage.getName_on_disk()).delete();
+                }
+            }
+            
+            if(text.equals("ok")) {
+                request.setAttribute("message", "ok");
+                response.sendRedirect("fe_courses?action=coursedetails&id=" + courseid);
+            }
+            else {
+                request.setAttribute("message", text);
+                action_error(request, response);
+            }
             return;
         }
         request.setAttribute("message", "You must be logged!");
         action_error(request, response);
-        return;
     }
     
     private void action_decouple_teacher(HttpServletRequest request, HttpServletResponse response) throws IOException {

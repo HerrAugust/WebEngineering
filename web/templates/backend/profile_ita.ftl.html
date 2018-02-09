@@ -2,7 +2,7 @@
 
 <#macro page_body>
 <div id="maincontent">
-    <h2 class="subtitle">Edit Profile</h2>
+    <h2 class="subtitle">Modifica profilo</h2>
 
     <#if message??>
     <div id="alert" class="alert alert-success" role="alert">
@@ -15,38 +15,38 @@
             <input type="hidden" class="form-control" id="id" name="id" value="${teacher.id}"/>
         </div>
         <div class="form-group">
-            <label for="name">Name:</label>
-            <input type="text" class="form-control" id="name" name="name" value="${teacher.name}" placeholder="John" required/>
+            <label for="name">Nome: </label>
+            <input type="text" class="form-control" id="name" name="name" value="${teacher.name}" placeholder="Mario" required/>
         </div>
         <div class="form-group">
-            <label for="lastname">Lastname:</label>
-            <input type="text" class="form-control" id="lastname" name="lastname"  value="${teacher.lastname}" placeholder="Smith" required/>
+            <label for="lastname">Cognome: </label>
+            <input type="text" class="form-control" id="lastname" name="lastname"  value="${teacher.lastname}" placeholder="Rossi" required/>
         </div>
         <div class="form-group">
-            <label for="language">Language:</label>
+            <label for="language">Lingua: </label>
             <select name="language" class="form-control">
-                <option value="ita" <#if teacher.language == "ita"> selected</#if>>Italian</option>
+                <option value="ita" <#if teacher.language == "ita"> selected</#if>>Italiano</option>
                 <option value="eng" <#if teacher.language == "eng"> selected</#if>>English</option>
             </select>
         </div>
         <div class="form-group">
-            <label for="email">Email:</label>
+            <label for="email">Email: </label>
             <input type="email" class="form-control" id="email" name="email"  value="${teacher.email}" placeholder="email@univaq.it" required/>
         </div>
         <div class="form-group">
-            <label for="image">Photo: </label>
-            <input type="file" class="form-control" name="image" id="image" accept="image/*" width="500" height="500" />
+            <label for="image">Foto: </label>
+            <input type="file" class="form-control" name="image" id="image" accept="image/*" width="500" height="500"/>
         </div>
         <hr/>
         <div class="form-group">
-            <label for="password">New password:</label>
+            <label for="password">Nuova password:</label>
             <input type="password" class="form-control" id="password" name="password" placeholder="Password..."/>
         </div>
         <div class="form-group">
-            <label for="password2">Repeat new password:</label>
+            <label for="password2">Ripeti nuova password:</label>
             <input type="password" class="form-control" id="password2" name="password2" placeholder="Password..."/>
         </div>
-        <button type="submit" class="btn btn-success moreabove" name="login">Save</button>
+        <button type="submit" class="btn btn-success moreabove" name="login">Salva</button>
     </form>
 </div>
 </#macro>

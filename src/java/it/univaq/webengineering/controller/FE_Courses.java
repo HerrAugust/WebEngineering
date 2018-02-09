@@ -1,6 +1,7 @@
 package it.univaq.webengineering.controller;
 
 import it.univaq.webengineering.data.model.Course;
+import it.univaq.webengineering.data.model.Image;
 import it.univaq.webengineering.data.model.Teacher;
 import it.univaq.webengineering.data.model.WebengineeringDataLayer;
 import it.univaq.webengineering.framework.data.DataLayerException;
@@ -12,6 +13,7 @@ import it.univaq.webengineering.framework.security.SecurityLayer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -83,8 +85,11 @@ public class FE_Courses extends WebengineeringBaseController {
             switchlang = "ENG";
             title = "Dettagli del professore";
         }
+        Teacher teacher = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(id);
+        Image image = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getImageByTeacher(id);
+        request.setAttribute("imagesrc", "uploads/" + image.getName_on_disk());
         request.setAttribute("page_title", title);
-        request.setAttribute("teacher", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(id));
+        request.setAttribute("teacher", teacher);
         request.setAttribute("switchlang", switchlang);
         res.activate(url, request, response);
     }
@@ -110,6 +115,10 @@ public class FE_Courses extends WebengineeringBaseController {
         course.setModule(((WebengineeringDataLayer)request.getAttribute("datalayer")).getModule(course));
         course.setSame_as(((WebengineeringDataLayer)request.getAttribute("datalayer")).getSame_as(course));
         course.setPreparatory(((WebengineeringDataLayer)request.getAttribute("datalayer")).getPreparatory(course));
+        
+        List<Image> imagessrc = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getImagesByCourse(course.getId());
+        
+        request.setAttribute("imagessrc", imagessrc);
         request.setAttribute("page_title", title);
         request.setAttribute("course", course);
         request.setAttribute("switchlang", switchlang);

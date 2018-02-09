@@ -2,7 +2,7 @@
 
 <#macro page_body>
 <div id="maincontent">
-    <h2 class="subtitle">Edit course of ${course.name}</h2>
+    <h2 class="subtitle">Edit course of <i>${course.name}</i></h2>
     <p class="subtitle">Academic Year: Current (${academic_year})</p>
 
     <div id="alert" class="alert alert-danger hidden" role="alert">
@@ -35,7 +35,8 @@
                     <textarea class="form-control" name="notes">${course.notes}</textarea>
                 </div>
                 <div class="form-control">
-                    <input type="file" name="images[]" id="images" multiple />
+                    <label for="images">Course images: </label>
+                    <input type="file" accept="image/*" width="500" height="500" name="images" id="images" multiple />
                 </div>
             </form>
         </div>
@@ -109,11 +110,14 @@ $(document).ready(function(){
         e.preventDefault();
         var formdata = new FormData($('form')[0]); // this also includes images
         console.log(formdata);
-        formdata.append('learning_outcomes_ita', $('input[name=learning_outcomes_ita]')[0].value);
-        formdata.append('prerequisites_ita', $('input[name=prerequisites_ita]')[0].value);
-        formdata.append('assessment_method_ita', $('input[name=assessment_method_ita]')[0].value);
-        formdata.append('teaching_method_ita', $('input[name=teaching_method_ita]')[0].value);
-        formdata.append('notes_ita',$('input[name=notes_ita]')[0].value);
+        formdata.append('learning_outcomes_ita', $('textarea[name=learning_outcomes_ita]')[0].value);
+        formdata.append('prerequisites_ita', $('textarea[name=prerequisites_ita]')[0].value);
+        formdata.append('assessment_method_ita', $('textarea[name=assessment_method_ita]')[0].value);
+        formdata.append('teaching_method_ita', $('textarea[name=teaching_method_ita]')[0].value);
+        formdata.append('notes_ita',$('textarea[name=notes_ita]')[0].value);
+        jQuery.each($('#images').get(0).files, function(i, file) {
+            formdata.append('file-'+i, file);
+        });
         console.log(formdata);
         
         let url = "be_editcourse?action=coursedescription";
@@ -121,6 +125,7 @@ $(document).ready(function(){
         $.ajax({
             url:    url,
             method: "POST",
+            cache: false,
             processData: false,  // tell jQuery not to process the data
             contentType: false,  // tell jQuery not to set contentType
             data: formdata

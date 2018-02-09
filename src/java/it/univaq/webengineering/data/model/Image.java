@@ -9,27 +9,15 @@ import java.io.InputStream;
  */
 public interface Image {
 
-    int getKey();
-
-    String getCaption();
-
-    void setCaption(String caption);
-
-    InputStream getImageData() throws DataLayerException;
-
-    void setImageData(InputStream is) throws DataLayerException;
-
-    String getImageType();
-
-    void setImageType(String type);
-
-    long getImageSize();
-
-    public String getFilename();
-
-    public void setFilename(String imageFilename);
-
-    void setDirty(boolean dirty);
-
-    boolean isDirty();
+    void setId(int o);
+    void setOriginal_name(String o);
+    void setName_on_disk(String o);
+    void setPath(String o);
+    void setCourse_id(int o);
+    
+    int getId();
+    String getOriginal_name();
+    String getName_on_disk();
+    String getPath();
+    int getCourse_id();
 }
