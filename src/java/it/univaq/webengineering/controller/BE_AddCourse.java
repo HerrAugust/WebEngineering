@@ -42,20 +42,22 @@ public class BE_AddCourse extends WebengineeringBaseController {
         }
         
         TemplateResult res = new TemplateResult(getServletContext());
+        String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
+        Teacher user = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
         if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
             url = "backend/addcourse_ita.ftl.html";
             switchlang = "ENG";
         }
         else { 
             // if user hasn't forced the language of the page, check his language and use it
-            String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
-            if(((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email).getLanguage().toLowerCase().equals("ita")) {
+            if(user.getLanguage().toLowerCase().equals("ita")) {
                 url = "backend/addcourse_ita.ftl.html";
                 switchlang = "ENG"; 
             }
         }
         request.setAttribute("teachers", teachers);
         request.setAttribute("switchlang", switchlang);
+        request.setAttribute("isAdmin", user.isAdmin());
         res.activate(url, request, response);
     }
     
@@ -69,6 +71,7 @@ public class BE_AddCourse extends WebengineeringBaseController {
             Course t = new CourseImpl(null);
             t.setName(name);
             t.setCode(code);
+            t.setAcademic_year(super.getCurrentAcademicYear());
             
             String text = "Error while creating new course.";
             if(((WebengineeringDataLayer)request.getAttribute("datalayer")).existCourse(t) == false) {

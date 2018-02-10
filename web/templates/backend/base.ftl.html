@@ -6,6 +6,7 @@
             <span class="nav-link-text">Dashboard</span>
           </a>
         </li>
+        <#if isAdmin?? && isAdmin == true>
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Components">
           <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseComponents" data-parent="#exampleAccordion">
             <i class="fa fa-fw fa-wrench"></i>
@@ -34,6 +35,7 @@
             </li>
           </ul>
         </li>
+        </#if>
       </ul>
 </#macro>
 
@@ -69,7 +71,7 @@ Nothing to show
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>Backend</title>
+  <title>${page_title}</title>
   
   <link href="templates/styles/normalize.css" rel="stylesheet" type="text/css">
   <!-- Bootstrap core CSS-->

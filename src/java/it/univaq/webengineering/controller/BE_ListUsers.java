@@ -31,6 +31,13 @@ public class BE_ListUsers extends WebengineeringBaseController {
         String url = "backend/listusers.ftl.html";
         String switchlang = "ITA";
         
+        HttpSession session = SecurityLayer.checkSession(request);
+        if(session == null) {
+            request.setAttribute("error", "Login necessary");
+            this.action_error(request, response);
+            return;
+        }
+        
         TemplateResult res = new TemplateResult(getServletContext());
         //add to the template a wrapper object that allows to call the stripslashes function
         //request.setAttribute("strip_slashes", new SplitSlashesFmkExt());
@@ -40,6 +47,8 @@ public class BE_ListUsers extends WebengineeringBaseController {
         }
         request.setAttribute("users", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeachers());
         request.setAttribute("switchlang", switchlang);
+        Teacher teacher = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher((String)session.getAttribute("username"));
+        request.setAttribute("isAdmin", teacher.isAdmin());
         res.activate(url, request, response);
     }
     

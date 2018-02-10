@@ -1,6 +1,7 @@
 package it.univaq.webengineering.controller;
 
 import it.univaq.webengineering.data.model.Course;
+import it.univaq.webengineering.data.model.Image;
 import it.univaq.webengineering.data.model.Teacher;
 import it.univaq.webengineering.data.model.WebengineeringDataLayer;
 import it.univaq.webengineering.framework.data.DataLayerException;
@@ -9,6 +10,7 @@ import it.univaq.webengineering.framework.result.TemplateResult;
 import it.univaq.webengineering.framework.result.SplitSlashesFmkExt;
 import it.univaq.webengineering.framework.result.TemplateManagerException;
 import it.univaq.webengineering.framework.security.SecurityLayer;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -62,6 +64,7 @@ public class BE_Homepage extends WebengineeringBaseController {
                     switchlang = "ENG";
                 }
             }
+            request.setAttribute("isAdmin", user.isAdmin());
             res.activate(url, request, response);
         }
         else { // user not logged in
@@ -72,10 +75,22 @@ public class BE_Homepage extends WebengineeringBaseController {
     private void action_deletecourse(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
+            WebengineeringDataLayer datalayer = (WebengineeringDataLayer)request.getAttribute("datalayer");
             String coursecode = request.getParameter("coursecode");
             String email = (String)session.getAttribute("username");
-            Teacher t = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
+            Teacher t = datalayer.getTeacher(email);
             if(t.getType() != null && t.getType().equals("admin") && coursecode != null) {
+                Course course = datalayer.getCourse(coursecode);
+                // delete images
+                List<Image> imagesByCourse = datalayer.getImagesByCourse(course.getId());
+                for(Image image : imagesByCourse) {
+                    new File(image.getPath() + image.getName_on_disk()).delete();
+                    datalayer.deleteImage(image.getId());
+                }
+                // delete teached courses (not teachers of course, only connection)
+                for(Teacher teacher : datalayer.getTeachers(course))
+                    datalayer.decouple_course(course.getId(), teacher.getId());
+
                 ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteCourse(coursecode);
                 response.sendRedirect("be_listcourses");
             }

@@ -66,7 +66,7 @@ public abstract class WebengineeringBaseController extends HttpServlet {
             year_end++;
         }
         
-        ay = "A.Y. " + year_init + "-" + year_end;
+        ay = "A.Y. " + year_init + "/" + year_end;
         return ay;
     }
 

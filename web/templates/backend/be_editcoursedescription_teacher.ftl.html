@@ -5,9 +5,11 @@
     <h2 class="subtitle">Edit course of <i>${course.name}</i></h2>
     <p class="subtitle">Academic Year: Current (${academic_year})</p>
 
+    <#if message??>
     <div id="alert" class="alert alert-danger hidden" role="alert">
-      Nothing to show
+      ${message}
     </div>
+    </#if>
 
     <div>
         <div class="left percent50">
@@ -68,7 +70,7 @@
     </div>
     
     <div>
-        <button id="button_back" onclick="goBack()" class="btn btn-danger">Back to base course info</button>
+        <button id="button_back" class="btn btn-danger">Back to base course info</button>
         <button id="button_submit" class="btn btn-success">Save and finish</button>
     </div>
     
@@ -101,9 +103,9 @@ $(document).ready(function(){
         }
     }
     
-    function goBack() {
-        window.history.back();
-    }
+    $('#button_back').click(function(e) {
+        history.go(-1);
+    });
     
     // I doubt this is achievable without JS
     $('#button_submit').click(function(e) {
@@ -131,13 +133,10 @@ $(document).ready(function(){
             data: formdata
         })
         .fail(function(res) {
-            showAlert(res, "alert-danger", true);
+            showAlert(res, 'red', true);
         })
-        .done(function(res) {
-            //alert(res);
-            if(res != "ok") {
-                showAlert(res, "alert-danger", true);
-            }
+        .done(function(loc) {
+            window.location = loc;
         });
     });
 

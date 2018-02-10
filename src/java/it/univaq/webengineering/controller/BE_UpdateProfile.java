@@ -71,6 +71,7 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
         
         request.setAttribute("teacher", curUser);
         request.setAttribute("switchlang", switchlang);
+        request.setAttribute("isAdmin", curUser.isAdmin());
         res.activate(url, request, response);
     }
     
@@ -195,6 +196,7 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
 
             request.setAttribute("teacher", userToBeUpdated);
             request.setAttribute("switchlang", switchlang);
+            request.setAttribute("isAdmin", userToBeUpdated.isAdmin());
             res.activate(url, request, response);
         }
     }

@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Giuseppe Della Penna
+ * @author HerrAugust on work by Giuseppe Della Penna
  */
 public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl implements WebengineeringDataLayer {
 
@@ -92,7 +92,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             sImagesByCourse = connection.prepareStatement("SELECT image.* FROM image JOIN course ON image.course_id = course.id WHERE course.id = ?");
             
             iTeacher = connection.prepareStatement("INSERT INTO teacher(name, lastname, language, type, email, password) VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-            iCourse = connection.prepareStatement("INSERT INTO course(code, name) VALUES(?,?)", Statement.RETURN_GENERATED_KEYS);
+            iCourse = connection.prepareStatement("INSERT INTO course(code, name, academic_year) VALUES(?,?,?)", Statement.RETURN_GENERATED_KEYS);
             iCourseTeacher = connection.prepareStatement("INSERT INTO teach(course_id, teacher_id) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
             iImage = connection.prepareStatement("INSERT INTO image(original_name, name_on_disk, path, course_id) VALUE(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
                    
@@ -473,6 +473,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         try {
             iCourse.setString(1, c.getCode());
             iCourse.setString(2, c.getName());
+            iCourse.setString(3, c.getAcademic_year());
             iCourse.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -528,9 +529,36 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             sTeacherByEmailPassword.close();
             sTeacherByEmail.close();
             sCourseByCode.close();
-            
-            
+            sCourses.close();
+
             dCourse.close();
+
+            sTeachers.close();
+            iCourseTeacher.close();
+            dCourseTeacher.close();
+            sTeacherByID.close();
+            sCourseByID.close();
+            iTeacher.close();
+            dTeacher.close();
+            iCourse.close();
+            sCourseByCodeAndName.close();
+            uTeacher_withPassword.close();
+            uTeacher.close();
+            sCoursesOfTeacher.close();
+            uCourseDescription.close();
+            uCourseBasicInfo.close();
+            sTeacherByCourse.close();
+            sTeachersByCourse.close();
+            sBooksByCourse.close();
+            sCoursesPreparatory.close();
+            sCoursesSame_as.close();
+            sCourseModule.close();
+            dTeach.close();
+            dImage.close();
+            iImage.close();
+            sImageByTeacher.close();
+            sImage.close();
+            sImagesByCourse.close();
         } catch (SQLException ex) {
             //
         }

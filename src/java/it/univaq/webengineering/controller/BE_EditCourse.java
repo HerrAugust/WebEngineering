@@ -55,6 +55,8 @@ public class BE_EditCourse extends WebengineeringBaseController {
         }
         
         TemplateResult res = new TemplateResult(getServletContext());
+        String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
+        Teacher user = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
         if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
             url = "backend/be_editcoursebase_teacher_ita.ftl.html";
             if(pagenumber == 2) url = "backend/be_editcoursedescription_teacher.ftl.html";
@@ -62,8 +64,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         }
         else { 
             // if user hasn't forced the language of the page, check his language and use it
-            String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
-            if(((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email).getLanguage().toLowerCase().equals("ita")) {
+            if(user.getLanguage().toLowerCase().equals("ita")) {
                 url = "backend/be_editcoursebase_teacher_ita.ftl.html";
                 if(pagenumber == 2) url = "backend/be_editcoursedescription_teacher_ita.ftl.html";
                 switchlang = "ENG"; 
@@ -75,6 +76,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         String i = super.getCurrentAcademicYear();
         request.setAttribute("academic_year", super.getCurrentAcademicYear());
         request.setAttribute("switchlang", switchlang);
+        request.setAttribute("isAdmin", user.isAdmin());
         res.activate(url, request, response);
     }
     
@@ -112,12 +114,12 @@ public class BE_EditCourse extends WebengineeringBaseController {
         if(session != null) {
             String coursecode = request.getParameter("coursecode");
             String prerequisites = request.getParameter("prerequisites");
-            String learning_outcomes = request.getParameter("language");
+            String learning_outcomes = request.getParameter("learning_outcomes");
             String assessment_method = request.getParameter("assessment_method");
             String teaching_method = request.getParameter("teaching_method");
             String notes = request.getParameter("notes");
             String prerequisites_ita = request.getParameter("prerequisites_ita");
-            String learning_outcomes_ita = request.getParameter("language_ita");
+            String learning_outcomes_ita = request.getParameter("learning_outcomes_ita");
             String assessment_method_ita = request.getParameter("assessment_method_ita");
             String teaching_method_ita = request.getParameter("teaching_method_ita");
             String notes_ita = request.getParameter("notes_ita");
@@ -195,8 +197,9 @@ public class BE_EditCourse extends WebengineeringBaseController {
             }
             
             if(text.equals("ok")) {
-                request.setAttribute("message", "ok");
-                response.sendRedirect("fe_courses?action=coursedetails&id=" + courseid);
+                // request.sendredirect() doesn't work while using AJAX
+                response.setContentType("text/plain");
+                response.getWriter().write("fe_courses?action=coursedetails&id=" + courseid);
             }
             else {
                 request.setAttribute("message", text);

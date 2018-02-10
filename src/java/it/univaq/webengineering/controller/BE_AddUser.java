@@ -39,19 +39,21 @@ public class BE_AddUser extends WebengineeringBaseController {
         }
         
         TemplateResult res = new TemplateResult(getServletContext());
+        String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
+        Teacher user = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
         if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
             url = "backend/adduser_ita.ftl.html";
             switchlang = "ENG";
         }
         else { 
             // if user hasn't forced the language of the page, check his language and use it
-            String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
-            if(((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email).getLanguage().toLowerCase().equals("ita")) {
+            if(user.getLanguage().toLowerCase().equals("ita")) {
                 url = "backend/adduser_ita.ftl.html";
                 switchlang = "ENG"; 
             }
         }
         request.setAttribute("switchlang", switchlang);
+        request.setAttribute("isAdmin", user.isAdmin());
         res.activate(url, request, response);
     }
     
