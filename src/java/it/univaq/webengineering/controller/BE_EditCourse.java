@@ -71,9 +71,8 @@ public class BE_EditCourse extends WebengineeringBaseController {
             }
         }
         
-        Course course = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(coursecode);
+        Course course = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, super.getCurrentAcademicYear());
         request.setAttribute("course", course);
-        String i = super.getCurrentAcademicYear();
         request.setAttribute("academic_year", super.getCurrentAcademicYear());
         request.setAttribute("switchlang", switchlang);
         request.setAttribute("isAdmin", user.isAdmin());
@@ -87,7 +86,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
             String ssd = request.getParameter("ssd");
             String language = request.getParameter("language");
             int semester = Integer.parseInt(request.getParameter("semester"));
-            int courseid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(coursecode).getId();
+            int courseid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, super.getCurrentAcademicYear()).getId();
             
             Course t = new CourseImpl(null);
             t.setId(courseid);
@@ -118,12 +117,14 @@ public class BE_EditCourse extends WebengineeringBaseController {
             String assessment_method = request.getParameter("assessment_method");
             String teaching_method = request.getParameter("teaching_method");
             String notes = request.getParameter("notes");
+            String syllabus = request.getParameter("syllabus");
             String prerequisites_ita = request.getParameter("prerequisites_ita");
             String learning_outcomes_ita = request.getParameter("learning_outcomes_ita");
             String assessment_method_ita = request.getParameter("assessment_method_ita");
             String teaching_method_ita = request.getParameter("teaching_method_ita");
             String notes_ita = request.getParameter("notes_ita");
-            int courseid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(coursecode).getId();
+            String syllabus_ita = request.getParameter("syllabus_ita");
+            int courseid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, super.getCurrentAcademicYear()).getId();
             
             List<String> photoNames = new LinkedList<>(), randomNames = new LinkedList<>();
             String filePath = getServletContext().getInitParameter("file-upload"); // see web.conf file
@@ -177,11 +178,13 @@ public class BE_EditCourse extends WebengineeringBaseController {
             t.setAssessment_method(assessment_method);
             t.setTeaching_method(teaching_method);
             t.setNotes(notes);
+            t.setSyllabus(syllabus);
             t.setPrerequisites_ita(prerequisites_ita);
             t.setLearning_outcomes_ita(learning_outcomes_ita);
             t.setAssessment_method_ita(assessment_method_ita);
             t.setTeaching_method_ita(teaching_method_ita);
             t.setNotes_ita(notes_ita);
+            t.setSyllabus_ita(syllabus_ita);
             
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).updateCourseDescription(t);
             String text = "ok";

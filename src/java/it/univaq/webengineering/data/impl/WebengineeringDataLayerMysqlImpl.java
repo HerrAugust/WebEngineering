@@ -30,7 +30,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
 
     private PreparedStatement sTeacherByEmailPassword;
     private PreparedStatement sTeacherByEmail;
-    private PreparedStatement sCourseByCode;
+    private PreparedStatement sCoursesByCode;
     private PreparedStatement sCourses;
     
     private PreparedStatement dCourse;
@@ -61,6 +61,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     private PreparedStatement sImageByTeacher;
     private PreparedStatement sImage;
     private PreparedStatement sImagesByCourse;
+    private PreparedStatement sCourseByCodeAndAcademic_year;
 
     public WebengineeringDataLayerMysqlImpl(DataSource datasource) throws SQLException, NamingException {
         super(datasource);
@@ -78,8 +79,9 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             sTeachers                = connection.prepareStatement("SELECT id FROM teacher");
             sTeacherByID             = connection.prepareStatement("SELECT * FROM teacher WHERE id=?");
             sTeachersByCourse        = connection.prepareStatement("SELECT * FROM teacher JOIN teach ON teach.teacher_id = teacher.id WHERE teach.course_id = ?");
-            sCourseByCode = connection.prepareStatement("SELECT * FROM course WHERE code=?");
+            sCoursesByCode = connection.prepareStatement("SELECT * FROM course WHERE code=?");
             sCourseByID = connection.prepareStatement("SELECT * FROM course WHERE id=?");
+            sCourseByCodeAndAcademic_year = connection.prepareStatement("SELECT * FROM course WHERE code=? AND academic_year = ?");
             sCourses  = connection.prepareStatement("SELECT id FROM course");
             sCourseByCodeAndName = connection.prepareStatement("SELECT * FROM course WHERE code=? AND name=?");
             sCoursesOfTeacher = connection.prepareStatement("SELECT * FROM course JOIN teach ON course.id=teach.course_id JOIN teacher ON teacher.id=teach.teacher_id WHERE teacher.id=?");
@@ -105,7 +107,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             uTeacher = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, photo=? WHERE id=?");
             uTeacher_withPassword = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, password=? WHERE id=?");
             uCourseBasicInfo = connection.prepareStatement("UPDATE course SET ssd=?,language=?,semester=? WHERE id=?");
-            uCourseDescription = connection.prepareStatement("UPDATE course SET prerequisites=?,learning_outcomes=?,assessment_method=?,teaching_method=?,notes=?,prerequisites_ita=?,learning_outcomes_ita=?,assessment_method_ita=?,teaching_method_ita=?,notes_ita=? WHERE id=?");
+            uCourseDescription = connection.prepareStatement("UPDATE course SET prerequisites=?,learning_outcomes=?,assessment_method=?,teaching_method=?,notes=?,prerequisites_ita=?,learning_outcomes_ita=?,assessment_method_ita=?,teaching_method_ita=?,notes_ita=?,syllabus=?,syllabus_ita=? WHERE id=?");
 
             //iArticle = connection.prepareStatement("INSERT INTO article (title,text,authorID,issueID,page) VALUES(?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 
@@ -350,19 +352,20 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         return true;
     }
     
-    public Course getCourse(String code) {
+    public List<Course> getCourses(String code) {
+        List<Course> courses = new LinkedList<>();
         try {
-            sCourseByCode.setString(1, code);
-            try (ResultSet rs = sCourseByCode.executeQuery()) {
-                if (rs.next()) {
-                    return createCourse(rs);
+            sCoursesByCode.setString(1, code);
+            try (ResultSet rs = sCoursesByCode.executeQuery()) {
+                while (rs.next()) {
+                    courses.add(createCourse(rs));
                 }
             }
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return null;
+        return courses;
     }
     
     public Course getCourse(int courseid) {
@@ -380,7 +383,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         return null;
     }
     
-    public List<Course> getCourses(Teacher teacher) {
+    public List<Course> getCoursesByTeacher(Teacher teacher) {
         List<Course> courses = new LinkedList<>();
         try {
             if(teacher == null ) { // you are an admin and you want all the courses
@@ -422,7 +425,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     }
     
     public List<Course> getCoursesByFilters(String name, String language, String semester, String academic_year, String SSD) {
-        List<Course> temp = this.getCourses(null);
+        List<Course> temp = this.getCourses();
         List<Course> courses = new LinkedList<>();
         
                 // initially all courses are admitted. Then, filter out the ones that don't satisfy criteria
@@ -512,7 +515,9 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             uCourseDescription.setString(8, c.getAssessment_method_ita());
             uCourseDescription.setString(9, c.getTeaching_method_ita());
             uCourseDescription.setString(10, c.getNotes_ita());
-            uCourseDescription.setInt(11, c.getId());
+            uCourseDescription.setString(11, c.getSyllabus());
+            uCourseDescription.setString(12, c.getSyllabus_ita());
+            uCourseDescription.setInt(13, c.getId());
             uCourseDescription.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -528,7 +533,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         try {
             sTeacherByEmailPassword.close();
             sTeacherByEmail.close();
-            sCourseByCode.close();
+            sCoursesByCode.close();
             sCourses.close();
 
             dCourse.close();
@@ -762,5 +767,27 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         }
 
         return images;
+    }
+
+    @Override
+    public Course getCourseByCodeAndAcademic_year(String code, String academic_year) {
+        try {
+            sCourseByCodeAndAcademic_year.setString(1, code);
+            sCourseByCodeAndAcademic_year.setString(2, academic_year);
+            try (ResultSet rs = sCourseByCodeAndAcademic_year.executeQuery()) {
+                if (rs.next()) {
+                    return createCourse(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
+    @Override
+    public List<Course> getCourses() {
+        return this.getCoursesByTeacher(null);
     }
 }

@@ -36,9 +36,13 @@
                     <label for="notes">Notes:</label>
                     <textarea class="form-control" name="notes">${course.notes}</textarea>
                 </div>
+                <div class="form-group">
+                    <label for="syllabus">Syllabus: </label>
+                    <textarea class="form-control" name="syllabus">${course.syllabus}</textarea>
+                </div>
                 <div class="form-control">
                     <label for="images">Course images: </label>
-                    <input type="file" accept="image/*" width="500" height="500" name="images" id="images" multiple />
+                    <input type="file" accept="image/*" name="images" id="images" multiple />
                 </div>
             </form>
         </div>
@@ -65,6 +69,10 @@
                     <label for="notes_ita">Note:</label>
                     <textarea class="form-control" name="notes_ita">${course.notes_ita}</textarea>
                 </div>
+                <div class="form-group">
+                    <label for="syllabus_ita">Sillabo: </label>
+                    <textarea class="form-control" name="syllabus_ita">${course.syllabus_ita}</textarea>
+                </div>
             </form>
         </div>
     </div>
@@ -81,6 +89,7 @@
 <!-- This page must work with only a minimum of JS -->
 $(document).ready(function(){
     let alert = $('#alert');
+    var _URL = window.URL || window.webkitURL; // necessary for images check
 
     function showAlert(message, color, tobeshown) {
         alert.removeClass("alert-warning").removeClass("alert-success").removeClass("alert-danger").removeClass("alert-info");
@@ -110,6 +119,10 @@ $(document).ready(function(){
     // I doubt this is achievable without JS
     $('#button_submit').click(function(e) {
         e.preventDefault();
+        showAlert("",'red',false);
+        var errorWidthHeight = false;
+        let checkedFiles = 0;
+        
         var formdata = new FormData($('form')[0]); // this also includes images
         console.log(formdata);
         formdata.append('learning_outcomes_ita', $('textarea[name=learning_outcomes_ita]')[0].value);
@@ -117,11 +130,38 @@ $(document).ready(function(){
         formdata.append('assessment_method_ita', $('textarea[name=assessment_method_ita]')[0].value);
         formdata.append('teaching_method_ita', $('textarea[name=teaching_method_ita]')[0].value);
         formdata.append('notes_ita',$('textarea[name=notes_ita]')[0].value);
+        formdata.append('syllabus_ita',$('textarea[name=syllabus_ita]')[0].value);
         jQuery.each($('#images').get(0).files, function(i, file) {
-            formdata.append('file-'+i, file);
+            // check: images width = height
+            img = new Image();
+            img.src = _URL.createObjectURL(file);
+            img.onload = function() {
+                console.log(this.width);
+                if(this.width != this.height) {
+                    errorWidthHeight = true;
+                    checkedFiles = checkedFiles + 1;
+                    showAlert("Images must have the same width and height",'red',true);
+                    
+                    document.body.scrollTop = 0; // For Safari
+                    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+                }
+                else {
+                    formdata.append('file-'+i, file);
+                }
+            };
+            img.onerror = function() {
+                alert( "not a valid file: " + file.type);
+            };
         });
         console.log(formdata);
         
+        // error: images must have the same width and height?
+        while(!errorWidthHeight && checkedFiles < $('#images').get(0).files.length) {}
+        console.log(errorWidthHeight);
+        if(errorWidthHeight) {
+            return;
+        }
+
         let url = "be_editcourse?action=coursedescription";
         
         $.ajax({

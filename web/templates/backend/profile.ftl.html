@@ -5,9 +5,11 @@
     <h2 class="subtitle">Edit Profile</h2>
 
     <#if message??>
-    <div id="alert" class="alert alert-success" role="alert">
-      ${message}
+    <div id="alert" class="alert alert-danger" role="alert">
+        ${message}
     </div>
+    <#else>
+    <div id="alert" class="alert alert-danger hidden" role="alert"></div>
     </#if>
 
     <form enctype='multipart/form-data' method="post" id="form_adduser" class="centered moreabove" action="be_updateprofile?action=updateprofile" >
@@ -34,8 +36,8 @@
             <input type="email" class="form-control" id="email" name="email"  value="${teacher.email}" placeholder="email@univaq.it" required/>
         </div>
         <div class="form-group">
-            <label for="image">Photo: </label>
-            <input type="file" class="form-control" name="image" id="image" accept="image/*" width="500" height="500" />
+            <label for="image">Photo (same width and height): </label>
+            <input type="file" class="form-control" name="image" id="image" accept="image/*" />
         </div>
         <hr/>
         <div class="form-group">
@@ -55,6 +57,32 @@
 $(document).ready(function(){
     // Delete password: if browser remembers it, it would be shown
     $('#password').val('');
+
+
+    // this code is not strictly necessary. server will stop request in any case
+    var _URL = window.URL || window.webkitURL;
+    $("#image").change(function(e) {
+        $('#alert')[0].classList.add('hidden');
+        var file, img;
+
+        if ((file = this.files[0])) {
+            img = new Image();
+            img.onload = function() {
+                if(this.width != this.height) {
+                    $('#alert')[0].innerHTML = '<b>Image height and width</b> are not the same. Image would be refused by server';
+                    $('#alert')[0].classList.remove('hidden');
+                    
+                    document.body.scrollTop = 0; // For Safari
+                    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+                }
+            };
+            img.onerror = function() {
+                alert( "not a valid file: " + file.type);
+            };
+            img.src = _URL.createObjectURL(file);
+        }
+    });
+
 });
 </#macro>
 

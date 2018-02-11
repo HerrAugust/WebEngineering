@@ -26,9 +26,11 @@ public interface WebengineeringDataLayer extends DataLayer {
 
     public boolean assignCourse(Course course, Teacher teacher);
     public void deleteCourse(String coursecode);
-    public Course getCourse(String code);
-    public Course getCourse(int id);
-    public List<Course> getCourses(Teacher teacher);
+    public List<Course> getCourses(String code);
+    public Course getCourse(int id);    
+    public List<Course> getCourses();
+    public Course getCourseByCodeAndAcademic_year(String code, String academic_year);
+    public List<Course> getCoursesByTeacher(Teacher teacher);
     public boolean insertCourse(Course t);
     public boolean existCourse(Course c);
     public boolean updateCourseBaseInfo(Course c);

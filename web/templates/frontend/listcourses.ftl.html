@@ -8,7 +8,7 @@
       Nothing to show
     </div>
     
-    <h5>Filters</h5>
+    <h5>Filters:</h5>
     <form id="filterform" action="fe_courses?action=filter" method="post">
         <div class="form-row">
             <div class="col">
@@ -51,7 +51,7 @@
                 </select>
             </div>
             <div class="col">
-                <input value="Filter" type="submit" class="form-control">
+                <input value="Filter" type="submit" class="form-control success">
             </div>
         </div>
     </form>
@@ -66,14 +66,14 @@
           <th>Lang.</th>
           <th>Semester</th>
           <th>Field</th>
+          <th>A.Y.</th>
         </tr>
       </thead>
       <tbody>
-
             <#list courseslist as course>
             <tr>
               <th scope="row">${course.code}</th>
-              <td><a href="fe_courses?action=details_course&id=${course.id}">${course.name}</a></td>
+              <td><a href="fe_courses?action=details_course&coursecode=${course.code}&academic_year=${course.academic_year}">${course.name}</a></td>
               <td>
                 <#list course.teachers as teacher>
                 <a href="fe_courses?action=details_teacher&id=${teacher.id}">${teacher.lastname}, ${teacher.name}<br/>
@@ -82,6 +82,7 @@
               <td>${course.language}</td>
               <td>${course.semester}</td>
               <td>${course.SSD}</td>
+              <td>${course.academic_year}</td>
             </#list>
 
       </tbody>

@@ -45,7 +45,7 @@ public class BE_Homepage extends WebengineeringBaseController {
             String email = (String)session.getAttribute("username");
             Teacher user = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
             if(user.isAdmin()) {
-                List<Course> courses = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourses(null);
+                List<Course> courses = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourses();
                 request.setAttribute("courses", courses);
                 request.setAttribute("teachers", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeachers());
                 request.setAttribute("switchlang", switchlang);
@@ -57,13 +57,14 @@ public class BE_Homepage extends WebengineeringBaseController {
             }
             else {
                 url = "backend/homepage_teacher.ftl.html";
-                request.setAttribute("courses", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourses(user));
+                request.setAttribute("courses", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCoursesByTeacher(user));
                 
                 if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
                     url = "backend/homepage_teacher_ita.ftl.html";
                     switchlang = "ENG";
                 }
             }
+            request.setAttribute("current_academic_year", super.getCurrentAcademicYear());
             request.setAttribute("isAdmin", user.isAdmin());
             res.activate(url, request, response);
         }
@@ -80,7 +81,7 @@ public class BE_Homepage extends WebengineeringBaseController {
             String email = (String)session.getAttribute("username");
             Teacher t = datalayer.getTeacher(email);
             if(t.getType() != null && t.getType().equals("admin") && coursecode != null) {
-                Course course = datalayer.getCourse(coursecode);
+                Course course = datalayer.getCourseByCodeAndAcademic_year(coursecode, super.getCurrentAcademicYear());
                 // delete images
                 List<Image> imagesByCourse = datalayer.getImagesByCourse(course.getId());
                 for(Image image : imagesByCourse) {
@@ -101,6 +102,7 @@ public class BE_Homepage extends WebengineeringBaseController {
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             String coursecode = request.getParameter("coursecode");
+            String academic_year = request.getParameter("academic_year");
             String teacherid = request.getParameter("teacherid");
             if(!SecurityLayer.isNumberic(teacherid)) {
                 response.setContentType("text/plain");
@@ -110,7 +112,7 @@ public class BE_Homepage extends WebengineeringBaseController {
             
             // Get course and teacher
             Teacher t = teacherid.equals("-1") ? null : ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(Integer.parseInt(teacherid));
-            Course  c = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(coursecode);
+            Course  c = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, academic_year);
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).assignCourse(c, t);
             String text = "";
             if(res)

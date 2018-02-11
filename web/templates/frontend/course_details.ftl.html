@@ -4,7 +4,22 @@
 <!-- Page Content -->
     <div id="maincontent" class="container">
 
-        <h2 class="morebelow">${course.name}</h2>
+        <div>
+            <h2 class="morebelow">${course.name} (A.Y. ${course.academic_year})</h2>
+            <#if academic_years?? && academic_years?size != 0>
+            <form class="form-inline" action="fe_courses?action=details_course&coursecode=${course.code}" method="post" id="academic_years_form">
+                <label for="academic_year">This course is available also for the A.Y.s: </label>
+                <select class="form-control moreright" form="academic_years_form" name="academic_year">
+                    <#list academic_years as academic_year>
+                    <option value="${academic_year}">${academic_year}</option>
+                    </#list>
+                </select>
+                <input value="0K" type="submit" class="form-control moreright success">
+            </form>
+            <#else>
+            (A.Y. ${course.academic_year})
+            </#if>
+        </div>
         <#if imagessrc??>
         <div id="carousel" class="carousel slide" data-ride="carousel" data-interval="3000">
             <ol class="carousel-indicators">
@@ -47,12 +62,14 @@
                 <div class="col-3"></div>
             </div>
             
+            <#if course.SSD?? && course.SSD != "">
             <div class="row">
                 <div class="col-3">SSD: </div>
                 <div class="col-3">${course.SSD}</div>
                 <div class="col-3"></div>
                 <div class="col-3"></div>
             </div>
+            </#if>
         
             <div class="row">
                 <div class="col-3">Semester: </div>
@@ -61,37 +78,47 @@
                 <div class="col-3"></div>
             </div>
             
+            <#if course.language?? && course.language != "">
             <div class="row">
                 <div class="col-3">Language: </div>
                 <div class="col-3"><#if course.language == 'ita'>Italian<#else>English</#if></div>
                 <div class="col-3"></div>
                 <div class="col-3"></div>
             </div>
+            </#if>
             
             <div class="row">
                 <div class="col-3">Teachers: </div>
                 <div class="col-6">
+                    <#if course.teachers?? && course.teachers?size == 0>
+                    ()
+                    <#else>
                     <ul>
                     <#list course.teachers as t>
                     <li><a href="fe_courses?action=details_teacher&id=${t.id}">${t.lastname}, ${t.name}</a></li>
                     </#list>
                     </ul>
+                    </#if>
                 </div>
             </div>
         
+            <#if course.homepage?? && course.homepage != "">
             <div class="row">
                 <div class="col-3">Course homepage: </div>
                 <div class="col-3"><a href="${course.homepage}">Homepage</a></div>
                 <div class="col-3"></div>
                 <div class="col-3"></div>
             </div>
+            </#if>
         
+            <#if course.forum?? && course.forum != "">
             <div class="row">
                 <div class="col-3">Course forum: </div>
                 <div class="col-3"><a href="${course.forum}">Forum</a></div>
                 <div class="col-3"></div>
                 <div class="col-3"></div>
             </div>
+            </#if>
         
             <#if course.module??>
             <div class="row">

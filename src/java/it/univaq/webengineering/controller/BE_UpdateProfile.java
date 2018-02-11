@@ -12,8 +12,10 @@ import it.univaq.webengineering.framework.result.TemplateResult;
 import it.univaq.webengineering.framework.result.SplitSlashesFmkExt;
 import it.univaq.webengineering.framework.result.TemplateManagerException;
 import it.univaq.webengineering.framework.security.SecurityLayer;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
@@ -46,13 +48,13 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
         // Needed to support double language (ita/eng)
         String url = "backend/profile.ftl.html";
         String switchlang = "ITA";
-        
+
         if(SecurityLayer.checkSession(request) == null) {
             request.setAttribute("message", "You must be logged in!");
             action_error(request, response);
             return;
         }
-        
+
         TemplateResult res = new TemplateResult(getServletContext());
         // get info about the requester
         String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
@@ -61,21 +63,21 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             url = "backend/profile_ita.ftl.html";
             switchlang = "ENG";
         }
-        else { 
+        else {
             // if user hasn't forced the language of the page, check his language and use it
             if(curUser.getLanguage().toLowerCase().equals("ita")) {
                 url = "backend/profile_ita.ftl.html";
-                switchlang = "ENG"; 
+                switchlang = "ENG";
             }
         }
-        
+
         request.setAttribute("teacher", curUser);
         request.setAttribute("switchlang", switchlang);
         request.setAttribute("isAdmin", curUser.isAdmin());
         res.activate(url, request, response);
     }
-    
-    private void action_updateprofile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+    private void action_updateprofile(HttpServletRequest request, HttpServletResponse response) throws IOException, TemplateManagerException {
         String text = "";
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
@@ -87,15 +89,26 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             String password2 = request.getParameter("password2");
             String email = request.getParameter("email");
             String type = request.getParameter("type");
-            
+
             //store photo
             String photoName = "", randomName = "";
-            String filePath = getServletContext().getInitParameter("file-upload"); 
+            String filePath = getServletContext().getInitParameter("file-upload");
             boolean multipart = ServletFileUpload.isMultipartContent(request);
             if (multipart) {
                 try {
                     Part item = request.getPart("image");
                     String namefile = item.getSubmittedFileName();
+
+                    // check if width and height are the same
+                    BufferedImage bimg = ImageIO.read(item.getInputStream());
+                    int width          = bimg.getWidth();
+                    int height         = bimg.getHeight();
+                    if(width != height) {
+                        request.setAttribute("message", "Error: image height and width are not the same");
+                        this.action_default(request, response);
+                        return;
+                    }
+
                     photoName = namefile;
                     long size = item.getSize();
                     String imagetype = item.getContentType().split("/")[1];
@@ -109,17 +122,17 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
                     action_error(request, response);
                 }
             }
-            
+
             if(!password.equals("") && !password.equals(password2))  {
                 request.setAttribute("message", "You did not confirm the new password well.");
                 action_error(request, response);
                 return;
             }
-            
+
             // Get previous profile photo (must be deleted from DB)
             Teacher teacher = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(id);
             Image oldImage = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getImageByTeacher(teacher.getId());
-            
+
             // Save photo to DB
             ImageImpl image = new ImageImpl(null);
             image.setName_on_disk(randomName);
@@ -127,7 +140,7 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             image.setPath(filePath);
             int photoid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertImage(image);
             image.setId(photoid);
-            
+
             // save teacher to DB
             Teacher t = new TeacherImpl(null);
             t.setId(id);
@@ -137,16 +150,16 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             t.setEmail(email);
             t.setPassword(password);
             t.setPhoto(image);
-            
+
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).updateTeacher(t);
             text = "Error while updating info of Teacher.";
-            
+
             // Delete old image from DB and disk
             if(oldImage != null) {
                 ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteImage(oldImage.getId());
                 new File(oldImage.getPath() + oldImage.getName_on_disk()).delete();
             }
-            
+
             if(res) {
                 response.sendRedirect("fe_courses?action=details_teacher&id="+t.getId());
                 return;
@@ -158,7 +171,7 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
         action_error(request, response);
         return;
     }
-    
+
     /*
     Allows the admin to modify the profile of the user with id userid
     */
@@ -173,7 +186,7 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
                 action_error(request, response);
                 return;
             }
-            
+
             // Shows the page to update the profile of the other person
             // Needed to support double language (ita/eng)
             String url = "backend/profile.ftl.html";
@@ -186,11 +199,11 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
                 url = "backend/profile_ita.ftl.html";
                 switchlang = "ENG";
             }
-            else { 
+            else {
                 // if user hasn't forced the language of the page, check his language and use it
                 if(curUser.getLanguage().toLowerCase().equals("ita")) {
                     url = "backend/profile_ita.ftl.html";
-                    switchlang = "ENG"; 
+                    switchlang = "ENG";
                 }
             }
 

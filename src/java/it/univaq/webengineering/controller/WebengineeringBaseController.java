@@ -57,8 +57,8 @@ public abstract class WebengineeringBaseController extends HttpServlet {
 
     protected String getCurrentAcademicYear() {
         String ay = "";
-        int year_init = Calendar.getInstance().get(Calendar.YEAR);
-        int year_end = year_init++;
+        int year_init = Calendar.getInstance().get(Calendar.YEAR)-1;
+        int year_end = year_init+1;
         int month = Calendar.getInstance().get(Calendar.MONTH);
         
         if(month > Calendar.SEPTEMBER) {
@@ -66,7 +66,7 @@ public abstract class WebengineeringBaseController extends HttpServlet {
             year_end++;
         }
         
-        ay = "A.Y. " + year_init + "/" + year_end;
+        ay = /*"A.Y. " + */year_init + "/" + year_end;
         return ay;
     }
 

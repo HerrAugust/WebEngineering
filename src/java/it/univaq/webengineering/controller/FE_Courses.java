@@ -41,7 +41,7 @@ public class FE_Courses extends WebengineeringBaseController {
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR);
         for(int i = 1; i < 5; i++) {
-            academic_years.add(year + "/" + (year-1));
+            academic_years.add((year-1) + "/" + year);
             year--;
         }
        
@@ -63,7 +63,7 @@ public class FE_Courses extends WebengineeringBaseController {
             String SSD = request.getParameter("SSD");
             courseslist = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCoursesByFilters(name, language, semester, academic_year, SSD);
         }else { // user requires all courses, no filter
-            courseslist = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourses(null);
+            courseslist = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourses();
         }
         request.setAttribute("courseslist", courseslist);
         request.setAttribute("switchlang", switchlang);
@@ -87,7 +87,8 @@ public class FE_Courses extends WebengineeringBaseController {
         }
         Teacher teacher = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(id);
         Image image = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getImageByTeacher(id);
-        request.setAttribute("imagesrc", "uploads/" + image.getName_on_disk());
+        if(image != null)
+            request.setAttribute("imagesrc", "uploads/" + image.getName_on_disk());
         request.setAttribute("page_title", title);
         request.setAttribute("teacher", teacher);
         request.setAttribute("switchlang", switchlang);
@@ -99,7 +100,8 @@ public class FE_Courses extends WebengineeringBaseController {
         String url = "frontend/course_details.ftl.html";
         String switchlang = "ITA";
         String title = "Course details";
-        int id = Integer.parseInt(request.getParameter("id"));
+        String coursecode = request.getParameter("coursecode");
+        String academic_year = request.getParameter("academic_year");
         
         TemplateResult res = new TemplateResult(getServletContext());
         //add to the template a wrapper object that allows to call the stripslashes function
@@ -109,7 +111,14 @@ public class FE_Courses extends WebengineeringBaseController {
             switchlang = "ENG";
             title = "Dettagli del corso";
         }
-        Course course = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(id);
+        List<Course> courses = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourses(coursecode);
+        List<String> academic_years = new LinkedList<>();
+        Course course = courses.get(0);
+        for(Course cur : courses) {
+            if(cur.getAcademic_year().equals(academic_year))
+                course = cur;
+            academic_years.add(cur.getAcademic_year());
+        }
         course.setTeachers(((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeachers(course));
         course.setBooks(((WebengineeringDataLayer)request.getAttribute("datalayer")).getBooks(course));
         course.setModule(((WebengineeringDataLayer)request.getAttribute("datalayer")).getModule(course));
@@ -122,6 +131,8 @@ public class FE_Courses extends WebengineeringBaseController {
         request.setAttribute("page_title", title);
         request.setAttribute("course", course);
         request.setAttribute("switchlang", switchlang);
+        request.setAttribute("academic_years", academic_years);
+        request.setAttribute("current_academic_year", academic_year);
         res.activate(url, request, response);
     }
     

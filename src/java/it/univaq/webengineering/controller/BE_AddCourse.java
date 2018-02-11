@@ -76,7 +76,7 @@ public class BE_AddCourse extends WebengineeringBaseController {
             String text = "Error while creating new course.";
             if(((WebengineeringDataLayer)request.getAttribute("datalayer")).existCourse(t) == false) {
                 boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertCourse(t);
-                t = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(code);
+                t = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(code, super.getCurrentAcademicYear());
                 
                 // Assign course to teacher
                 if(teacherid != -1) {

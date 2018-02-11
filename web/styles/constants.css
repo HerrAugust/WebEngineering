@@ -71,3 +71,8 @@ footer {
 .percent50 {
     width: 50%;
 }
+
+input[type=submit].success {
+    background-color: #28a745;
+    color: #fff;
+}
