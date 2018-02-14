@@ -1,0 +1,20 @@
+Feb 14, 2018 6:16:28 PM it.univaq.webengineering.controller.FE_Login action_login
+INFO: it.univaq.webengineering.controller.FE_Loginaction_login
+Feb 14, 2018 6:16:28 PM it.univaq.webengineering.controller.BE_Homepage action_default
+INFO: c@c.c: it.univaq.webengineering.controller.BE_Homepage.action_default
+Feb 14, 2018 6:16:31 PM it.univaq.webengineering.controller.BE_EditCourse action_default
+INFO: c@c.c: it.univaq.webengineering.controller.BE_EditCourse.action_default
+Feb 14, 2018 6:16:33 PM it.univaq.webengineering.controller.BE_EditCourse action_savebaseinfo
+INFO: c@c.c: it.univaq.webengineering.controller.BE_EditCourse.action_savebaseinfo
+Feb 14, 2018 6:16:34 PM it.univaq.webengineering.controller.BE_EditCourse action_savebaseinfo
+INFO: c@c.c: saved base info of course 
+Feb 14, 2018 6:16:34 PM it.univaq.webengineering.controller.BE_EditCourse action_default
+INFO: c@c.c: it.univaq.webengineering.controller.BE_EditCourse.action_default
+Feb 14, 2018 6:18:01 PM it.univaq.webengineering.controller.BE_EditCourse action_default
+INFO: c@c.c: it.univaq.webengineering.controller.BE_EditCourse.action_default
+Feb 14, 2018 6:18:39 PM it.univaq.webengineering.controller.BE_EditCourse action_default
+INFO: c@c.c: it.univaq.webengineering.controller.BE_EditCourse.action_default
+Feb 14, 2018 6:20:00 PM it.univaq.webengineering.controller.BE_EditCourse action_default
+INFO: c@c.c: it.univaq.webengineering.controller.BE_EditCourse.action_default
+Feb 14, 2018 6:21:54 PM it.univaq.webengineering.controller.BE_EditCourse action_default
+INFO: c@c.c: it.univaq.webengineering.controller.BE_EditCourse.action_default

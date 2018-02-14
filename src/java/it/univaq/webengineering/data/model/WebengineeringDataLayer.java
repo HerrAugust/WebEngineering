@@ -41,11 +41,23 @@ public interface WebengineeringDataLayer extends DataLayer {
     public List<Book> getBooks(Course c);
     public List<Course> getSame_as(Course course);
     public List<Course> getPreparatory(Course course);
-    public Course getModule(Course course);
+    public List<Course> getModule(Course course);
 
     public Image getImageByTeacher(int teacher_id);
     public void deleteImage(int id);
     public void deleteImageByTeacher(int teacher_id);
     public int insertImage(Image image);
     public List<Image> getImagesByCourse(int id);
+
+    public void deletePreparatory(Course t);
+
+    public void deleteSame_as(Course t);
+
+    public void deleteModule(Course t);
+
+    public void insertModule(int courseid, int parseInt);
+
+    public void insertSame_as(int courseid, int parseInt);
+
+    public void insertPreparatory(int courseid, int parseInt);
 }

@@ -15,6 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import it.univaq.webengineering.data.impl.WebengineeringDataLayerMysqlImpl;
+
 /**
  *
  * @author Giuseppe
@@ -36,6 +40,8 @@ public class FE_Login extends WebengineeringBaseController {
     }
     
     private void action_login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, TemplateManagerException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, Thread.currentThread().getStackTrace()[1].getClassName() + Thread.currentThread().getStackTrace()[1].getMethodName());
+        
         if (request.getParameter("input_email") != null && request.getParameter("input_password") != null) {
             String email = request.getParameter("input_email");
             String password = request.getParameter("input_password");
@@ -58,6 +64,8 @@ public class FE_Login extends WebengineeringBaseController {
     }
     
     private void action_logout(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, TemplateManagerException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+        
         SecurityLayer.disposeSession(request);
         this.showHomepage(request, response);
     }

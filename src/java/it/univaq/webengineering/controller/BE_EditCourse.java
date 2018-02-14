@@ -24,6 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import it.univaq.webengineering.data.impl.WebengineeringDataLayerMysqlImpl;
+import java.util.Enumeration;
+
 @MultipartConfig
 public class BE_EditCourse extends WebengineeringBaseController {
 
@@ -37,6 +42,8 @@ public class BE_EditCourse extends WebengineeringBaseController {
 
     // If you pass the course, it will show the edit page of course with its information. pagenumber = 1 shows the course base info page, = 2 shows the course description page
     private void action_default(HttpServletRequest request, HttpServletResponse response, int pagenumber) throws IOException, ServletException, TemplateManagerException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+        
         // Needed to support double language (ita/eng)
         String url = "backend/be_editcoursebase_teacher.ftl.html";
         if(pagenumber == 2) url = "backend/be_editcoursedescription_teacher.ftl.html";
@@ -44,6 +51,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         String coursecode = request.getParameter("coursecode");
         
         if(SecurityLayer.checkSession(request) == null) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
             request.setAttribute("message", "You must be logged in!");
             action_error(request, response);
             return;
@@ -72,6 +80,11 @@ public class BE_EditCourse extends WebengineeringBaseController {
         }
         
         Course course = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, super.getCurrentAcademicYear());
+        course.setModule(((WebengineeringDataLayer)request.getAttribute("datalayer")).getModule(course));
+        course.setPreparatory(((WebengineeringDataLayer)request.getAttribute("datalayer")).getPreparatory(course));
+        course.setSame_as(((WebengineeringDataLayer)request.getAttribute("datalayer")).getSame_as(course));
+        List<Course> coursesByFilters = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCoursesByFilters(null, null, null, super.getCurrentAcademicYear(), null);
+        request.setAttribute("courses", coursesByFilters);
         request.setAttribute("course", course);
         request.setAttribute("academic_year", super.getCurrentAcademicYear());
         request.setAttribute("switchlang", switchlang);
@@ -80,6 +93,8 @@ public class BE_EditCourse extends WebengineeringBaseController {
     }
     
     private void action_savebaseinfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+        
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             String coursecode = request.getParameter("coursecode");
@@ -87,6 +102,9 @@ public class BE_EditCourse extends WebengineeringBaseController {
             String language = request.getParameter("language");
             int semester = Integer.parseInt(request.getParameter("semester"));
             int courseid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, super.getCurrentAcademicYear()).getId();
+            String[] preparatory = request.getParameterValues("preparatory[]");
+            String[] same_as = request.getParameterValues("same_as[]");
+            String[] module = request.getParameterValues("module[]");
             
             Course t = new CourseImpl(null);
             t.setId(courseid);
@@ -96,19 +114,44 @@ public class BE_EditCourse extends WebengineeringBaseController {
             t.setLanguage(language);
             
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).updateCourseBaseInfo(t);
+            if(preparatory != null) {
+                ((WebengineeringDataLayer)request.getAttribute("datalayer")).deletePreparatory(t);
+                for(String p : preparatory)
+                    ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertPreparatory(courseid, Integer.parseInt(p));
+            }
+            if(same_as != null) {
+                ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteSame_as(t);
+                for(String p : same_as)
+                    ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertSame_as(courseid, Integer.parseInt(p));
+            }
+            if(module != null) {
+                ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteModule(t);
+                for(String p : module)
+                    ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertModule(courseid, Integer.parseInt(p));
+            }
+            
+            
             String text = "Error while saving basic info.";
-            if(res)
+            if(res) {
                 text = "ok";
+                Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: saved base info of course %s", SecurityLayer.getUser(request), t.getName()));
+            }
+            else {
+                Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: error while saving base info of course %s", SecurityLayer.getUser(request), t.getName()));
+            }
                 
             response.sendRedirect("be_editcourse?action=showBe_EditCourseDescription_teacher&coursecode="+coursecode);
             return;
         }
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
         request.setAttribute("message", "You must be logged!");
         action_error(request, response);
         return;
     }
     
     private void action_savedescription(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+        
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             String coursecode = request.getParameter("coursecode");
@@ -118,12 +161,12 @@ public class BE_EditCourse extends WebengineeringBaseController {
             String teaching_method = request.getParameter("teaching_method");
             String notes = request.getParameter("notes");
             String syllabus = request.getParameter("syllabus");
-            String prerequisites_ita = request.getParameter("prerequisites_ita");
-            String learning_outcomes_ita = request.getParameter("learning_outcomes_ita");
-            String assessment_method_ita = request.getParameter("assessment_method_ita");
-            String teaching_method_ita = request.getParameter("teaching_method_ita");
-            String notes_ita = request.getParameter("notes_ita");
-            String syllabus_ita = request.getParameter("syllabus_ita");
+            String prerequisites_ita = SecurityLayer.canonizeItalian(request.getParameter("prerequisites_ita"));
+            String learning_outcomes_ita = SecurityLayer.canonizeItalian(request.getParameter("learning_outcomes_ita"));
+            String assessment_method_ita = SecurityLayer.canonizeItalian(request.getParameter("assessment_method_ita"));
+            String teaching_method_ita = SecurityLayer.canonizeItalian(request.getParameter("te-aching_method_ita"));
+            String notes_ita = SecurityLayer.canonizeItalian(request.getParameter("notes_ita"));
+            String syllabus_ita = SecurityLayer.canonizeItalian(request.getParameter("syllabus_ita"));
             int courseid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, super.getCurrentAcademicYear()).getId();
             
             List<String> photoNames = new LinkedList<>(), randomNames = new LinkedList<>();
@@ -153,7 +196,6 @@ public class BE_EditCourse extends WebengineeringBaseController {
             List<Image> oldImages = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getImagesByCourse(course.getId());
             
             // Save photos to DB
-            List<Image> savedImages = new LinkedList<>();
             for(int i = 0; i < randomNames.size(); i++) {
                 String randomName = randomNames.get(i);
                 String photoName = photoNames.get(i);
@@ -164,9 +206,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
                 image.setPath(filePath);
                 image.setCourse_id(courseid);
                 int photoid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertImage(image);
-                image.setId(photoid);
-                
-                savedImages.add(image);
+                image.setId(photoid);                
             }
             
             // save course to DB
@@ -188,8 +228,10 @@ public class BE_EditCourse extends WebengineeringBaseController {
             
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).updateCourseDescription(t);
             String text = "ok";
-            if(!res)
+            if(!res) {
                 text = "Error while saving the description of the course.";
+                Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: error saving description of course %s", SecurityLayer.getUser(request), t.getName()));
+            }
             
             // delete old images of course
             if(oldImages.isEmpty() == false) {
@@ -200,6 +242,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
             }
             
             if(text.equals("ok")) {
+                Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: saved description of course %s", SecurityLayer.getUser(request), t.getName()));
                 // request.sendredirect() doesn't work while using AJAX
                 response.setContentType("text/plain");
                 response.getWriter().write("fe_courses?action=coursedetails&id=" + courseid);
@@ -210,11 +253,14 @@ public class BE_EditCourse extends WebengineeringBaseController {
             }
             return;
         }
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
         request.setAttribute("message", "You must be logged!");
         action_error(request, response);
     }
     
     private void action_decouple_teacher(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+        
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             int teacher_id = Integer.parseInt(request.getParameter("teacher_id"));
@@ -226,9 +272,11 @@ public class BE_EditCourse extends WebengineeringBaseController {
                 action_error(request,response);
                 return;
             }
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: couple teacher-course (%d,%d)", SecurityLayer.getUser(request), teacher_id, course_id));
             response.sendRedirect("be_homepage");
             return;
         }
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
         request.setAttribute("message", "You must be logged!");
         action_error(request, response);
     }

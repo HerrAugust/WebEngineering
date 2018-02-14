@@ -88,7 +88,7 @@ public interface Course {
     
     public List<Course> getSame_as();
     
-    public Course getModule();
+    public List<Course> getModule();
     
     public void setPrerequisites_ita(String s);
 
@@ -106,5 +106,5 @@ public interface Course {
     
     public void setPreparatory(List<Course> c);
     
-    public void setModule(Course c);
+    public void setModule(List<Course> c);
 }

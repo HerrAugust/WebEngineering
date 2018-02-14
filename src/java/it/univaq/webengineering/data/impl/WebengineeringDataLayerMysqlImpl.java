@@ -62,6 +62,12 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     private PreparedStatement sImage;
     private PreparedStatement sImagesByCourse;
     private PreparedStatement sCourseByCodeAndAcademic_year;
+    private PreparedStatement dModule;
+    private PreparedStatement dSame_as;
+    private PreparedStatement dPreparatory;
+    private PreparedStatement iSame_as;
+    private PreparedStatement iModule;
+    private PreparedStatement iPreparatory;
 
     public WebengineeringDataLayerMysqlImpl(DataSource datasource) throws SQLException, NamingException {
         super(datasource);
@@ -87,8 +93,8 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             sCoursesOfTeacher = connection.prepareStatement("SELECT * FROM course JOIN teach ON course.id=teach.course_id JOIN teacher ON teacher.id=teach.teacher_id WHERE teacher.id=?");
             sBooksByCourse = connection.prepareStatement("SELECT * FROM book JOIN uses ON uses.book_id = book.id WHERE uses.course_id = ?");
             sCoursesPreparatory = connection.prepareStatement("SELECT course.* FROM preparatory JOIN course ON preparatory.requires = course.id WHERE preparatory.course_id = ?");
-            sCoursesSame_as = connection.prepareStatement("SELECT b1.* FROM course as b1 JOIN course as b2 ON b1.same_as = b2.id WHERE b1.same_as = ?");
-            sCourseModule = connection.prepareStatement("SELECT b2.* FROM course as b1 JOIN course as b2 ON b1.module = b2.id WHERE b1.id= ?");
+            sCoursesSame_as = connection.prepareStatement("SELECT course.* FROM same_as JOIN course ON same_as.same_as_course_id = course.id WHERE same_as.course_id = ? OR same_as.same_as_course_id = ?");
+            sCourseModule = connection.prepareStatement("select course.* from module join course on module.module_course_id = course.id WHERE module.course_id = ? UNION select course.* from module join course on module.course_id = course.id WHERE module.module_course_id = ?");
             sImage = connection.prepareStatement("SELECT * FROM image WHERE id = ?");
             sImageByTeacher = connection.prepareStatement("SELECT image.* FROM teacher JOIN image ON teacher.photo = image.id WHERE teacher.id = ?");
             sImagesByCourse = connection.prepareStatement("SELECT image.* FROM image JOIN course ON image.course_id = course.id WHERE course.id = ?");
@@ -97,15 +103,21 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             iCourse = connection.prepareStatement("INSERT INTO course(code, name, academic_year) VALUES(?,?,?)", Statement.RETURN_GENERATED_KEYS);
             iCourseTeacher = connection.prepareStatement("INSERT INTO teach(course_id, teacher_id) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
             iImage = connection.prepareStatement("INSERT INTO image(original_name, name_on_disk, path, course_id) VALUE(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+            iModule = connection.prepareStatement("INSERT INTO module(course_id, module_course_id) VALUE(?,?)");
+            iSame_as = connection.prepareStatement("INSERT INTO same_as(course_id, same_as_course_id) VALUE(?,?)");
+            iPreparatory = connection.prepareStatement("INSERT INTO preparatory(course_id, requires) VALUE(?,?)");
                    
             dTeacher = connection.prepareStatement("DELETE FROM teacher WHERE id=?");
             dCourse = connection.prepareStatement("DELETE FROM course WHERE code=?");
             dCourseTeacher = connection.prepareStatement("DELETE FROM teach WHERE course_id=?");
             dTeach = connection.prepareStatement("DELETE FROM teach WHERE course_id = ? and teacher_id = ?");
             dImage = connection.prepareStatement("DELETE FROM image WHERE id = ?");
+            dModule = connection.prepareStatement("DELETE FROM module WHERE course_id = ? OR module_course_id = ?");
+            dPreparatory = connection.prepareStatement("DELETE FROM preparatory WHERE course_id = ? OR preparatory_course_id = ?");
+            dSame_as = connection.prepareStatement("DELETE FROM same_as WHERE course_id = ? OR same_as_course_id = ?");
             
-            uTeacher = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, photo=? WHERE id=?");
-            uTeacher_withPassword = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, password=? WHERE id=?");
+            uTeacher = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, photo=?, type=? WHERE id=?");
+            uTeacher_withPassword = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, password=?,photo=?,type=? WHERE id=?");
             uCourseBasicInfo = connection.prepareStatement("UPDATE course SET ssd=?,language=?,semester=? WHERE id=?");
             uCourseDescription = connection.prepareStatement("UPDATE course SET prerequisites=?,learning_outcomes=?,assessment_method=?,teaching_method=?,notes=?,prerequisites_ita=?,learning_outcomes_ita=?,assessment_method_ita=?,teaching_method_ita=?,notes_ita=?,syllabus=?,syllabus_ita=? WHERE id=?");
 
@@ -261,7 +273,8 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     uTeacher.setInt(5, t.getPhoto().getId());
                 else
                     uTeacher.setNull(5, java.sql.Types.INTEGER);
-                uTeacher.setInt(6, t.getId());
+                uTeacher.setString(6, t.getType());
+                uTeacher.setInt(7, t.getId());
                 uTeacher.executeUpdate();
             }
             else {
@@ -270,7 +283,12 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                 uTeacher_withPassword.setString(3, t.getLanguage());
                 uTeacher_withPassword.setString(4, t.getEmail());
                 uTeacher_withPassword.setString(5, t.getPassword());
-                uTeacher_withPassword.setInt(6, t.getId());
+                if(t.getPhoto()!= null)
+                    uTeacher_withPassword.setInt(6, t.getPhoto().getId());
+                else
+                    uTeacher_withPassword.setNull(6, java.sql.Types.INTEGER);
+                uTeacher_withPassword.setString(7, t.getType());
+                uTeacher_withPassword.setInt(8, t.getId());
                 uTeacher_withPassword.executeUpdate();
             }
             
@@ -607,6 +625,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         List<Course> same_as = new LinkedList<>();
         try {
             sCoursesSame_as.setInt(1, course.getId());
+            sCoursesSame_as.setInt(2, course.getId());
             try (ResultSet rs = sCoursesSame_as.executeQuery()) {
                 while (rs.next()) {
                     same_as.add(createCourse(rs));
@@ -637,13 +656,14 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     }
 
     @Override
-    public Course getModule(Course course) {
-        Course module = null;
+    public List<Course> getModule(Course course) {
+        List<Course> module = new LinkedList<>();
         try {
             sCourseModule.setInt(1, course.getId());
+            sCourseModule.setInt(2, course.getId());
             try (ResultSet rs = sCourseModule.executeQuery()) {
                 while (rs.next()) {
-                    module = createCourse(rs);
+                    module.add(createCourse(rs));
                 }
             }
         }
@@ -789,5 +809,71 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     @Override
     public List<Course> getCourses() {
         return this.getCoursesByTeacher(null);
+    }
+
+    @Override
+    public void deletePreparatory(Course t) {
+        try {
+            dPreparatory.setInt(1, t.getId());
+            dPreparatory.setInt(2, t.getId());
+            dPreparatory.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void deleteSame_as(Course t) {
+        try {
+            dSame_as.setInt(1, t.getId());
+            dSame_as.setInt(2, t.getId());
+            dSame_as.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void deleteModule(Course t) {
+        try {
+            dModule.setInt(1, t.getId());
+            dModule.setInt(2, t.getId());
+            dModule.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void insertModule(int courseid, int other) {
+        try {
+            iModule.setInt(1, courseid);
+            iModule.setInt(2, other);
+            iModule.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void insertSame_as(int courseid, int other) {
+        try {
+            iSame_as.setInt(1, courseid);
+            iSame_as.setInt(2, other);
+            iSame_as.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void insertPreparatory(int courseid, int other) {
+        try {
+            iPreparatory.setInt(1, courseid);
+            iPreparatory.setInt(2, other);
+            iPreparatory.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

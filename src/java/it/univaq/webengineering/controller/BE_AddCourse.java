@@ -2,6 +2,7 @@ package it.univaq.webengineering.controller;
 
 import it.univaq.webengineering.data.impl.CourseImpl;
 import it.univaq.webengineering.data.impl.TeacherImpl;
+import it.univaq.webengineering.data.impl.WebengineeringDataLayerMysqlImpl;
 import it.univaq.webengineering.data.model.Course;
 import it.univaq.webengineering.data.model.Teacher;
 import it.univaq.webengineering.data.model.WebengineeringDataLayer;
@@ -13,6 +14,8 @@ import it.univaq.webengineering.framework.result.TemplateManagerException;
 import it.univaq.webengineering.framework.security.SecurityLayer;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +33,15 @@ public class BE_AddCourse extends WebengineeringBaseController {
     }
 
     private void action_default(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, TemplateManagerException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+        
         // Needed to support double language (ita/eng)
         String url = "backend/addcourse.ftl.html";
         String switchlang = "ITA";
         List<Teacher> teachers = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeachers();
         
         if(SecurityLayer.checkSession(request) == null) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
             request.setAttribute("message", "You must be logged in and be an admin!");
             action_error(request, response);
             return;
@@ -62,6 +68,8 @@ public class BE_AddCourse extends WebengineeringBaseController {
     }
     
     private void action_addcourse(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+        
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             String name = request.getParameter("name");
@@ -85,10 +93,12 @@ public class BE_AddCourse extends WebengineeringBaseController {
                 }
                 if(res) {
                     text = "ok";
+                    Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + " adds course " + name + " (" + code + ").");
                 }
             }
             else {
                 text += " Course with that code and name already exists. Change one of them.";
+                Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + " can't add course " + name + " (" + code + "), it exists already.");
             }
                 
             response.setContentType("text/plain");
@@ -96,6 +106,7 @@ public class BE_AddCourse extends WebengineeringBaseController {
             response.getWriter().write(text);
             return;
         }
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
         request.setAttribute("message", "You must be logged and be administrator!");
         action_error(request, response);
     }

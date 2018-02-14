@@ -10,6 +10,11 @@
       <param-name>file-upload</param-name> 
       <param-value>C:/Users/agost/Documents/workspace/WebEngineering-master/web/uploads/</param-value> 
    </context-param>
+   <context-param> 
+      <description>Location of log file</description> 
+      <param-name>log</param-name> 
+      <param-value>C:/Users/agost/Documents/workspace/WebEngineering-master/web/logs.log</param-value> 
+   </context-param>
     <context-param>
         <param-name>view.date_format</param-name>
         <param-value>dd/MM/yyyy hh:mm:ss</param-value>
@@ -133,7 +138,7 @@
     </servlet-mapping>
     <session-config>
         <session-timeout>
-            30
+            120
         </session-timeout>
     </session-config>
     <welcome-file-list>

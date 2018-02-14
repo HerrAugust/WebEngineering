@@ -16,6 +16,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import it.univaq.webengineering.data.impl.WebengineeringDataLayerMysqlImpl;
+import java.io.File;
+
 public class BE_ListUsers extends WebengineeringBaseController {
 
     private void action_error(HttpServletRequest request, HttpServletResponse response) {
@@ -27,13 +32,16 @@ public class BE_ListUsers extends WebengineeringBaseController {
     }
 
     private void action_default(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, TemplateManagerException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+        
         // Needed to support double language (ita/eng)
         String url = "backend/listusers.ftl.html";
         String switchlang = "ITA";
         
         HttpSession session = SecurityLayer.checkSession(request);
         if(session == null) {
-            request.setAttribute("error", "Login necessary");
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
+            request.setAttribute("message", "Login necessary");
             this.action_error(request, response);
             return;
         }
@@ -53,22 +61,42 @@ public class BE_ListUsers extends WebengineeringBaseController {
     }
     
     private void action_deleteuser(HttpServletRequest request, HttpServletResponse response) throws TemplateManagerException, IOException, ServletException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             int userid = Integer.parseInt(request.getParameter("userid"));
+            Teacher teacher = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(userid);
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteTeacher(userid);
+            
+            // delete user's image
+            if(teacher.getPhoto() != null) {
+                ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteImage(teacher.getPhoto().getId());
+                new File(teacher.getPhoto().getPath() + teacher.getPhoto().getName_on_disk()).delete();
+            }
+            
             if(res) {
+                
+                Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: delete user %d", SecurityLayer.getUser(request), userid));
                 action_default(request, response);
             }
+            return;
         }
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
     }
     
     private void action_edituser(HttpServletRequest request, HttpServletResponse response) throws TemplateManagerException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             int userid = Integer.parseInt(request.getParameter("userid"));
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: edits user %d", SecurityLayer.getUser(request), userid));
             new BE_UpdateProfile().editUser_Admin(request, response, userid, getServletContext());
+            return;
         }
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
+        request.setAttribute("message", "Login necessary");
+        this.action_error(request, response);
     }
     
     @Override

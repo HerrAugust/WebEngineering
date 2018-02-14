@@ -198,4 +198,36 @@ public class SecurityLayer {
             rand = rand + a.charAt(r.nextInt(a.length()));
         return rand;
     }
+    
+    public static String getUser(HttpServletRequest r) {
+        String username = "??";
+        HttpSession session = checkSession(r);
+        if(session != null) {
+            username = (String) session.getAttribute("username");
+        }
+        return username;
+    }
+
+    public static String canonizeItalian(String parameter) {
+        parameter = parameter.replace("à", "&agrave;");
+        parameter = parameter.replace("è", "&egrave;");
+        parameter = parameter.replace("ò", "&ograve;");
+        parameter = parameter.replace("ù", "&ugrave;");
+        parameter = parameter.replace("À", "&Agrave;");
+        parameter = parameter.replace("È", "&Egrave;");
+        parameter = parameter.replace("Ò", "&Ograve;");
+        parameter = parameter.replace("Ù", "&Ugrave;");
+        parameter = SecurityLayer.canonize(parameter);
+        return parameter;
+    }
+
+    private static String canonize(String parameter) {
+        parameter = parameter.replace("\"", "&quot;");
+        parameter = parameter.replace("&", "&amp;");
+        parameter = parameter.replace("/", "&frasl;");
+        parameter = parameter.replace(">", "&gt;");
+        parameter = parameter.replace("°", "&deg;");
+        return parameter;
+    }
+    
 }

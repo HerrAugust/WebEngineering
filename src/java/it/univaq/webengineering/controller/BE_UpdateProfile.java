@@ -2,6 +2,7 @@ package it.univaq.webengineering.controller;
 
 import it.univaq.webengineering.data.impl.ImageImpl;
 import it.univaq.webengineering.data.impl.TeacherImpl;
+import it.univaq.webengineering.data.impl.WebengineeringDataLayerMysqlImpl;
 import it.univaq.webengineering.data.model.Course;
 import it.univaq.webengineering.data.model.Image;
 import it.univaq.webengineering.data.model.Teacher;
@@ -17,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
@@ -45,11 +48,14 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
     }
 
     private void action_default(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, TemplateManagerException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+
         // Needed to support double language (ita/eng)
         String url = "backend/profile.ftl.html";
         String switchlang = "ITA";
 
         if(SecurityLayer.checkSession(request) == null) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
             request.setAttribute("message", "You must be logged in!");
             action_error(request, response);
             return;
@@ -78,6 +84,8 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
     }
 
     private void action_updateprofile(HttpServletRequest request, HttpServletResponse response) throws IOException, TemplateManagerException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+        
         String text = "";
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
@@ -97,25 +105,27 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             if (multipart) {
                 try {
                     Part item = request.getPart("image");
-                    String namefile = item.getSubmittedFileName();
+                    if(item != null && item.getSize() > 0) {
+                        String namefile = item.getSubmittedFileName();
 
-                    // check if width and height are the same
-                    BufferedImage bimg = ImageIO.read(item.getInputStream());
-                    int width          = bimg.getWidth();
-                    int height         = bimg.getHeight();
-                    if(width != height) {
-                        request.setAttribute("message", "Error: image height and width are not the same");
-                        this.action_default(request, response);
-                        return;
-                    }
+                        // check if width and height are the same
+                        BufferedImage bimg = ImageIO.read(item.getInputStream());
+                        int width          = bimg.getWidth();
+                        int height         = bimg.getHeight();
+                        if(width != height) {
+                            request.setAttribute("message", "Error: image height and width are not the same");
+                            this.action_default(request, response);
+                            return;
+                        }
 
-                    photoName = namefile;
-                    long size = item.getSize();
-                    String imagetype = item.getContentType().split("/")[1];
-                    if (size > 0 && !namefile.isEmpty()) {
-                        randomName = SecurityLayer.generateRandomString(7) + "." + imagetype;
-                        //File target = new File(filePath + randomName);
-                        item.write(filePath + randomName);
+                        photoName = namefile;
+                        long size = item.getSize();
+                        String imagetype = item.getContentType().split("/")[1];
+                        if (size > 0 && !namefile.isEmpty()) {
+                            randomName = SecurityLayer.generateRandomString(7) + "." + imagetype;
+                            //File target = new File(filePath + randomName);
+                            item.write(filePath + randomName);
+                        }
                     }
                 } catch (ServletException ex) {
                     request.setAttribute("exception", ex);
@@ -134,12 +144,15 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             Image oldImage = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getImageByTeacher(teacher.getId());
 
             // Save photo to DB
-            ImageImpl image = new ImageImpl(null);
-            image.setName_on_disk(randomName);
-            image.setOriginal_name(photoName);
-            image.setPath(filePath);
-            int photoid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertImage(image);
-            image.setId(photoid);
+            Image image = teacher.getPhoto();
+            if(! photoName.equals("")) { // if a photo is uploaded
+                image = new ImageImpl(null);
+                image.setName_on_disk(randomName);
+                image.setOriginal_name(photoName);
+                image.setPath(filePath);
+                int photoid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertImage(image);
+                image.setId(photoid);
+            }
 
             // save teacher to DB
             Teacher t = new TeacherImpl(null);
@@ -150,6 +163,7 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             t.setEmail(email);
             t.setPassword(password);
             t.setPhoto(image);
+            t.setType(teacher.getType());
 
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).updateTeacher(t);
             text = "Error while updating info of Teacher.";
@@ -161,25 +175,31 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             }
 
             if(res) {
+                Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: updates his/her own profile", SecurityLayer.getUser(request)));
                 response.sendRedirect("fe_courses?action=details_teacher&id="+t.getId());
                 return;
             }
         }
-        else
+        else {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
             text = "You must be logged and be administrator!";
+        }
         request.setAttribute("error", text);
         action_error(request, response);
         return;
     }
 
     /*
-    Allows the admin to modify the profile of the user with id userid
+    * Allows the admin to modify the profile of the user with id userid.
+    * This method only shows the GUI for editing his info
     */
     protected void editUser_Admin(HttpServletRequest request, HttpServletResponse response, int userid, ServletContext servletContext) throws TemplateManagerException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+        
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             // Check user is authenticated as admin
-            String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
+            String email = (String)session.getAttribute("username");
             Teacher curUser  = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
             if(curUser.getType().equals("admin") == false) {
                 request.setAttribute("message", "You must be logged and be administrator!");
@@ -189,14 +209,14 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
 
             // Shows the page to update the profile of the other person
             // Needed to support double language (ita/eng)
-            String url = "backend/profile.ftl.html";
+            String url = "backend/adduser.ftl.html";
             String switchlang = "ITA";
 
             TemplateResult res = new TemplateResult(servletContext);
             // get info about the user with id userid
             Teacher userToBeUpdated  = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(userid);
             if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
-                url = "backend/profile_ita.ftl.html";
+                url = "backend/adduser_ita.ftl.html";
                 switchlang = "ENG";
             }
             else {
@@ -209,9 +229,12 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
 
             request.setAttribute("teacher", userToBeUpdated);
             request.setAttribute("switchlang", switchlang);
-            request.setAttribute("isAdmin", userToBeUpdated.isAdmin());
+            request.setAttribute("isAdmin", true);
+            request.setAttribute("edit_user", true);
             res.activate(url, request, response);
+            return;
         }
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");   
     }
 
     @Override

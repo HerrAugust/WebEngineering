@@ -2,82 +2,149 @@
 
 <#macro page_body>
 <div id="maincontent">
-    <h2 class="subtitle">Edit course of <i>${course.name}</i></h2>
-    <p class="subtitle">Academic Year: Current (${academic_year})</p>
-
-    <#if message??>
-    <div id="alert" class="alert alert-danger hidden" role="alert">
-      ${message}
-    </div>
-    </#if>
-
     <div>
+        <h2 class="subtitle">Edit course of <i>${course.name}</i></h2>
+        <p class="subtitle">Academic Year: Current (${academic_year})</p>
+
+        <div id="alert" class="alert alert-danger hidden" role="alert">
+          <#if message??>
+          ${message}
+          </#if>
+        </div>
+    
         <div class="left percent50">
             <h3 class="subtitle"><b>Course description and notes:</b></h3>
-            <form id="left" class="subtitle moreabove" method="post" action="be_editcourse?action=coursedescription">
+            <form id="left" class="subtitle moreabove">
                 <input type="hidden" name="coursecode" value="${course.code}"/>
                 <div class="form-group">
                     <label for="prerequisites">Prerequisites:</label>
-                    <textarea class="form-control" name="prerequisites">${course.prerequisites}</textarea>
+                    <textarea rows="25"class="form-control" name="prerequisites">${course.prerequisites}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="learning_outcomes">Learning outcomes:</label>
-                    <textarea class="form-control" name="learning_outcomes">${course.learning_outcomes}</textarea>
+                    <textarea rows="25"class="form-control" name="learning_outcomes">${course.learning_outcomes}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="assessment_method">Assessment method:</label>
-                    <textarea class="form-control" name="assessment_method">${course.assessment_method}</textarea>
+                    <textarea rows="25"class="form-control" name="assessment_method">${course.assessment_method}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="teaching_method">Teaching method:</label>
-                    <textarea class="form-control" name="teaching_method">${course.teaching_method}</textarea>
+                    <textarea rows="25"class="form-control" name="teaching_method">${course.teaching_method}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="notes">Notes:</label>
-                    <textarea class="form-control" name="notes">${course.notes}</textarea>
+                    <textarea rows="25"class="form-control" name="notes">${course.notes}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="syllabus">Syllabus: </label>
-                    <textarea class="form-control" name="syllabus">${course.syllabus}</textarea>
-                </div>
-                <div class="form-control">
-                    <label for="images">Course images: </label>
-                    <input type="file" accept="image/*" name="images" id="images" multiple />
+                    <textarea rows="25"class="form-control" name="syllabus">${course.syllabus}</textarea>
                 </div>
             </form>
         </div>
         <div class="right percent50">
             <h3 class="subtitle"><b>Descrizione del corso e note:</b></h3>
-            <form id="right" class="subtitle moreabove" method="post" action="be_editcourse?action=coursedescription">
+            <form id="right" class="subtitle moreabove">
                 <div class="form-group">
                     <label for="prerequisites_ita">Prerequisiti:</label>
-                    <textarea class="form-control" name="prerequisites_ita">${course.prerequisites_ita}</textarea>
+                    <textarea rows="25"class="form-control" name="prerequisites_ita">${course.prerequisites_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="learning_outcomes_ita">Risultati del corso:</label>
-                    <textarea class="form-control" name="learning_outcomes_ita">${course.learning_outcomes_ita}</textarea>
+                    <textarea rows="25"class="form-control" name="learning_outcomes_ita">${course.learning_outcomes_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="assessment_method_ita">Modalit&agrave; d'esame:</label>
-                    <textarea class="form-control" name="assessment_method_ita">${course.assessment_method_ita}</textarea>
+                    <textarea rows="25"class="form-control" name="assessment_method_ita">${course.assessment_method_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="teaching_method_ita">Modalit&agrave; d'insegnamento:</label>
-                    <textarea class="form-control" name="teaching_method_ita">${course.teaching_method_ita}</textarea>
+                    <textarea rows="25"class="form-control" name="teaching_method_ita">${course.teaching_method_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="notes_ita">Note:</label>
-                    <textarea class="form-control" name="notes_ita">${course.notes_ita}</textarea>
+                    <textarea rows="25"class="form-control" name="notes_ita">${course.notes_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="syllabus_ita">Sillabo: </label>
-                    <textarea class="form-control" name="syllabus_ita">${course.syllabus_ita}</textarea>
+                    <textarea rows="25"class="form-control" name="syllabus_ita">${course.syllabus_ita}</textarea>
                 </div>
             </form>
         </div>
     </div>
     
     <div>
+        <h3 class="subtitle"><b>Textbooks, external links and images</b></h3>
+        <form class="subtitle moreabove">
+            <div id="textbooks">
+                <h4>Textbooks</h4>
+                <div id="textbook">
+                    <h5>Textbook #1</h5>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputtextauthor">Author: </label>
+                            <input type="text" class="form-control" id="inputtextauthor" name="inputtextauthor" placeholder="Author's name">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputtextpublisher">Publisher: </label>
+                            <input type="text" class="form-control" id="inputtextpublisher" name="inputtextpublisher" placeholder="Publisher">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-2">
+                            <label for="inputtextvolume">Volume: </label>
+                            <input type="text" class="form-control" id="inputtextvolume" name="inputtextvolume" placeholder="Vol. 1">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="inputtextyear">Year: </label>
+                            <input type="number" class="form-control" id="inputtextyear" name="inputtextyear" placeholder="2017">
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label for="inputtexturl">Website: </label>
+                            <input type="url" class="form-control" id="inputtexturl" name="inputtexturl" placeholder="http://www.example.com">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="inputtexttitle">Title: </label>
+                            <input type="text" class="form-control" id="inputtexttitle" name="inputtexttitle" placeholder="Title of book">
+                        </div>
+                    </div>
+                </div>
+                <button type='button' id="button_add_book" class="morebelow btn btn-info">Add another textbook</button>
+            </div>
+            
+            <div id="resources" class="morebelow">
+                <h4>External resources</h4>
+                <div id="resource">
+                    <h5>Resource #1</h5>
+                    <div class="form-row">
+                        <label for="inputresourcename">Resource name: </label>
+                        <input type="text" class="form-control" name="inputresourcename" id="inputresourcename" placeholder="Summary of lecture 1" />
+                    </div>
+                    <div class="form-row">
+                        <label for="inputresourcedescription">Resource description: </label>
+                        <input type="text" class="form-control" name="inputresourcedescription" id="inputdescription" placeholder="Description" />
+                    </div>
+                    <div class="form-row">
+                        <label for="inputresourceweblink">Weblink: </label><br/>
+                        <input type="text" class="form-control" name="inputresourceweblink" id="inputweblink" placeholder="http://www.example.com" />
+                    </div>
+                </div>
+                <button type='button' id="button_add_resource" class="morebelow btn btn-info">Add another resource</button>
+            </div>
+            
+            <div id="images" class="morebelow">
+                <h4>Images</h4>
+                <div class="form-group">
+                    <label for="images">Course images: </label><br/>
+                    <input type="file" accept="image/*" name="images" id="images" multiple />
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <div style="margin-left: 105px">
         <button id="button_back" class="btn btn-danger">Back to base course info</button>
         <button id="button_submit" class="btn btn-success">Save and finish</button>
     </div>
@@ -89,7 +156,6 @@
 <!-- This page must work with only a minimum of JS -->
 $(document).ready(function(){
     let alert = $('#alert');
-    var _URL = window.URL || window.webkitURL; // necessary for images check
 
     function showAlert(message, color, tobeshown) {
         alert.removeClass("alert-warning").removeClass("alert-success").removeClass("alert-danger").removeClass("alert-info");
@@ -121,7 +187,6 @@ $(document).ready(function(){
         e.preventDefault();
         showAlert("",'red',false);
         var errorWidthHeight = false;
-        let checkedFiles = 0;
         
         var formdata = new FormData($('form')[0]); // this also includes images
         console.log(formdata);
@@ -131,32 +196,28 @@ $(document).ready(function(){
         formdata.append('teaching_method_ita', $('textarea[name=teaching_method_ita]')[0].value);
         formdata.append('notes_ita',$('textarea[name=notes_ita]')[0].value);
         formdata.append('syllabus_ita',$('textarea[name=syllabus_ita]')[0].value);
+        var _URL = window.URL || window.webkitURL; // necessary for images check
         jQuery.each($('#images').get(0).files, function(i, file) {
             // check: images width = height
             img = new Image();
-            img.src = _URL.createObjectURL(file);
-            img.onload = function() {
-                console.log(this.width);
-                if(this.width != this.height) {
-                    errorWidthHeight = true;
-                    checkedFiles = checkedFiles + 1;
-                    showAlert("Images must have the same width and height",'red',true);
-                    
-                    document.body.scrollTop = 0; // For Safari
-                    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-                }
-                else {
-                    formdata.append('file-'+i, file);
-                }
-            };
             img.onerror = function() {
                 alert( "not a valid file: " + file.type);
             };
+            img.src = _URL.createObjectURL(file);
+            if(img.width != img.height) {
+                errorWidthHeight = true;
+                showAlert("Images must have the same width and height",'red',true);
+
+                document.body.scrollTop = 0; // For Safari
+                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+            }
+            else {
+                formdata.append('file-'+i, file);
+            }
         });
         console.log(formdata);
         
         // error: images must have the same width and height?
-        while(!errorWidthHeight && checkedFiles < $('#images').get(0).files.length) {}
         console.log(errorWidthHeight);
         if(errorWidthHeight) {
             return;
@@ -179,7 +240,65 @@ $(document).ready(function(){
             window.location = loc;
         });
     });
+    
+    $('#button_add_book').click(function(e) {
+    let html2 = "<div><h5>Textbook #" + book_no + "</h5>  \
+                    <div class=\"form-row\">  \
+                        <div class=\"form-group col-md-6\">  \
+                            <label for=\"inputtextauthor\">Author: </label>  \
+                            <input type=\"text\" class=\"form-control\" id=\"inputtextauthor\" name=\"inputtextauthor\" placeholder=\"Author name\">  \
+                        </div>  \
+                        <div class=\"form-group col-md-6\">  \
+                            <label for=\"inputtextpublisher\">Publisher: </label>  \
+                            <input type=\"text\" class=\"form-control\" id=\"inputtextpublisher\" name=\"inputtextpublisher\" placeholder=\"Publisher\">  \
+                        </div>  \
+                    </div>  \
+                    <div class=\"form-row\">  \
+                        <div class=\"form-group col-md-2\">  \
+                            <label for=\"inputtextvolume\">Volume: </label>  \
+                            <input type=\"text\" class=\"form-control\" id=\"inputtextvolume\" name=\"inputtextvolume\" placeholder=\"Vol. 1\">  \
+                        </div>  \
+                        <div class=\"form-group col-md-2\">  \
+                            <label for=\"inputtextyear\">Year: </label>  \
+                            <input type=\"number\" class=\"form-control\" id=\"inputtextyear\" name=\"inputtextyear\" placeholder=\"2017\">  \
+                        </div>  \
+                        <div class=\"form-group col-md-8\">  \
+                            <label for=\"inputtexturl\">Website: </label>  \
+                            <input type=\"url\" class=\"form-control\" id=\"inputtexturl\" name=\"inputtexturl\" placeholder=\"http://www.example.com\">  \
+                        </div>  \
+                    </div>  \
+                    <div class=\"form-row\">  \
+                        <div class=\"form-group col-md-12\">  \
+                            <label for=\"inputtexttitle\">Title: </label>  \
+                            <input type=\"text\" class=\"form-control\" id=\"inputtexttitle\" name=\"inputtexttitle\" placeholder=\"Title of book\">  \
+                        </div>  \
+                    </div>  \
+                </div>";
+        $(this).parent().children().last().before($.parseHTML(html2)[0]);
+        book_no = book_no + 1;
+    });
+    
+    $('#button_add_resource').click(function(e) {
+            let html1 = "<div><h5>Resource #" + resource_no + "</h5>   \
+                    <div class=\"form-row\">  \
+                        <label for=\"inputresourcename\">Resource name: </label>  \
+                        <input type=\"text\" class=\"form-control\" name=\"inputresourcename\" id=\"inputresourcename\" placeholder=\"Summary of lecture 1\" />  \
+                    </div> \
+                    <div class=\"form-row\">  \
+                        <label for=\"inputresourcedescription\">Resource description: </label>  \
+                        <input type=\"text\" class=\"form-control\" name=\"inputresourcedescription\" id=\"inputdescription\" placeholder=\"Description\" />  \
+                    </div>  \
+                    <div class=\"form-row\">  \
+                        <label for=\"inputresourceweblink\">Weblink: </label><br/>  \
+                        <input type=\"text\" class=\"form-control\" name=\"inputresourceweblink\" id=\"inputweblink\" placeholder=\"http://www.example.com\" />  \
+                    </div>  \
+                </div>";
+        $(this).parent().children().last().before($.parseHTML(html1)[0]);
+        resource_no = resource_no + 1;
+    });
 
+    var resource_no = 2;
+    var book_no = 2;
 });
 </#macro>
 

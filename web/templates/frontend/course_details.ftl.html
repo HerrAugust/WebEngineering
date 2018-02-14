@@ -120,11 +120,15 @@
             </div>
             </#if>
         
-            <#if course.module??>
+            <#if course.module?? && course.module?size != 0>
             <div class="row">
                 <div class="col-3">Module with: </div>
                 <div class="col-3">
-                    <a href="fe_courses?action=details_course&id=${course.module.id}">${course.module.name}</a>
+                    <ul>
+                    <#list course.same_as as c>
+                    <li><a href="fe_courses?action=details_course&id=${c.id}">${c.name}</a></li>
+                    </#list>
+                    </ul>
                 </div>
                 <div class="col-3"></div>
                 <div class="col-3"></div>

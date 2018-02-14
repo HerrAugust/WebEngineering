@@ -4,10 +4,13 @@ import it.univaq.webengineering.data.impl.WebengineeringDataLayerMysqlImpl;
 import it.univaq.webengineering.data.model.WebengineeringDataLayer;
 import it.univaq.webengineering.framework.data.DataLayerException;
 import it.univaq.webengineering.framework.result.FailureResult;
+import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,10 +26,25 @@ public abstract class WebengineeringBaseController extends HttpServlet {
 
     @Resource(name = "jdbc/webengineering")
     private DataSource ds;
+    private static boolean LOGGER_CONFIGURED = false;
 
     protected abstract void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException;
 
-    private void processBaseRequest(HttpServletRequest request, HttpServletResponse response) {
+    private void processBaseRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {    
+        if(!LOGGER_CONFIGURED) {
+            String filename = getServletContext().getInitParameter("log");
+            File file = new File(filename);
+            if(file.exists()) 
+                file.delete();
+            file.createNewFile();
+            FileHandler fh = new FileHandler(filename);
+            Logger logger = Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName());
+            logger.addHandler(fh);
+            SimpleFormatter formatter = new SimpleFormatter();
+            fh.setFormatter(formatter);
+            LOGGER_CONFIGURED = true;
+        }
+        
         //WARNING: never declare DB-related objects including references to Connection and Statement (as our data layer)
         //as class variables of a servlet. Since servlet instances are reused, concurrent requests may conflict on such
         //variables leading to unexpected results. To always have different connections and statements on a per-request

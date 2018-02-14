@@ -2,35 +2,40 @@
 
 <#macro page_body>
 <div id="maincontent">
-    <h2 class="subtitle">Add User</h2>
+    <h2 class="subtitle"><#if edit_user?? && edit_user>Edit<#else>Add</#if> User</h2>
 
-    <div id="alert" class="alert alert-danger hidden" role="alert">
-      Nothing to show
+    <#if message??>
+    <div id="alert" class="alert alert-danger" role="alert">
+      ${message}
     </div>
+    </#if>
 
-    <form id="form_adduser" class="centered moreabove" method="post" action="be_adduser">
+    <form id="form_adduser" class="centered moreabove" method="post" <#if teacher??>action="be_adduser?action=edituser"<#else>action="be_adduser?action=adduser"</#if> >
+        <#if teacher??>
+        <input type="hidden" name="id" value="${teacher.id}" />
+        </#if>
         <div class="form-group">
             <label for="name">Name:</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Giuseppe" required/>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Giuseppe" required <#if teacher??>value="${teacher.name}"</#if> />
         </div>
         <div class="form-group">
             <label for="lastname">Lastname:</label>
-            <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Della Penna" required/>
+            <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Della Penna" required <#if teacher??>value="${teacher.lastname}"</#if> />
         </div>
         <div class="form-group">
             <label for="language">Language:</label>
-            <select>
-                <option value="ita">Italian</option>
-                <option value="eng">English</option>
+            <select name="language">
+                <option value="ita" <#if teacher?? && teacher.language == "ita">selected"</#if> >Italian</option>
+                <option value="eng" <#if teacher?? && teacher.language == "eng">selected</#if> >English</option>
             </select>
         </div>
         <div class="form-group">
-            <input type="checkbox" id="type" name="type"/>
+            <input type="checkbox" id="type" name="type" <#if teacher?? && teacher.type == "admin">checked</#if> />
             <label for="type">Admin?</label>
         </div>
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="email@univaq.it" required/>
+            <input type="email" class="form-control" id="email" name="email" placeholder="email@univaq.it" required <#if teacher??>value="${teacher.email}"</#if> />
         </div>
         <div class="form-group">
             <label for="password">Password:</label>
@@ -40,69 +45,13 @@
             <label for="password2">Repeat password:</label>
             <input type="password" class="form-control" id="password2" name="password2" placeholder="Password..." required/>
         </div>
-        <button type="submit" class="btn btn-success centered moreabove" name="login">Create</button>
+        <button type="submit" class="btn btn-success centered moreabove" name="login">Confirm</button>
     </form>
 </div>
 </#macro>
 
 <#macro script>
-$(document).ready(function(){
-    let alert = $('#alert');
-    
-    function showAlert(message, color, tobeshown) {
-        alert.removeClass("alert-warning").removeClass("alert-success").removeClass("alert-danger").removeClass("alert-info");
-        let newtype = "alert-warning";
-        switch(color) {
-            case "green": newtype = "alert-success"; break;
-            case "blue": newtype = "alert-info"; break;
-            case "red": newtype = "alert-danger"; break;
-            default: newtype = "alert-warning"; break;
-        }
-        alert.addClass(newtype);
-        
-        alert.html(message);
-        
-        if(tobeshown) {
-            alert.removeClass("hidden");
-        }
-        else {
-            alert.addClass("hidden");
-        }
-    }
-    
-    // Button Assign clicked: assign course to teacher
-    $("form").on( "submit", function( event ) {
-        event.preventDefault();
-        showAlert("","",false);
-        
-        if($('#password')[0].value != $('#password2')[0].value) {
-            showAlert("Passwords not equal", "red", true);
-            window.scrollTo(0,0);
-            return;
-        }
-        
-        let admin = $("form div input[type=checkbox]")[0].checked;
-        let language = $("form select")[0].selectedOptions[0].attributes.value.value;
-        let formdata = $(this).serialize() + "&type=" + (admin ? "on" : "off") + "&language=" + language + "&action=adduser";
-        console.log(formdata);
-        
-        $.ajax(
-        {
-            url: "be_adduser", 
-            type: "post",
-            data: formdata
-        })
-        .done(function(res) {
-            let text = res;
-            if(res == "ok")
-                text = "New user created!";
-            showAlert(text, res == "ok" ? "green" : "red", true);
-        })
-        .fail(function() {
-            showAlert( "error", red, true );
-        })
-    });
-});
+
 </#macro>
 
 <@display_page/>

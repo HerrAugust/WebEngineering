@@ -4,9 +4,6 @@
 <div id="maincontent">
     <h2 class="subtitle">Edit course of <i>${course.name}</i></h2>
     <p class="subtitle">Academic Year: Current (${academic_year})</p>
-    <#if course.module??><p class="subtitle">Module with: ${academic_year}</p></#if>
-    <#if course.preparatory??><p class="subtitle">Preparatory for: ${academic_year}</p></#if>
-    <#if course.same_as??><p class="subtitle">Same as: ${academic_year}</p></#if>
 
     <div id="alert" class="alert alert-danger hidden" role="alert">
       Nothing to show
@@ -41,7 +38,73 @@
                 <option value="2" <#if course.semester?? && course.semester == 2>selected="selected"</#if>>2 - Summer</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-success">Save and continue</button>
+        <#if courses??>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="fa fa-angle-down"></i>  It requires the following courses:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <#list courses as c>
+                    <#if c.id != course.id>
+                    <input type="checkbox" name="preparatory[]" <#list course.preparatory as m><#if m?? && m.id == c.id>checked</#if></#list> value="${c.id}" />
+                    <label> ${c.name} (${c.code}) </label>
+                    <br/>
+                    </#if>
+                    </#list>
+                </div>
+            </div>
+        </div>
+        </#if>
+        <#if courses??>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading2">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="true" aria-controls="collapse2">
+                        <i class="fa fa-angle-down"></i>  Is the same as these courses:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading2">
+                <div class="panel-body">
+                    <#list courses as c>
+                    <#if c.id != course.id>
+                    <input type="checkbox" name="same_as[]" <#list course.same_as as m><#if m?? && m.id == c.id>checked</#if></#list> value="${c.id}" />
+                    <label> ${c.name} (${c.code}) </label>
+                    <br/>                    
+                    </#if>
+                    </#list>
+                </div>
+            </div>
+        </div>
+        </#if>
+        <#if courses??>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading3">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="true" aria-controls="collapse3">
+                        <i class="fa fa-angle-down"></i>  It makes module with the following course:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading3">
+                <div class="panel-body">
+                    <#list courses as c>
+                    <#if c.id != course.id>
+                    <input type="checkbox" name="module[]" <#list course.module as m><#if m?? && m.id == c.id>checked</#if></#list> value="${c.id}" />
+                    <label> ${c.name} (${c.code}) </label>
+                    <br/>
+                    </#if>
+                    </#list>
+                </div>
+            </div>
+        </div>
+        </#if>
+        <button type="submit" class="btn btn-success morebelow">Save and continue</button>
     </form>
 </div>
 </#macro>

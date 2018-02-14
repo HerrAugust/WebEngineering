@@ -18,6 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import it.univaq.webengineering.data.impl.WebengineeringDataLayerMysqlImpl;
+
 /**
  *
  * @author Giuseppe
@@ -33,6 +37,8 @@ public class BE_Homepage extends WebengineeringBaseController {
     }
 
     private void action_default(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, TemplateManagerException {
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
+        
         // Needed to support double language (ita/eng)
         String url = "backend/homepage.ftl.html";
         String switchlang = "ITA";
@@ -69,6 +75,7 @@ public class BE_Homepage extends WebengineeringBaseController {
             res.activate(url, request, response);
         }
         else { // user not logged in
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
             response.sendRedirect("fe_login");
         }
     }
@@ -93,9 +100,12 @@ public class BE_Homepage extends WebengineeringBaseController {
                     datalayer.decouple_course(course.getId(), teacher.getId());
 
                 ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteCourse(coursecode);
+                Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: deleted course %s", SecurityLayer.getUser(request), coursecode));
                 response.sendRedirect("be_listcourses");
+                return;
             }
         }
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
     }
     
     private void action_assigncourse(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -115,8 +125,10 @@ public class BE_Homepage extends WebengineeringBaseController {
             Course  c = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, academic_year);
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).assignCourse(c, t);
             String text = "";
-            if(res)
+            if(res) {
                 text = "ok";
+                Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: assign course %s to teacher %s", SecurityLayer.getUser(request), c.getName(), t.getName()));
+            }
             else
                 text = "Error while assigning course.";
             response.setContentType("text/plain");
@@ -124,6 +136,7 @@ public class BE_Homepage extends WebengineeringBaseController {
             response.getWriter().write(text);
             return;
         }
+        Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("You must be authorized and logged in for this.");

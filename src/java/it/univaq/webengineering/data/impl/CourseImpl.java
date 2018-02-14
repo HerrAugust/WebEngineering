@@ -24,7 +24,7 @@ public class CourseImpl implements Course {
     private List<Teacher> teachers = null;
     private List<Book> books = null;
     
-    private Course module = null;
+    private List<Course> module = null;
     private List<Course> same_as = null;
     private List<Course> preparatory = null;
 
@@ -254,12 +254,12 @@ public class CourseImpl implements Course {
     }
     
     @Override
-    public Course getModule() {
+    public List<Course> getModule() {
         return this.module;
     }
     
     @Override
-    public void setModule(Course s) {
+    public void setModule(List<Course> s) {
         this.module = s;
     }
     
