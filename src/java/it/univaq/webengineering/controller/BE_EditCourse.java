@@ -50,6 +50,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         // Needed to support double language (ita/eng)
         String url = "backend/be_editcoursebase_teacher.ftl.html";
         if(pagenumber == 2) url = "backend/be_editcoursedescription_teacher.ftl.html";
+        if(pagenumber == 3) url = "backend/be_editcourseresources_teacher.ftl.html";
         String switchlang = "ITA";
         int courseid = Integer.parseInt(request.getParameter("courseid"));
         
@@ -66,6 +67,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
             url = "backend/be_editcoursebase_teacher_ita.ftl.html";
             if(pagenumber == 2) url = "backend/be_editcoursedescription_teacher.ftl.html";
+            if(pagenumber == 3) url = "backend/be_editcourseresources_teacher.ftl.html";
             switchlang = "ENG";
         }
         else { 
@@ -73,6 +75,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
             if(user.getLanguage().toLowerCase().equals("ita")) {
                 url = "backend/be_editcoursebase_teacher_ita.ftl.html";
                 if(pagenumber == 2) url = "backend/be_editcoursedescription_teacher_ita.ftl.html";
+                if(pagenumber == 3) url = "backend/be_editcourseresources_teacher_ita.ftl.html";
                 switchlang = "ENG"; 
             }
         }
@@ -85,8 +88,10 @@ public class BE_EditCourse extends WebengineeringBaseController {
         List<Course> coursesByFilters = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCoursesByFilters(null, null, null, super.getCurrentAcademicYear(), null);
         request.setAttribute("courses", coursesByFilters);
         request.setAttribute("course", course);
-        request.setAttribute("textbooks", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTextbooks(courseid));
-        request.setAttribute("resources", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getExternalResources(courseid));
+        if(pagenumber == 3) {
+            request.setAttribute("textbooks", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTextbooks(courseid));
+            request.setAttribute("resources", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getExternalResources(courseid));
+        }
         request.setAttribute("academic_year", super.getCurrentAcademicYear());
         request.setAttribute("switchlang", switchlang);
         request.setAttribute("isAdmin", user.isAdmin());
@@ -332,6 +337,9 @@ public class BE_EditCourse extends WebengineeringBaseController {
             switch(request.getParameter("action")) {
                 case "showBe_EditCourseDescription_teacher":
                     action_default(request, response, 2);
+                    break;
+                case "showBe_EditCourseResources_teacher":
+                    action_default(request, response, 3);
                     break;
                 case "textbook":
                     action_savetextbook(request, response);
