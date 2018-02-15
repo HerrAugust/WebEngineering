@@ -11,6 +11,7 @@
 
     <h3 class="subtitle">Insert the <b>basic information:</b></h3>
     <form id="form_adduser" class="subtitle moreabove" method="post" action="be_editcourse?action=coursebase">
+        <input type="hidden" name="courseid" value="${course.id}"/>
         <input type="hidden" name="coursecode" value="${course.code}"/>
         <div class="form-group">
             <label for="ssd">SSD:</label>

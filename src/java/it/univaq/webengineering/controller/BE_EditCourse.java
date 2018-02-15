@@ -28,6 +28,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import it.univaq.webengineering.data.impl.WebengineeringDataLayerMysqlImpl;
 import java.util.Enumeration;
+import java.util.Iterator;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 @MultipartConfig
 public class BE_EditCourse extends WebengineeringBaseController {
@@ -48,16 +51,11 @@ public class BE_EditCourse extends WebengineeringBaseController {
         String url = "backend/be_editcoursebase_teacher.ftl.html";
         if(pagenumber == 2) url = "backend/be_editcoursedescription_teacher.ftl.html";
         String switchlang = "ITA";
-        String coursecode = request.getParameter("coursecode");
+        int courseid = Integer.parseInt(request.getParameter("courseid"));
         
         if(SecurityLayer.checkSession(request) == null) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
             request.setAttribute("message", "You must be logged in!");
-            action_error(request, response);
-            return;
-        }
-        if(coursecode == null || coursecode.equals("")) {
-            request.setAttribute("message", "Course code is null!");
             action_error(request, response);
             return;
         }
@@ -79,13 +77,16 @@ public class BE_EditCourse extends WebengineeringBaseController {
             }
         }
         
-        Course course = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, super.getCurrentAcademicYear());
+        response.setCharacterEncoding("UTF-8");
+        Course course = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(courseid);
         course.setModule(((WebengineeringDataLayer)request.getAttribute("datalayer")).getModule(course));
         course.setPreparatory(((WebengineeringDataLayer)request.getAttribute("datalayer")).getPreparatory(course));
         course.setSame_as(((WebengineeringDataLayer)request.getAttribute("datalayer")).getSame_as(course));
         List<Course> coursesByFilters = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCoursesByFilters(null, null, null, super.getCurrentAcademicYear(), null);
         request.setAttribute("courses", coursesByFilters);
         request.setAttribute("course", course);
+        request.setAttribute("textbooks", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTextbooks(courseid));
+        request.setAttribute("resources", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getExternalResources(courseid));
         request.setAttribute("academic_year", super.getCurrentAcademicYear());
         request.setAttribute("switchlang", switchlang);
         request.setAttribute("isAdmin", user.isAdmin());
@@ -140,7 +141,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: error while saving base info of course %s", SecurityLayer.getUser(request), t.getName()));
             }
                 
-            response.sendRedirect("be_editcourse?action=showBe_EditCourseDescription_teacher&coursecode="+coursecode);
+            response.sendRedirect("be_editcourse?action=showBe_EditCourseDescription_teacher&courseid="+courseid);
             return;
         }
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
@@ -150,6 +151,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
     }
     
     private void action_savedescription(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        request.setCharacterEncoding("UTF-8");
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
         
         HttpSession session = SecurityLayer.checkSession(request);
@@ -161,10 +163,12 @@ public class BE_EditCourse extends WebengineeringBaseController {
             String teaching_method = request.getParameter("teaching_method");
             String notes = request.getParameter("notes");
             String syllabus = request.getParameter("syllabus");
+            String homepage = request.getParameter("homepage");
+            String forum = request.getParameter("forum");
             String prerequisites_ita = SecurityLayer.canonizeItalian(request.getParameter("prerequisites_ita"));
             String learning_outcomes_ita = SecurityLayer.canonizeItalian(request.getParameter("learning_outcomes_ita"));
             String assessment_method_ita = SecurityLayer.canonizeItalian(request.getParameter("assessment_method_ita"));
-            String teaching_method_ita = SecurityLayer.canonizeItalian(request.getParameter("te-aching_method_ita"));
+            String teaching_method_ita = SecurityLayer.canonizeItalian(request.getParameter("teaching_method_ita"));
             String notes_ita = SecurityLayer.canonizeItalian(request.getParameter("notes_ita"));
             String syllabus_ita = SecurityLayer.canonizeItalian(request.getParameter("syllabus_ita"));
             int courseid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, super.getCurrentAcademicYear()).getId();
@@ -225,6 +229,8 @@ public class BE_EditCourse extends WebengineeringBaseController {
             t.setTeaching_method_ita(teaching_method_ita);
             t.setNotes_ita(notes_ita);
             t.setSyllabus_ita(syllabus_ita);
+            t.setForum(forum);
+            t.setHomepage(homepage);
             
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).updateCourseDescription(t);
             String text = "ok";
@@ -245,7 +251,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: saved description of course %s", SecurityLayer.getUser(request), t.getName()));
                 // request.sendredirect() doesn't work while using AJAX
                 response.setContentType("text/plain");
-                response.getWriter().write("fe_courses?action=coursedetails&id=" + courseid);
+                response.getWriter().write(text);
             }
             else {
                 request.setAttribute("message", text);
@@ -280,6 +286,36 @@ public class BE_EditCourse extends WebengineeringBaseController {
         request.setAttribute("message", "You must be logged!");
         action_error(request, response);
     }
+    
+    private void action_savetextbook(HttpServletRequest request, HttpServletResponse response) {
+        int courseid = Integer.parseInt(request.getParameter("courseid"));
+        String title = request.getParameter("inputtexttitle");
+        String volume = request.getParameter("inputtextvolume");
+        String author = request.getParameter("inputtextauthor");
+        String publisher = request.getParameter("inputtextpublisher");
+        String weblink = request.getParameter("inputtexturl");
+        String temp = request.getParameter("inputtextyear");
+        int year = 0;
+        if(temp != null && !temp.equals(""))
+            year = Integer.parseInt(temp);
+        String inputtextid = request.getParameter("inputtextid");
+        if(inputtextid != null)
+            ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteTextbook(courseid, Integer.parseInt(inputtextid));
+        
+        ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertTextbook(courseid, author, title, volume, publisher, weblink, year);
+    }
+
+    private void action_saveexternal_resource(HttpServletRequest request, HttpServletResponse response) {
+        int courseid = Integer.parseInt(request.getParameter("courseid"));
+        String name = request.getParameter("inputresourcename");
+        String description = request.getParameter("inputresourcedescription");
+        String weblink = request.getParameter("inputresourceweblink");
+        String inputresourceid = request.getParameter("inputresourceid");
+        if(inputresourceid != null)
+            ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteExternalResource(courseid, Integer.parseInt(inputresourceid));
+        
+        ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertExternalResource(courseid, name, description, weblink);
+    }
 
     @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -296,6 +332,12 @@ public class BE_EditCourse extends WebengineeringBaseController {
             switch(request.getParameter("action")) {
                 case "showBe_EditCourseDescription_teacher":
                     action_default(request, response, 2);
+                    break;
+                case "textbook":
+                    action_savetextbook(request, response);
+                    break;
+                case "external_resource":
+                    action_saveexternal_resource(request, response);
                     break;
                 case "coursedescription":
                     action_savedescription(request, response);

@@ -15,30 +15,31 @@
         <div class="left percent50">
             <h3 class="subtitle"><b>Course description and notes:</b></h3>
             <form id="left" class="subtitle moreabove">
-                <input type="hidden" name="coursecode" value="${course.code}"/>
+                <input type="hidden" name="courseid" id="courseid" value="${course.id}"/>
+                <input type="hidden" name="coursecode" id="coursecode" value="${course.code}"/>
                 <div class="form-group">
                     <label for="prerequisites">Prerequisites:</label>
-                    <textarea rows="25"class="form-control" name="prerequisites">${course.prerequisites}</textarea>
+                    <textarea rows="25" class="form-control" name="prerequisites">${course.prerequisites}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="learning_outcomes">Learning outcomes:</label>
-                    <textarea rows="25"class="form-control" name="learning_outcomes">${course.learning_outcomes}</textarea>
+                    <textarea rows="25" class="form-control" name="learning_outcomes">${course.learning_outcomes}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="assessment_method">Assessment method:</label>
-                    <textarea rows="25"class="form-control" name="assessment_method">${course.assessment_method}</textarea>
+                    <textarea rows="25" class="form-control" name="assessment_method">${course.assessment_method}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="teaching_method">Teaching method:</label>
-                    <textarea rows="25"class="form-control" name="teaching_method">${course.teaching_method}</textarea>
+                    <textarea rows="25" class="form-control" name="teaching_method">${course.teaching_method}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="notes">Notes:</label>
-                    <textarea rows="25"class="form-control" name="notes">${course.notes}</textarea>
+                    <textarea rows="25" class="form-control" name="notes">${course.notes}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="syllabus">Syllabus: </label>
-                    <textarea rows="25"class="form-control" name="syllabus">${course.syllabus}</textarea>
+                    <textarea rows="25" class="form-control" name="syllabus">${course.syllabus}</textarea>
                 </div>
             </form>
         </div>
@@ -47,94 +48,117 @@
             <form id="right" class="subtitle moreabove">
                 <div class="form-group">
                     <label for="prerequisites_ita">Prerequisiti:</label>
-                    <textarea rows="25"class="form-control" name="prerequisites_ita">${course.prerequisites_ita}</textarea>
+                    <textarea rows="25" class="form-control" name="prerequisites_ita">${course.prerequisites_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="learning_outcomes_ita">Risultati del corso:</label>
-                    <textarea rows="25"class="form-control" name="learning_outcomes_ita">${course.learning_outcomes_ita}</textarea>
+                    <textarea rows="25" class="form-control" name="learning_outcomes_ita">${course.learning_outcomes_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="assessment_method_ita">Modalit&agrave; d'esame:</label>
-                    <textarea rows="25"class="form-control" name="assessment_method_ita">${course.assessment_method_ita}</textarea>
+                    <textarea rows="25" class="form-control" name="assessment_method_ita">${course.assessment_method_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="teaching_method_ita">Modalit&agrave; d'insegnamento:</label>
-                    <textarea rows="25"class="form-control" name="teaching_method_ita">${course.teaching_method_ita}</textarea>
+                    <textarea rows="25" class="form-control" name="teaching_method_ita">${course.teaching_method_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="notes_ita">Note:</label>
-                    <textarea rows="25"class="form-control" name="notes_ita">${course.notes_ita}</textarea>
+                    <textarea rows="25" class="form-control" name="notes_ita">${course.notes_ita}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="syllabus_ita">Sillabo: </label>
-                    <textarea rows="25"class="form-control" name="syllabus_ita">${course.syllabus_ita}</textarea>
+                    <textarea rows="25" class="form-control" name="syllabus_ita">${course.syllabus_ita}</textarea>
                 </div>
             </form>
         </div>
     </div>
     
-    <div>
-        <h3 class="subtitle"><b>Textbooks, external links and images</b></h3>
-        <form class="subtitle moreabove">
-            <div id="textbooks">
-                <h4>Textbooks</h4>
-                <div id="textbook">
-                    <h5>Textbook #1</h5>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="inputtextauthor">Author: </label>
-                            <input type="text" class="form-control" id="inputtextauthor" name="inputtextauthor" placeholder="Author's name">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="inputtextpublisher">Publisher: </label>
-                            <input type="text" class="form-control" id="inputtextpublisher" name="inputtextpublisher" placeholder="Publisher">
-                        </div>
+    <div class="subtitle">
+        <div>
+            <h3><b>Textbooks, external links and images</b></h3>
+            <h4>Textbooks</h4>
+            <#list textbooks as textbook>
+            <form id="formtextbook${textbook?index+1}"  method="post" action="be_editcourse?action=textbook">
+                <h5>Textbook #1</h5>
+                <input type="hidden" name="courseid" value="${course.id}"/>
+                <input type="hidden" name="inputtextid" value="${textbook.id}"/>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputtextauthor">Author: </label>
+                        <input type="text" value="${textbook.author}" class="form-control" name="inputtextauthor" placeholder="Author's name">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-2">
-                            <label for="inputtextvolume">Volume: </label>
-                            <input type="text" class="form-control" id="inputtextvolume" name="inputtextvolume" placeholder="Vol. 1">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="inputtextyear">Year: </label>
-                            <input type="number" class="form-control" id="inputtextyear" name="inputtextyear" placeholder="2017">
-                        </div>
-                        <div class="form-group col-md-8">
-                            <label for="inputtexturl">Website: </label>
-                            <input type="url" class="form-control" id="inputtexturl" name="inputtexturl" placeholder="http://www.example.com">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="inputtexttitle">Title: </label>
-                            <input type="text" class="form-control" id="inputtexttitle" name="inputtexttitle" placeholder="Title of book">
-                        </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputtextpublisher">Publisher: </label>
+                        <input type="text" value="${textbook.publisher}" class="form-control" name="inputtextpublisher" placeholder="Publisher">
                     </div>
                 </div>
-                <button type='button' id="button_add_book" class="morebelow btn btn-info">Add another textbook</button>
-            </div>
-            
-            <div id="resources" class="morebelow">
-                <h4>External resources</h4>
-                <div id="resource">
-                    <h5>Resource #1</h5>
-                    <div class="form-row">
-                        <label for="inputresourcename">Resource name: </label>
-                        <input type="text" class="form-control" name="inputresourcename" id="inputresourcename" placeholder="Summary of lecture 1" />
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label for="inputtextvolume">Volume: </label>
+                        <input type="text" value="${textbook.volume}" class="form-control" name="inputtextvolume" placeholder="Vol. 1">
                     </div>
-                    <div class="form-row">
-                        <label for="inputresourcedescription">Resource description: </label>
-                        <input type="text" class="form-control" name="inputresourcedescription" id="inputdescription" placeholder="Description" />
+                    <div class="form-group col-md-2">
+                        <label for="inputtextyear">Year: </label>
+                        <input type="number" value="${textbook.year}" class="form-control" name="inputtextyear" placeholder="2017">
                     </div>
-                    <div class="form-row">
-                        <label for="inputresourceweblink">Weblink: </label><br/>
-                        <input type="text" class="form-control" name="inputresourceweblink" id="inputweblink" placeholder="http://www.example.com" />
+                    <div class="form-group col-md-8">
+                        <label for="inputtexturl">Website: </label>
+                        <input type="url" class="form-control" name="inputtexturl" placeholder="http://www.example.com">
                     </div>
                 </div>
-                <button type='button' id="button_add_resource" class="morebelow btn btn-info">Add another resource</button>
-            </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="inputtexttitle">Title: </label>
+                        <input type="text" required value="${textbook.title}" class="form-control" name="inputtexttitle" placeholder="Title of book">
+                    </div>
+                </div>
+            </form>
+            </#list>
+            <button type='button' id="button_add_book" class="morebelow btn btn-info">Add another textbook</button>
+        </div>
             
-            <div id="images" class="morebelow">
+        <div class="morebelow">
+            <h4>External resources</h4>
+            <#list resources as resource>
+            <form id="formresource${resource?index+1}" method="post" action="be_editcourse?action=external_resource">
+                <h5>Resource #1</h5>
+                <input type="hidden" name="courseid" value="${course.id}"/>
+                <input type="hidden" name="inputresourceid" value="${resource.id}"/>
+                <div class="form-row">
+                    <label for="inputresourcename">Resource name: </label>
+                    <input type="text" required  value="${resource.name}" class="form-control" name="inputresourcename" placeholder="Summary of lecture 1" />
+                </div>
+                <div class="form-row">
+                    <label for="inputresourcedescription">Resource description: </label>
+                    <input type="text"  value="${resource.description}" class="form-control" name="inputresourcedescription" placeholder="Description" />
+                </div>
+                <div class="form-row">
+                    <label for="inputresourceweblink">Weblink: </label><br/>
+                    <input type="text" value="${resource.weblink}" class="form-control" name="inputresourceweblink"  placeholder="http://www.example.com" />
+                </div>
+            </form>
+            </#list>
+            <button type='button' id="button_add_resource" class="morebelow btn btn-info">Add another resource</button>
+        </div>
+        
+        <div class="morebelow">
+            <h4>Official resources</h4>
+            <form id="formofficialresources">
+                <div class="form-row">
+                    <label for="homepage">Course homepage: </label>
+                    <input type="url" class="form-control" name="homepage" id="homepage" placeholder="http://univaq.it/mycourse.html" />
+                </div>
+                <div class="form-row">
+                    <label for="forum">Course forum&frasl;e-learning: </label>
+                    <input type="url" class="form-control" name="forum" id="forum" placeholder="http://univaq.it/mycourse.html" />
+                </div>
+            </form>
+        </div>
+        
+            
+        <form id="form_images">
+            <div class="morebelow">
                 <h4>Images</h4>
                 <div class="form-group">
                     <label for="images">Course images: </label><br/>
@@ -154,6 +178,21 @@
 
 <#macro script>
 <!-- This page must work with only a minimum of JS -->
+/*function Textbook(author, title, volume, year, publisher, weblink) {
+    this.author = author;
+    this.title = title;
+    this.volume = volume;
+    this.year = year;
+    this.publisher = publisher;
+    this.weblink = weblink;
+}
+
+function ExternalResource(name, description, weblink) {
+    this.name = name;
+    this.description = description;
+    this.weblink = weblink;
+}*/
+
 $(document).ready(function(){
     let alert = $('#alert');
 
@@ -176,11 +215,65 @@ $(document).ready(function(){
         else {
             alert.addClass("hidden");
         }
+        
+        window.scrollTo(0,0);
     }
     
     $('#button_back').click(function(e) {
         history.go(-1);
     });
+    
+    function isURL(textval) {
+        var urlregex = /^(https?|ftp):\/\/([a-zA-Z0-9.-]+(:[a-zA-Z0-9.&%$-]+)*@)*((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(:[0-9]+)*(\/($|[a-zA-Z0-9.,?'\\+&%$#=~_-]+))*$/;
+        return urlregex.test(textval);
+    }
+    
+    function sendExternalResources(){
+        // Check on textbooks and ERs. Texbooks require at least title and author; ERs name and weblink
+        let toComplete = false;
+        for(let i = 1; i <= book_no; i++) {
+            let title = $('#formtextbook'+i).children().find('input[name="inputtexttitle"]').get(0).value;
+            let author = $('#formtextbook'+i).children().find('input[name="inputtextauthor"]').get(0).value;
+            if(title == "" || author == "") {
+                showAlert('Please define for each <b>textbook</b> at least <b>author and title</b>', 'red', true);
+                toComplete = true;
+                break;
+            }
+        }
+        
+        if(!toComplete) {
+            for(let i = 1; i <= resource_no; i++) {
+                let weblink = $('#formresource'+i).children().find('input[name="inputresourceweblink"]').get(0).value;
+                let name = $('#formresource'+i).children().find('input[name="inputresourcename"]').get(0).value;
+                if(weblink == "" || name == "" || !isURL(weblink)) {
+                    showAlert('Please define for each <b>resource</b> at least <b>name and weblink</b>', 'red', true);
+                    toComplete = true;
+                    break;
+                }
+            }
+        }
+    
+        if(!toComplete) {
+            // Textbooks
+            for(let i = 1; i <= book_no; i++) {
+                $('#formtextbook'+i).get(0).submit();
+            }
+
+            // External resources
+            for(let i = 1; i <= resource_no; i++){
+                $('#formresource'+i).get(0).submit();
+            }
+            
+            let courseid = $('#courseid').val();
+            window.location = "fe_courses?action=coursedetails&id=" + courseid;
+        }
+        
+        // if there are no resources and no textbooks to process, change location
+        if(resource_no == 1 && book_no == 1) {
+            let courseid = $('#courseid').val();
+            window.location = "fe_courses?action=coursedetails&id=" + courseid;
+        }
+    }
     
     // I doubt this is achievable without JS
     $('#button_submit').click(function(e) {
@@ -196,6 +289,9 @@ $(document).ready(function(){
         formdata.append('teaching_method_ita', $('textarea[name=teaching_method_ita]')[0].value);
         formdata.append('notes_ita',$('textarea[name=notes_ita]')[0].value);
         formdata.append('syllabus_ita',$('textarea[name=syllabus_ita]')[0].value);
+        // homepage, forum
+        formdata.append('homepage', $('#homepage').val());
+        formdata.append('forum', $('#forum').val());
         var _URL = window.URL || window.webkitURL; // necessary for images check
         jQuery.each($('#images').get(0).files, function(i, file) {
             // check: images width = height
@@ -237,12 +333,14 @@ $(document).ready(function(){
             showAlert(res, 'red', true);
         })
         .done(function(loc) {
-            window.location = loc;
+            sendExternalResources();
         });
     });
     
     $('#button_add_book').click(function(e) {
-    let html2 = "<div><h5>Textbook #" + book_no + "</h5>  \
+    book_no = book_no + 1;
+    let html2 = "<form  method=\"post\" action=\"be_editcourse?action=textbook\" id=\"formtextbook"+ book_no +"\"><h5>Textbook #" + book_no + "</h5>  \
+                    <input type=\"hidden\" name=\"courseid\" value=\"${course.id}\"/> \
                     <div class=\"form-row\">  \
                         <div class=\"form-group col-md-6\">  \
                             <label for=\"inputtextauthor\">Author: </label>  \
@@ -270,19 +368,21 @@ $(document).ready(function(){
                     <div class=\"form-row\">  \
                         <div class=\"form-group col-md-12\">  \
                             <label for=\"inputtexttitle\">Title: </label>  \
-                            <input type=\"text\" class=\"form-control\" id=\"inputtexttitle\" name=\"inputtexttitle\" placeholder=\"Title of book\">  \
+                            <input required type=\"text\" class=\"form-control\" id=\"inputtexttitle\" name=\"inputtexttitle\" placeholder=\"Title of book\">  \
                         </div>  \
                     </div>  \
-                </div>";
+                </form>";
         $(this).parent().children().last().before($.parseHTML(html2)[0]);
-        book_no = book_no + 1;
+        
     });
     
     $('#button_add_resource').click(function(e) {
-            let html1 = "<div><h5>Resource #" + resource_no + "</h5>   \
+            resource_no = resource_no + 1;
+            let html1 = "<form method=\"post\" action=\"be_editcourse?action=external_resource\" id=\"formresource"+ resource_no +"\"><h5>Resource #" + resource_no + "</h5>   \
+                    <input type=\"hidden\" name=\"courseid\" value=\"${course.id}\"/> \
                     <div class=\"form-row\">  \
                         <label for=\"inputresourcename\">Resource name: </label>  \
-                        <input type=\"text\" class=\"form-control\" name=\"inputresourcename\" id=\"inputresourcename\" placeholder=\"Summary of lecture 1\" />  \
+                        <input required type=\"text\" class=\"form-control\" name=\"inputresourcename\" id=\"inputresourcename\" placeholder=\"Summary of lecture 1\" />  \
                     </div> \
                     <div class=\"form-row\">  \
                         <label for=\"inputresourcedescription\">Resource description: </label>  \
@@ -292,13 +392,13 @@ $(document).ready(function(){
                         <label for=\"inputresourceweblink\">Weblink: </label><br/>  \
                         <input type=\"text\" class=\"form-control\" name=\"inputresourceweblink\" id=\"inputweblink\" placeholder=\"http://www.example.com\" />  \
                     </div>  \
-                </div>";
+                </form>";
         $(this).parent().children().last().before($.parseHTML(html1)[0]);
-        resource_no = resource_no + 1;
+        
     });
 
-    var resource_no = 2;
-    var book_no = 2;
+    var resource_no = 1;
+    var book_no = 1;
 });
 </#macro>
 

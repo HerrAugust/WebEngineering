@@ -32,7 +32,7 @@
               <td>${course.academic_year}</td>
               <td>
                   <ul class="ul_no_dots">
-                      <#if course.academic_year == current_academic_year><li><a href="be_editcourse?coursecode=${course.code!"none"}"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a></li></#if>
+                      <#if course.academic_year == current_academic_year><li><a href="be_editcourse?courseid=${course.id}"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a></li></#if>
                       <li><a href="fe_courses?action=details_course&coursecode=${course.code}"><i class="fa fa-trash-o" aria-hidden="true"></i> Show details</a></li>
                   </ul>
               </td>

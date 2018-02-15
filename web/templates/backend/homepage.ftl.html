@@ -45,7 +45,7 @@
               <td>
                   <ul class="ul_no_dots">
                       <li><i class="fa fa-eye" aria-hidden="true"></i> <a href="fe_courses?action=details_course&coursecode=${course.code}&academic_year=${course.academic_year}">Show</a></li>
-                      <#if course.academic_year == current_academic_year><li><i class="fa fa-pencil" aria-hidden="true"></i> <a href="be_editcourse?coursecode=${course.code!"none"}">Edit</a></li></#if>
+                      <#if course.academic_year == current_academic_year><li><i class="fa fa-pencil" aria-hidden="true"></i> <a href="be_editcourse?courseid=${course.id}">Edit</a></li></#if>
                       <li><i class="fa fa-trash-o" aria-hidden="true"></i> <a href="deletecourse?action=deletecourse&coursecode=${course.code!"none"}">Delete</a></a></li>
                   </ul>
               </td>

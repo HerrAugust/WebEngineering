@@ -4,6 +4,7 @@ import it.univaq.webengineering.data.model.Book;
 import it.univaq.webengineering.data.model.Teacher;
 import it.univaq.webengineering.framework.data.DataLayerException;
 import it.univaq.webengineering.data.model.Course;
+import it.univaq.webengineering.data.model.ExternalResource;
 import it.univaq.webengineering.data.model.Image;
 import java.io.InputStream;
 import java.sql.PreparedStatement;
@@ -68,6 +69,15 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     private PreparedStatement iSame_as;
     private PreparedStatement iModule;
     private PreparedStatement iPreparatory;
+    private PreparedStatement iExternalResource;
+    private PreparedStatement iSupport;
+    private PreparedStatement iUses;
+    private PreparedStatement iTextbook;
+    private PreparedStatement sExternalResourcesByCourse;
+    private PreparedStatement dExternalResource;
+    private PreparedStatement dTextbook;
+    private PreparedStatement dUses;
+    private PreparedStatement dSupport;
 
     public WebengineeringDataLayerMysqlImpl(DataSource datasource) throws SQLException, NamingException {
         super(datasource);
@@ -98,6 +108,8 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             sImage = connection.prepareStatement("SELECT * FROM image WHERE id = ?");
             sImageByTeacher = connection.prepareStatement("SELECT image.* FROM teacher JOIN image ON teacher.photo = image.id WHERE teacher.id = ?");
             sImagesByCourse = connection.prepareStatement("SELECT image.* FROM image JOIN course ON image.course_id = course.id WHERE course.id = ?");
+            sBooksByCourse = connection.prepareStatement("SELECT book.* FROM uses JOIN book ON book.id = uses.book_id WHERE uses.course_id = ?");
+            sExternalResourcesByCourse = connection.prepareStatement("SELECT external_resource.* FROM support JOIN external_resource ON external_resource.id = support.external_resource_id WHERE support.course_id = ?");
             
             iTeacher = connection.prepareStatement("INSERT INTO teacher(name, lastname, language, type, email, password) VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             iCourse = connection.prepareStatement("INSERT INTO course(code, name, academic_year) VALUES(?,?,?)", Statement.RETURN_GENERATED_KEYS);
@@ -106,6 +118,10 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             iModule = connection.prepareStatement("INSERT INTO module(course_id, module_course_id) VALUE(?,?)");
             iSame_as = connection.prepareStatement("INSERT INTO same_as(course_id, same_as_course_id) VALUE(?,?)");
             iPreparatory = connection.prepareStatement("INSERT INTO preparatory(course_id, requires) VALUE(?,?)");
+            iExternalResource = connection.prepareStatement("INSERT INTO external_resource(name, description, weblink) VALUE(?,?,?)", Statement.RETURN_GENERATED_KEYS);
+            iSupport = connection.prepareStatement("INSERT INTO support(course_id, external_resource_id) VALUE(?,?)");
+            iUses = connection.prepareStatement("INSERT INTO uses(course_id, book_id) VALUE(?,?)");
+            iTextbook = connection.prepareStatement("INSERT INTO book(author, title, volume, year, publisher, weblink) VALUE(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
                    
             dTeacher = connection.prepareStatement("DELETE FROM teacher WHERE id=?");
             dCourse = connection.prepareStatement("DELETE FROM course WHERE code=?");
@@ -115,11 +131,15 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             dModule = connection.prepareStatement("DELETE FROM module WHERE course_id = ? OR module_course_id = ?");
             dPreparatory = connection.prepareStatement("DELETE FROM preparatory WHERE course_id = ? OR preparatory_course_id = ?");
             dSame_as = connection.prepareStatement("DELETE FROM same_as WHERE course_id = ? OR same_as_course_id = ?");
+            dExternalResource = connection.prepareStatement("DELETE FROM external_resource WHERE id=?");
+            dTextbook = connection.prepareStatement("DELETE FROM book WHERE id=?");
+            dUses = connection.prepareStatement("DELETE FROM uses WHERE course_id=? AND book_id =?");
+            dSupport = connection.prepareStatement("DELETE FROM support WHERE course_id=? AND external_resource_id =?");
             
             uTeacher = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, photo=?, type=? WHERE id=?");
             uTeacher_withPassword = connection.prepareStatement("UPDATE teacher SET name=?,lastname=?,language=?,email=?, password=?,photo=?,type=? WHERE id=?");
             uCourseBasicInfo = connection.prepareStatement("UPDATE course SET ssd=?,language=?,semester=? WHERE id=?");
-            uCourseDescription = connection.prepareStatement("UPDATE course SET prerequisites=?,learning_outcomes=?,assessment_method=?,teaching_method=?,notes=?,prerequisites_ita=?,learning_outcomes_ita=?,assessment_method_ita=?,teaching_method_ita=?,notes_ita=?,syllabus=?,syllabus_ita=? WHERE id=?");
+            uCourseDescription = connection.prepareStatement("UPDATE course SET prerequisites=?,learning_outcomes=?,assessment_method=?,teaching_method=?,notes=?,prerequisites_ita=?,learning_outcomes_ita=?,assessment_method_ita=?,teaching_method_ita=?,notes_ita=?,syllabus=?,syllabus_ita=?,homepage=?,forum=? WHERE id=?");
 
             //iArticle = connection.prepareStatement("INSERT INTO article (title,text,authorID,issueID,page) VALUES(?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 
@@ -535,7 +555,9 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             uCourseDescription.setString(10, c.getNotes_ita());
             uCourseDescription.setString(11, c.getSyllabus());
             uCourseDescription.setString(12, c.getSyllabus_ita());
-            uCourseDescription.setInt(13, c.getId());
+            uCourseDescription.setString(13, c.getHomepage());
+            uCourseDescription.setString(14, c.getForum());
+            uCourseDescription.setInt(15, c.getId());
             uCourseDescription.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -597,6 +619,19 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             r.setPublisher(rs.getString("publisher"));
             r.setTitle(rs.getString("title"));
             r.setVolume(rs.getString("volume"));
+            r.setWeblink(rs.getString("weblink"));
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return r;
+    }
+    
+    public ExternalResource createExternalResource(ResultSet rs) {
+        ExternalResourceImpl r = new ExternalResourceImpl(this);;
+        try {
+            r.setId(rs.getInt("id"));
+            r.setDescription(rs.getString("description"));
+            r.setName(rs.getString("name"));
             r.setWeblink(rs.getString("weblink"));
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -872,6 +907,117 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             iPreparatory.setInt(1, courseid);
             iPreparatory.setInt(2, other);
             iPreparatory.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void insertTextbook(int courseid, String author, String title, String volume, String publisher, String weblink, int year) {
+        try {
+            iTextbook.setString(1, author);
+            iTextbook.setString(2, title);
+            iTextbook.setString(3, volume);
+            iTextbook.setInt(4, year);
+            iTextbook.setString(5, publisher);
+            iTextbook.setString(6, weblink);
+            iTextbook.executeUpdate();
+            
+            // get id
+            ResultSet rs = iTextbook.getGeneratedKeys();
+            int bookid = 0;
+            if (rs.next()) {
+                bookid = (int) rs.getLong(1);
+            }
+            
+            iUses.setInt(1, courseid);
+            iUses.setInt(2, bookid);
+            iUses.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void insertExternalResource(int courseid, String name, String description, String weblink) {
+        try {
+            iExternalResource.setString(1, name);
+            iExternalResource.setString(2, description);
+            iExternalResource.setString(3, weblink);
+            iExternalResource.executeUpdate();
+            
+            // get id
+            ResultSet rs = iExternalResource.getGeneratedKeys();
+            int erid = 0;
+            if (rs.next()) {
+                erid = (int) rs.getLong(1);
+            }
+            
+            iSupport.setInt(1, courseid);
+            iSupport.setInt(2, erid);
+            iSupport.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public List<Book> getTextbooks(int courseid) {
+        List<Book> books = new LinkedList<>();
+        try {
+            sBooksByCourse.setInt(1,courseid);
+            try (ResultSet rs = sBooksByCourse.executeQuery()) {
+                while (rs.next()) {
+                     books.add(createBook(rs));
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return books;
+    }
+
+    @Override
+    public List<ExternalResource> getExternalResources(int courseid) {
+        List<ExternalResource> ers = new LinkedList<>();
+        try {
+            sExternalResourcesByCourse.setInt(1,courseid);
+            try (ResultSet rs = sExternalResourcesByCourse.executeQuery()) {
+                while (rs.next()) {
+                     ers.add(createExternalResource(rs));
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return ers;
+    }
+
+    @Override
+    public void deleteTextbook(int courseid, int id) {
+        try {
+            dUses.setInt(1,courseid);
+            dUses.setInt(2,id);
+            dUses.executeUpdate();
+            
+            dTextbook.setInt(1, id);
+            dTextbook.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void deleteExternalResource(int courseid, int id) {
+        try {
+            dSupport.setInt(1,courseid);
+            dSupport.setInt(2,id);
+            dSupport.executeUpdate();
+            
+            dExternalResource.setInt(1, id);
+            dExternalResource.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
