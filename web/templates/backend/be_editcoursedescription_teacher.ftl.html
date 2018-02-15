@@ -7,9 +7,11 @@
         <p class="subtitle">Academic Year: Current (${academic_year})</p>
 
         <div id="alert" class="alert alert-danger hidden" role="alert">
-          <#if message??>
-          ${message}
-          </#if>
+            ${message!""}
+        </div>
+
+        <div class="subtitle alert alert-info" role="alert">
+            Warning: <b>This page</b> requires <b>JavaScript</b>!
         </div>
     
         <div class="left percent50">

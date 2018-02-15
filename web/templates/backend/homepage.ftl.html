@@ -5,7 +5,11 @@
     <h2 class="subtitle">Courses</h2>
 
     <div id="alert" class="alert alert-danger hidden" role="alert">
-      Nothing to show
+      ${message!""}
+    </div>
+    
+    <div class="subtitle alert alert-info" role="alert">
+        Warning: <b>Assigning a teacher</b> requires <b>JavaScript</b>!
     </div>
 
     <#if courses??>

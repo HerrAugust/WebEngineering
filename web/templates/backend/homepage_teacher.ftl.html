@@ -8,7 +8,11 @@
     </div>
 
     <div id="alert" class="alert alert-danger hidden" role="alert">
-      Nothing to show
+      ${message!""}
+    </div>
+    
+    <div class="subtitle alert alert-info" role="alert">
+        Warning: <b>Search</b> requires <b>JavaScript</b>!
     </div>
 
     <#if courses?? && courses?size != 0>
@@ -42,7 +46,7 @@
       </tbody>
     </table>
     <#else>
-    <div class="alert alert-info" role="alert">
+    <div class="morebelow subtitle alert alert-info" role="alert">
         No course entered yet
     </div>
     </#if>

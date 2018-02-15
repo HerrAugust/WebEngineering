@@ -153,6 +153,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             sTeacherByEmail.setString(1, email);
             if(!sTeacherByEmail.executeQuery().next())
                 return false;
+            sTeacherByEmail.close();
         }catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -169,6 +170,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             iTeacher.setString(5, t.getEmail());
             iTeacher.setString(6, t.getPassword());
             iTeacher.executeUpdate();
+            iTeacher.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -181,6 +183,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         try {
             dTeacher.setInt(1, id);
             dTeacher.executeUpdate();
+            dTeacher.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -214,6 +217,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     return createTeacher(rs);
                 }
             }
+            sTeacherByEmailPassword.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -229,6 +233,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     return createTeacher(rs);
                 }
             }
+            sTeacherByEmail.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -244,6 +249,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     return createTeacher(rs);
                 }
             }
+            sTeacherByID.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -259,6 +265,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                      teachers.add(getTeacher(rs.getInt("id")));
                 }
             }
+            sTeachers.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -275,6 +282,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                      teachers.add(getTeacher(rs.getInt("id")));
                 }
             }
+            sTeachersByCourse.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -296,6 +304,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                 uTeacher.setString(6, t.getType());
                 uTeacher.setInt(7, t.getId());
                 uTeacher.executeUpdate();
+                uTeacher.close();
             }
             else {
                 uTeacher_withPassword.setString(1, t.getName());
@@ -310,6 +319,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                 uTeacher_withPassword.setString(7, t.getType());
                 uTeacher_withPassword.setInt(8, t.getId());
                 uTeacher_withPassword.executeUpdate();
+                uTeacher_withPassword.close();
             }
             
         } catch (SQLException ex) {
@@ -327,6 +337,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             iCourseTeacher.setInt(2, teacher.getId());
             dCourseTeacher.executeUpdate();
             iCourseTeacher.executeUpdate();
+            iCourseTeacher.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -371,6 +382,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         try {
             dCourse.setString(1, code);
             dCourse.executeUpdate();
+            dCourse.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -383,6 +395,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             sCourseByCodeAndName.setString(2, c.getName());
             if(!sCourseByCodeAndName.executeQuery().next())
                 return false;
+            sCourseByCodeAndName.close();
         }catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -399,6 +412,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     courses.add(createCourse(rs));
                 }
             }
+            sCoursesByCode.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -414,6 +428,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     return createCourse(rs);
                 }
             }
+            sCourseByID.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -430,6 +445,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                         courses.add(getCourse(rs.getInt("id")));
                     }
                 }
+                sCourses.close();
                 
                 // Order courses alfabetically
                 courses.sort(Comparator.comparing(Course::getName));
@@ -445,6 +461,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                         c.setTeachers(teachers);
                     }
                 }
+                sTeacherByCourse.close();
                 
             }
             else {
@@ -454,6 +471,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                         courses.add(getCourse(rs.getInt("id")));
                     }
                 }
+                sCoursesOfTeacher.close();
             }
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -516,6 +534,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             iCourse.setString(2, c.getName());
             iCourse.setString(3, c.getAcademic_year());
             iCourse.executeUpdate();
+            iCourse.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -532,6 +551,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             uCourseBasicInfo.setInt(3, c.getSemester());
             uCourseBasicInfo.setInt(4, c.getId());
             uCourseBasicInfo.executeUpdate();
+            uCourseBasicInfo.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -559,6 +579,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             uCourseDescription.setString(14, c.getForum());
             uCourseDescription.setInt(15, c.getId());
             uCourseDescription.executeUpdate();
+            uCourseDescription.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -648,6 +669,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     books.add(createBook(rs));
                 }
             }
+            sBooksByCourse.close();
         }
         catch(SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -666,6 +688,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     same_as.add(createCourse(rs));
                 }
             }
+            sCoursesSame_as.close();
         }
         catch(SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -683,6 +706,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     courses.add(createCourse(rs));
                 }
             }
+            sCoursesPreparatory.close();
         }
         catch(SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -701,6 +725,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     module.add(createCourse(rs));
                 }
             }
+            sCourseModule.close();
         }
         catch(SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -714,6 +739,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             dTeach.setInt(1, course_id);
             dTeach.setInt(2, teacher_id);
             dTeach.executeUpdate();
+            dTeach.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -739,6 +765,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             if (rs.next()) {
                 id = (int) rs.getLong(1);
             }
+            iImage.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -770,6 +797,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     return createImage(rs);
                 }
             }
+            sImageByTeacher.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -782,6 +810,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         try {
             dImage.setInt(1, id);
             dImage.executeUpdate();
+            dImage.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -801,6 +830,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     return createImage(rs);
                 }
             }
+            sImage.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -817,6 +847,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     images.add(createImage(rs));
                 }
             }
+            sImagesByCourse.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -834,6 +865,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     return createCourse(rs);
                 }
             }
+            sCourseByCodeAndAcademic_year.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -852,6 +884,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             dPreparatory.setInt(1, t.getId());
             dPreparatory.setInt(2, t.getId());
             dPreparatory.executeUpdate();
+            dPreparatory.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -863,6 +896,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             dSame_as.setInt(1, t.getId());
             dSame_as.setInt(2, t.getId());
             dSame_as.executeUpdate();
+            dSame_as.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -874,6 +908,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             dModule.setInt(1, t.getId());
             dModule.setInt(2, t.getId());
             dModule.executeUpdate();
+            dModule.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -885,6 +920,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             iModule.setInt(1, courseid);
             iModule.setInt(2, other);
             iModule.executeUpdate();
+            iModule.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -896,6 +932,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             iSame_as.setInt(1, courseid);
             iSame_as.setInt(2, other);
             iSame_as.executeUpdate();
+            iSame_as.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -907,13 +944,15 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             iPreparatory.setInt(1, courseid);
             iPreparatory.setInt(2, other);
             iPreparatory.executeUpdate();
+            iPreparatory.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void insertTextbook(int courseid, String author, String title, String volume, String publisher, String weblink, int year) {
+    public boolean insertTextbook(int courseid, String author, String title, String volume, String publisher, String weblink, int year) {
+        boolean res = false;
         try {
             iTextbook.setString(1, author);
             iTextbook.setString(2, title);
@@ -933,13 +972,18 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             iUses.setInt(1, courseid);
             iUses.setInt(2, bookid);
             iUses.executeUpdate();
+            iTextbook.close();
+            iUses.close();
+            res = true;
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return res;
     }
 
     @Override
-    public void insertExternalResource(int courseid, String name, String description, String weblink) {
+    public boolean insertExternalResource(int courseid, String name, String description, String weblink) {
+        boolean res = false;
         try {
             iExternalResource.setString(1, name);
             iExternalResource.setString(2, description);
@@ -956,9 +1000,13 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             iSupport.setInt(1, courseid);
             iSupport.setInt(2, erid);
             iSupport.executeUpdate();
+            iExternalResource.close();
+            iSupport.close();
+            res = true;
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return res;
     }
 
     @Override
@@ -971,6 +1019,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                      books.add(createBook(rs));
                 }
             }
+            sBooksByCourse.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -988,6 +1037,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                      ers.add(createExternalResource(rs));
                 }
             }
+            sExternalResourcesByCourse.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -996,7 +1046,8 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     }
 
     @Override
-    public void deleteTextbook(int courseid, int id) {
+    public boolean deleteTextbook(int courseid, int id) {
+        boolean res = false;
         try {
             dUses.setInt(1,courseid);
             dUses.setInt(2,id);
@@ -1004,13 +1055,18 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             
             dTextbook.setInt(1, id);
             dTextbook.executeUpdate();
+            dUses.close();
+            dTextbook.close();
+            res = true;
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return res;
     }
 
     @Override
-    public void deleteExternalResource(int courseid, int id) {
+    public boolean deleteExternalResource(int courseid, int id) {
+        boolean res = false;
         try {
             dSupport.setInt(1,courseid);
             dSupport.setInt(2,id);
@@ -1018,8 +1074,12 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             
             dExternalResource.setInt(1, id);
             dExternalResource.executeUpdate();
+            dSupport.close();
+            dExternalResource.close();
+            res = true;
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return res;
     }
 }

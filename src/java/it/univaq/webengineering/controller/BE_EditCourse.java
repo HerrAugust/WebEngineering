@@ -292,7 +292,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         action_error(request, response);
     }
     
-    private void action_savetextbook(HttpServletRequest request, HttpServletResponse response) {
+    private void action_savetextbook(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int courseid = Integer.parseInt(request.getParameter("courseid"));
         String title = request.getParameter("inputtexttitle");
         String volume = request.getParameter("inputtextvolume");
@@ -303,23 +303,55 @@ public class BE_EditCourse extends WebengineeringBaseController {
         int year = 0;
         if(temp != null && !temp.equals(""))
             year = Integer.parseInt(temp);
-        String inputtextid = request.getParameter("inputtextid");
-        if(inputtextid != null)
-            ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteTextbook(courseid, Integer.parseInt(inputtextid));
         
-        ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertTextbook(courseid, author, title, volume, publisher, weblink, year);
+        boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertTextbook(courseid, author, title, volume, publisher, weblink, year);
+        String text = "Problems while saving textbook";
+        if(res)
+            text = "Textbook saved";
+        request.setAttribute("message", text);
+        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid);
     }
 
-    private void action_saveexternal_resource(HttpServletRequest request, HttpServletResponse response) {
+    private void action_saveexternal_resource(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int courseid = Integer.parseInt(request.getParameter("courseid"));
         String name = request.getParameter("inputresourcename");
         String description = request.getParameter("inputresourcedescription");
         String weblink = request.getParameter("inputresourceweblink");
+        
+        boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertExternalResource(courseid, name, description, weblink);
+        String text = "Problems while saving resource";
+        if(res)
+            text = "Resource saved";
+        request.setAttribute("message", text);
+        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid);
+    }
+    
+    private void action_deleteexternal_resource(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        boolean res = false;
+        int courseid = Integer.parseInt(request.getParameter("courseid"));
         String inputresourceid = request.getParameter("inputresourceid");
         if(inputresourceid != null)
-            ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteExternalResource(courseid, Integer.parseInt(inputresourceid));
+            res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteExternalResource(courseid, Integer.parseInt(inputresourceid));
         
-        ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertExternalResource(courseid, name, description, weblink);
+        String text = "Problems while deleting resource";
+        if(res)
+            text = "Resource deleted";
+        request.setAttribute("message", text);
+        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid);
+    }
+
+    private void action_deletetextbook(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        boolean res = false;
+        int courseid = Integer.parseInt(request.getParameter("courseid"));
+        String inputtextid = request.getParameter("inputtextid");
+        if(inputtextid != null)
+            res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteTextbook(courseid, Integer.parseInt(inputtextid));
+        
+        String text = "Problems while deleting textbook";
+        if(res)
+            text = "Textbook deleted";
+        request.setAttribute("message", text);
+        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid);
     }
 
     @Override
@@ -344,8 +376,14 @@ public class BE_EditCourse extends WebengineeringBaseController {
                 case "textbook":
                     action_savetextbook(request, response);
                     break;
+                case "delete_textbook":
+                    action_deletetextbook(request, response);
+                    break;
                 case "external_resource":
                     action_saveexternal_resource(request, response);
+                    break;
+                case "delete_external_resource":
+                    action_deleteexternal_resource(request, response);
                     break;
                 case "coursedescription":
                     action_savedescription(request, response);

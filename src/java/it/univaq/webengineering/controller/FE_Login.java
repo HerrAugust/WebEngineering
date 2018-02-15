@@ -42,6 +42,7 @@ public class FE_Login extends WebengineeringBaseController {
     private void action_login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, TemplateManagerException {
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, Thread.currentThread().getStackTrace()[1].getClassName() + Thread.currentThread().getStackTrace()[1].getMethodName());
         
+        boolean nologin = false;
         if (request.getParameter("input_email") != null && request.getParameter("input_password") != null) {
             String email = request.getParameter("input_email");
             String password = request.getParameter("input_password");
@@ -49,17 +50,19 @@ public class FE_Login extends WebengineeringBaseController {
             if (teacher != null) {
                 // Set up session
                 SecurityLayer.createSession(request, teacher.getEmail(), teacher.getId());
-                request.setAttribute("switchlang", teacher.getLanguage());
                 response.sendRedirect("be_homepage");
             } else {
-                response.setContentType("text/plain");  // Set content type of the response so that jQuery knows what it can expect.
-                response.setCharacterEncoding("UTF-8"); // You want world domination, huh?
-                response.getWriter().write("Wrong email or password");
+                nologin = true;
             }
         } else {
-                response.setContentType("text/plain");  // Set content type of the response so that jQuery knows what it can expect.
-                response.setCharacterEncoding("UTF-8"); // You want world domination, huh?
-                response.getWriter().write("No email or passoword");
+            nologin = true;
+        }
+        
+        if(nologin) {
+            String url = "frontend/login.ftl.html";
+            TemplateResult res = new TemplateResult(getServletContext());
+            request.setAttribute("message", "Wrong email or password");
+            res.activate(url, request, response);
         }
     }
     
@@ -102,15 +105,6 @@ public class FE_Login extends WebengineeringBaseController {
             
             if (request.getParameter("login") != null) {
                 action_login(request, response);
-                request.setAttribute("logged", true);
-                
-                String url = "backend/homepage.ftl.html";
-                // if professor speaks italian
-                if(request.getAttribute("switchlang") != null && request.getAttribute("switchlang").equals("eng")) {
-                    url = "backend/homepage_ita.ftl.html";
-                }
-                TemplateResult res = new TemplateResult(getServletContext());
-                res.activate(url, request, response);
                 return;
             }
             else {

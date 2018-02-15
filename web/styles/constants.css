@@ -76,3 +76,8 @@ input[type=submit].success {
     background-color: #28a745;
     color: #fff;
 }
+
+.ul_no_dots {
+    list-style-type: none;
+    margin-left: -36px;
+}

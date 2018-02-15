@@ -61,15 +61,15 @@ public interface WebengineeringDataLayer extends DataLayer {
 
     public void insertPreparatory(int courseid, int parseInt);
 
-    public void insertTextbook(int courseid, String author, String title, String volume, String publisher, String weblink, int year);
+    public boolean insertTextbook(int courseid, String author, String title, String volume, String publisher, String weblink, int year);
 
-    public void insertExternalResource(int courseid, String name, String description, String weblink);
+    public boolean insertExternalResource(int courseid, String name, String description, String weblink);
 
     public List<Book> getTextbooks(int courseid);
 
     public List<ExternalResource> getExternalResources(int courseid);
 
-    public void deleteTextbook(int courseid, int id);
+    public boolean deleteTextbook(int courseid, int id);
 
-    public void deleteExternalResource(int courseid, int id);
+    public boolean deleteExternalResource(int courseid, int id);
 }

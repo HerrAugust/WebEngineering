@@ -8,7 +8,7 @@
       Nothing to show
     </div>
 
-    <form id="form_adduser" class="centered moreabove" method="post" action="be_adduser">
+    <form id="form_adduser" class="centered moreabove" method="post" action="be_addcourse">
         <div class="form-group">
             <label for="code">Code</label>
             <input type="text" class="form-control" id="code" name="code" placeholder="DT0912" required/>
@@ -19,7 +19,7 @@
         </div>
         <div class="form-group">
             <label for="teacher">Teacher</label>
-            <select>
+            <select class="form-control">
                 <option value="-1">Nobody</option>
                 <#if teachers??>
                 <#list teachers as teacher>
@@ -29,64 +29,13 @@
             </select>
         </div>
         
-        <button type="submit" class="btn btn-success centered moreabove" name="login">Create</button>
+        <button type="submit" class="btn btn-success centered moreabove">Create</button>
     </form>
 </div>
 </#macro>
 
 <#macro script>
-$(document).ready(function(){
-    let alert = $('#alert');
-    
-    function showAlert(message, color, tobeshown) {
-        alert.removeClass("alert-warning").removeClass("alert-success").removeClass("alert-danger").removeClass("alert-info");
-        let newtype = "alert-warning";
-        switch(color) {
-            case "green": newtype = "alert-success"; break;
-            case "blue": newtype = "alert-info"; break;
-            case "red": newtype = "alert-danger"; break;
-            default: newtype = "alert-warning"; break;
-        }
-        alert.addClass(newtype);
-        
-        alert.html(message);
-        
-        if(tobeshown) {
-            alert.removeClass("hidden");
-        }
-        else {
-            alert.addClass("hidden");
-        }
-    }
-    
-    // Button Assign clicked: assign course to teacher
-    $("form").on( "submit", function( event ) {
-        event.preventDefault();
-        showAlert("","",false);
-        
-        let teacherid = $("form select")[0].selectedOptions[0].attributes.value.value;
-        let formdata = $(this).serialize() + "&teacherid=" + teacherid + "&action=addcourse";
-        console.log(formdata);
-        
-        $.ajax(
-        {
-            url: "be_addcourse", 
-            type: "post",
-            data: formdata
-        })
-        .done(function(res) {
-            let text = res;
-            if(res == "ok")
-                text = "New course created!";
-            showAlert(text, res == "ok" ? "green" : "red", true);
-            window.scrollTo(0,0);
-        })
-        .fail(function() {
-            showAlert( "error", red, true );
-            window.scrollTo(0,0);
-        })
-    });
-});
+
 </#macro>
 
 <@display_page/>
