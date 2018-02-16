@@ -17,7 +17,9 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import it.univaq.webengineering.data.model.WebengineeringDataLayer;
 import it.univaq.webengineering.framework.data.DataLayerMysqlImpl;
+import it.univaq.webengineering.framework.security.SecurityLayer;
 import java.sql.Connection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -78,6 +80,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     private PreparedStatement dTextbook;
     private PreparedStatement dUses;
     private PreparedStatement dSupport;
+    private PreparedStatement sCloserCourseProperty;
 
     public WebengineeringDataLayerMysqlImpl(DataSource datasource) throws SQLException, NamingException {
         super(datasource);
@@ -412,7 +415,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     courses.add(createCourse(rs));
                 }
             }
-            sCoursesByCode.close();
+            //sCoursesByCode.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -671,7 +674,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     same_as.add(createCourse(rs));
                 }
             }
-            sCoursesSame_as.close();
+            //sCoursesSame_as.close();
         }
         catch(SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -689,7 +692,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     courses.add(createCourse(rs));
                 }
             }
-            sCoursesPreparatory.close();
+            //sCoursesPreparatory.close();
         }
         catch(SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -708,7 +711,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     module.add(createCourse(rs));
                 }
             }
-            sCourseModule.close();
+            //sCourseModule.close();
         }
         catch(SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -830,7 +833,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                     images.add(createImage(rs));
                 }
             }
-            sImagesByCourse.close();
+            //sImagesByCourse.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1002,7 +1005,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                      books.add(createBook(rs));
                 }
             }
-            sBooksByCourse.close();
+            //sBooksByCourse.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1020,7 +1023,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                      ers.add(createExternalResource(rs));
                 }
             }
-            sExternalResourcesByCourse.close();
+            //sExternalResourcesByCourse.close();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1064,5 +1067,132 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return res;
+    }
+
+    @Override
+    public Course getCloserCourseProperty(String code, String property) {
+        List<Course> courses = new LinkedList<>();
+        try {
+            switch(property) {
+                case "notes_ita":
+                case "name":
+                case "SSD":
+                case "language": 
+                case "semester": 
+                case "academic_year": 
+                case "prerequisites":
+                case "learning outcomes":
+                case "learning_outcomes_ita":
+                case "prerequisites_ita":
+                case "assessment_method_ita":
+                case "teaching_method_ita":
+                case "assessment_method":
+                case "teaching_method":
+                case "syllabus":
+                case "syllabus_ita":
+                case "homepage":
+                case "forum":
+                case "notes": 
+                    break;
+                default:
+                    throw new SQLException("Somebody tried a strange property in getCloserCourseProperty()");
+            }
+            sCloserCourseProperty = connection.prepareStatement("select * from course where code = ? and " + property + " != '' order by academic_year desc");
+            sCloserCourseProperty.setString(1, code);
+            try (ResultSet rs = sCloserCourseProperty.executeQuery()) {
+                while (rs.next()) {
+                    courses.add(createCourse(rs));
+                }
+            }
+            //sCloserCourseProperty.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return courses.get(0);
+    }
+
+    @Override
+    public List<ExternalResource> getCloserExternal_resources(String code) {
+        List<Course> courses = this.getCourses(code);
+        // Sort by academic year
+        Collections.sort(courses, (Course p1, Course p2) -> p2.getAcademic_year().compareTo(p1.getAcademic_year()));
+        
+        for(Course c : courses) {
+            List<ExternalResource> t = this.getExternalResources(c.getId());
+            if(t.isEmpty() == false)
+                return t;
+        }
+        return new LinkedList<>();
+    }
+
+    @Override
+    public List<Book> getCloserTextbooks(String code) {
+        List<Course> courses = this.getCourses(code);
+        // Sort by academic year
+        Collections.sort(courses, (Course p1, Course p2) -> p2.getAcademic_year().compareTo(p1.getAcademic_year()));
+        
+        for(Course c : courses) {
+            List<Book> t = this.getTextbooks(c.getId());
+            if(t.isEmpty() == false)
+                return t;
+        }
+        return new LinkedList<>();
+    }
+
+    @Override
+    public List<Course> getCloserModule(String code) {
+        List<Course> courses = this.getCourses(code);
+        // Sort by academic year
+        Collections.sort(courses, (Course p1, Course p2) -> p2.getAcademic_year().compareTo(p1.getAcademic_year()));
+        
+        for(Course c : courses) {
+            List<Course> t = this.getModule(c);
+            if(t.isEmpty() == false)
+                return t;
+        }
+        return new LinkedList<>();
+    }
+
+    @Override
+    public List<Course> getCloserPreparatory(String code) {
+        List<Course> courses = this.getCourses(code);
+        // Sort by academic year
+        Collections.sort(courses, (Course p1, Course p2) -> p2.getAcademic_year().compareTo(p1.getAcademic_year()));
+        
+        for(Course c : courses) {
+            List<Course> t = this.getPreparatory(c);
+            if(t.isEmpty() == false)
+                return t;
+        }
+        return new LinkedList<>();
+    }
+
+    @Override
+    public List<Course> getCloserSame_as(String code) {
+        List<Course> courses = this.getCourses(code);
+        // Sort by academic year
+        Collections.sort(courses, (Course p1, Course p2) -> p2.getAcademic_year().compareTo(p1.getAcademic_year()));
+        
+        for(Course c : courses) {
+            List<Course> t = this.getSame_as(c);
+            if(t.isEmpty() == false)
+                return t;
+        }
+        return new LinkedList<>();
+    }
+
+    @Override
+    public List<Image> getCloserImages(String code) {
+        List<Course> courses = this.getCourses(code);
+        // Sort by academic year
+        Collections.sort(courses, (Course p1, Course p2) -> p2.getAcademic_year().compareTo(p1.getAcademic_year()));
+        
+        for(Course c : courses) {
+            List<Image> t = this.getImagesByCourse(c.getId());
+            if(t.isEmpty() == false)
+                return t;
+        }
+        return new LinkedList<>();
     }
 }

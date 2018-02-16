@@ -8,8 +8,10 @@ body {
   padding-top: 54px;
 }
 
-@media (min-width: 992px) {
-  body {
-    padding-top: 56px;
-  }
+li.menu_divider {
+    display: none;
+}
+
+img#logo {
+  width: 70%; 
 }

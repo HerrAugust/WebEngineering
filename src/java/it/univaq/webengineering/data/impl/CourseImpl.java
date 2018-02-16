@@ -7,6 +7,7 @@ import it.univaq.webengineering.data.model.Image;
 import it.univaq.webengineering.data.model.Teacher;
 import it.univaq.webengineering.framework.data.DataLayerException;
 import it.univaq.webengineering.data.model.WebengineeringDataLayer;
+import java.util.Comparator;
 import java.util.List;
 
 public class CourseImpl implements Course {
@@ -282,4 +283,5 @@ public class CourseImpl implements Course {
     public void setBooks(List<Book> b) {
         this.books = b;
     }
+    
 }

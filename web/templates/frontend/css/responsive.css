@@ -1,0 +1,38 @@
+/* desktop */
+@media (min-width: 992px) {
+  body {
+    padding-top: 56px;
+  }
+  
+  li.menu_divider {
+    display: inline;
+  }
+  
+  *, ::after, ::before {
+    box-sizing: border-box;
+  }
+  
+  h2#welcome {
+      margin-top: 100px;
+      text-align: center;
+      font-size: 2rem;
+  }
+  
+  #button_seeall {
+      width: 40%;
+  }
+  
+  img#logo {
+      width: 20%;
+  }
+  
+  footer {
+      height: 9%;
+  }
+  
+  #carousel {
+      float: right;
+      width: 30%;
+      margin: auto;
+  }
+}

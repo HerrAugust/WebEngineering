@@ -37,6 +37,19 @@ public interface WebengineeringDataLayer extends DataLayer {
     public boolean updateCourseDescription(Course c);
     public List<Course> getCoursesByFilters(String name, String language, String semester, String academic_year, String SSD);
     public boolean decouple_course(int course_id, int teacher_id);
+    public void deletePreparatory(Course t);
+    public void deleteSame_as(Course t);
+    public void deleteModule(Course t);
+    public void insertModule(int courseid, int parseInt);
+    public void insertSame_as(int courseid, int parseInt);
+    public void insertPreparatory(int courseid, int parseInt);
+    public Course getCloserCourseProperty(String code, String property);
+    public List<ExternalResource> getCloserExternal_resources(String code);
+    public List<Book> getCloserTextbooks(String code);
+    public List<Course> getCloserModule(String code);
+    public List<Course> getCloserPreparatory(String code);
+    public List<Course> getCloserSame_as(String code);
+    public List<Image> getCloserImages(String code);
     
     public List<Book> getTextbooks(int courseid);
     public List<Course> getSame_as(Course course);
@@ -49,25 +62,9 @@ public interface WebengineeringDataLayer extends DataLayer {
     public int insertImage(Image image);
     public List<Image> getImagesByCourse(int id);
 
-    public void deletePreparatory(Course t);
-
-    public void deleteSame_as(Course t);
-
-    public void deleteModule(Course t);
-
-    public void insertModule(int courseid, int parseInt);
-
-    public void insertSame_as(int courseid, int parseInt);
-
-    public void insertPreparatory(int courseid, int parseInt);
-
     public boolean insertTextbook(int courseid, String author, String title, String volume, String publisher, String weblink, int year);
-
     public boolean insertExternalResource(int courseid, String name, String description, String weblink);
-
     public List<ExternalResource> getExternalResources(int courseid);
-
     public boolean deleteTextbook(int courseid, int id);
-
     public boolean deleteExternalResource(int courseid, int id);
 }

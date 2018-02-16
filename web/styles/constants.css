@@ -57,7 +57,7 @@ html,body {
 
 footer {
     position: relative;
-    height: 60px;
+    height: 10%;
 }
 
 .left {
@@ -80,4 +80,12 @@ input[type=submit].success {
 .ul_no_dots {
     list-style-type: none;
     margin-left: -36px;
+}
+
+.round {
+    border-radius: 50%;
+}
+
+.inline {
+    display: inline;
 }

@@ -20,14 +20,12 @@
             (A.Y. ${course.academic_year})
             </#if>
         </div>
-        <#if imagessrc??>
-        <div id="carousel" class="carousel slide" data-ride="carousel" data-interval="3000">
+        <#if imagessrc?? && imagessrc?size != 0>
+        <div id="carousel" class="carousel slide" data-ride="carousel" data-interval="4000">
             <ol class="carousel-indicators">
-              <#if imagessrc?size != 1>
               <#list imagessrc as i>
               <li data-target="#carouselExampleIndicators" data-slide-to="${i?index}" <#if i?index == 0>class="active"</#if>></li>
               </#list>
-              </#if>
             </ol>
             <div class="carousel-inner">
                 <#list imagessrc as imagesrc>
@@ -44,6 +42,14 @@
               <span class="carousel-control-next-icon" aria-hidden="true"></span>
               <span class="sr-only">Next</span>
             </a>-->
+          </div>
+        <#else>
+        <div id="carousel" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <img class="d-block w-100 round" src="uploads/standard_course.jpg" alt="Standard image of course">
+                </div>
+            </div>
           </div>
         </#if>
         

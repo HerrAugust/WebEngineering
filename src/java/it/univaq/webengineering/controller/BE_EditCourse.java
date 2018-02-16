@@ -27,6 +27,7 @@ import javax.servlet.http.Part;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import it.univaq.webengineering.data.impl.WebengineeringDataLayerMysqlImpl;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Iterator;
 import org.json.JSONArray;
@@ -85,6 +86,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         course.setModule(((WebengineeringDataLayer)request.getAttribute("datalayer")).getModule(course));
         course.setPreparatory(((WebengineeringDataLayer)request.getAttribute("datalayer")).getPreparatory(course));
         course.setSame_as(((WebengineeringDataLayer)request.getAttribute("datalayer")).getSame_as(course));
+        
         List<Course> coursesByFilters = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCoursesByFilters(null, null, null, super.getCurrentAcademicYear(), null);
         request.setAttribute("courses", coursesByFilters);
         request.setAttribute("course", course);
@@ -92,6 +94,54 @@ public class BE_EditCourse extends WebengineeringBaseController {
             request.setAttribute("textbooks", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTextbooks(courseid));
             request.setAttribute("resources", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getExternalResources(courseid));
         }
+        
+        // If the course doesn't have a field, take the one belonging to the closest past year
+        WebengineeringDataLayer dl = (WebengineeringDataLayer)request.getAttribute("datalayer");
+        if(course.getSSD().equals(""))
+            course.setSSD(dl.getCloserCourseProperty(course.getCode(), "SSD").getSSD());
+        if(course.getNotes_ita().equals(""))
+            course.setNotes_ita(dl.getCloserCourseProperty(course.getCode(), "notes_ita").getNotes_ita());
+        if(course.getAssessment_method().equals(""))
+            course.setAssessment_method(dl.getCloserCourseProperty(course.getCode(), "assessment_method").getAssessment_method());
+        if(course.getLanguage().equals(""))
+            course.setLanguage(dl.getCloserCourseProperty(course.getCode(), "language").getLanguage());
+        if(course.getPrerequisites().equals(""))
+            course.setPrerequisites(dl.getCloserCourseProperty(course.getCode(), "prerequisites").getPrerequisites());
+        if(course.getLearning_outcomes().equals(""))
+            course.setLearning_outcomes(dl.getCloserCourseProperty(course.getCode(), "learning_outcomes").getLearning_outcomes());
+        if(course.getLearning_outcomes_ita().equals(""))
+            course.setLearning_outcomes_ita(dl.getCloserCourseProperty(course.getCode(), "learning_outcomes_ita").getLearning_outcomes_ita());
+        if(course.getPrerequisites_ita().equals(""))
+            course.setPrerequisites_ita(dl.getCloserCourseProperty(course.getCode(), "prerequisites_ita").getPrerequisites_ita());
+        if(course.getAssessment_method_ita().equals(""))
+            course.setAssessment_method_ita(dl.getCloserCourseProperty(course.getCode(), "assessment_method_ita").getAssessment_method_ita());
+        if(course.getTeaching_method_ita().equals(""))
+            course.setTeaching_method_ita(dl.getCloserCourseProperty(course.getCode(), "teaching_method_ita").getTeaching_method_ita());
+        if(course.getAssessment_method().equals(""))
+            course.setAssessment_method(dl.getCloserCourseProperty(course.getCode(), "assessment_method").getAssessment_method());
+        if(course.getTeaching_method().equals(""))
+            course.setTeaching_method(dl.getCloserCourseProperty(course.getCode(), "teaching_method").getTeaching_method());
+        if(course.getSyllabus().equals(""))
+            course.setSyllabus(dl.getCloserCourseProperty(course.getCode(), "syllabus").getSyllabus());
+        if(course.getSyllabus_ita().equals(""))
+            course.setSyllabus_ita(dl.getCloserCourseProperty(course.getCode(), "syllabus_ita").getSyllabus_ita());
+        if(course.getHomepage().equals(""))
+            course.setHomepage(dl.getCloserCourseProperty(course.getCode(), "homepage").getHomepage());
+        if(course.getForum().equals(""))
+            course.setForum(dl.getCloserCourseProperty(course.getCode(), "forum").getForum());
+        if(course.getNotes().equals(""))
+            course.setNotes(dl.getCloserCourseProperty(course.getCode(), "notes").getNotes());
+        if(course.getExternal_resources() == null || course.getExternal_resources().isEmpty())
+            course.setExternal_resources(dl.getCloserExternal_resources(course.getCode()));
+        if(course.getBooks()== null || course.getBooks().isEmpty())
+            course.setBooks(dl.getCloserTextbooks(course.getCode()));
+        if(course.getModule() == null || course.getModule().isEmpty())
+            course.setModule(dl.getCloserModule(course.getCode()));
+        if(course.getPreparatory()== null || course.getPreparatory().isEmpty())
+            course.setPreparatory(dl.getCloserPreparatory(course.getCode()));
+        if(course.getSame_as()== null || course.getSame_as().isEmpty())
+            course.setSame_as(dl.getCloserSame_as(course.getCode()));
+        
         request.setAttribute("academic_year", super.getCurrentAcademicYear());
         request.setAttribute("switchlang", switchlang);
         request.setAttribute("isAdmin", user.isAdmin());
@@ -181,11 +231,13 @@ public class BE_EditCourse extends WebengineeringBaseController {
             
             List<String> photoNames = new LinkedList<>(), randomNames = new LinkedList<>();
             String filePath = getServletContext().getInitParameter("file-upload"); // see web.conf file
+            boolean atLeastOneImage = false;
             try {
                 int i = 0;
                 while(true) {
                     Part item = request.getPart("file-" + i++);
                     if(item == null) break;
+                    atLeastOneImage = true;
                     String namefile = item.getSubmittedFileName();
                     photoNames.add(namefile);
                     long size = item.getSize();
@@ -204,6 +256,19 @@ public class BE_EditCourse extends WebengineeringBaseController {
             // Get previous profile photo (must be deleted from DB)
             Course course = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourse(courseid);
             List<Image> oldImages = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getImagesByCourse(course.getId());
+            
+            // if the teacher/admin doesn't provide images for the current year, take the one belonging to the closest year
+            if(!atLeastOneImage) {
+                // get the images
+                List<Image> closerImages = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCloserImages(course.getCode());
+                String imagetype = "jpeg";
+                // save on disk (copy) and insert into DB (done just below by the same code)
+                for(Image image : closerImages) { 
+                    randomNames.add(SecurityLayer.generateRandomString(7) + "." + imagetype);
+                    photoNames.add(image.getOriginal_name());
+                    Files.copy(new File(image.getPath() + image.getName_on_disk()).toPath(), new File(filePath + randomNames.get((randomNames.size()-1))).toPath());
+                }
+            }
             
             // Save photos to DB
             for(int i = 0; i < randomNames.size(); i++) {

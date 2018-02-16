@@ -1,20 +1,42 @@
+*, ::after, ::before {
+    box-sizing: initial;
+}
+
 #maincontent {
     width: 80%;
     margin: auto;
 }
 
 /* Homepage */
-#logo {
+h2#welcome {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+img#logo {
     margin-left: auto;
     margin-right: auto;
-    width: 30%;
+    width: 80%;
     display: block;
+}
+
+#button_seeall {
+    width: 80%;
+    margin: auto;
+    display: block;
+    margin-bottom: 9%;
 }
 
 #form_login {
     width: 50%;
     margin: auto;
     margin-top: 90px;
+}
+
+/* Footer */
+footer {
+    height: 4%;
 }
 
 /* Courses List */
@@ -29,7 +51,7 @@
 
 #photo_teacher {
     margin: auto;
-    width: 30%;
+    width: 80%;
     display: block;
     border-radius: 50%;
 }
@@ -43,9 +65,8 @@
 
 /* Carousel */
 #carousel {
-    float: right;
-    width: 30%;
-    height: 30%;
+    width: 80%;
+    margin: 15px auto 15px auto;
 }
 
 #carousel .carousel-indicators li {

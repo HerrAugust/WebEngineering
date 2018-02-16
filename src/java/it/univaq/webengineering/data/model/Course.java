@@ -3,7 +3,7 @@ package it.univaq.webengineering.data.model;
 import java.util.List;
 
 public interface Course {
-
+    
     int getId();
 
     String getName();
