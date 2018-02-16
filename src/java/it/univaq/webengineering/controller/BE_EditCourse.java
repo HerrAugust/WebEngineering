@@ -95,6 +95,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         request.setAttribute("academic_year", super.getCurrentAcademicYear());
         request.setAttribute("switchlang", switchlang);
         request.setAttribute("isAdmin", user.isAdmin());
+        if(request.getParameter("message") != null) request.setAttribute("message", request.getParameter("message"));
         res.activate(url, request, response);
     }
     
@@ -284,7 +285,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
                 return;
             }
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: couple teacher-course (%d,%d)", SecurityLayer.getUser(request), teacher_id, course_id));
-            response.sendRedirect("be_homepage");
+            response.sendRedirect("be_homepage?message=Teacher decoupled");
             return;
         }
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
@@ -308,8 +309,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         String text = "Problems while saving textbook";
         if(res)
             text = "Textbook saved";
-        request.setAttribute("message", text);
-        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid);
+        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid+"&message="+text);
     }
 
     private void action_saveexternal_resource(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -322,8 +322,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         String text = "Problems while saving resource";
         if(res)
             text = "Resource saved";
-        request.setAttribute("message", text);
-        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid);
+        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid+"&message="+text);
     }
     
     private void action_deleteexternal_resource(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -336,8 +335,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         String text = "Problems while deleting resource";
         if(res)
             text = "Resource deleted";
-        request.setAttribute("message", text);
-        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid);
+        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid+"&message="+text);
     }
 
     private void action_deletetextbook(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -350,8 +348,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         String text = "Problems while deleting textbook";
         if(res)
             text = "Textbook deleted";
-        request.setAttribute("message", text);
-        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid);
+        response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid+"&message="+text);
     }
 
     @Override

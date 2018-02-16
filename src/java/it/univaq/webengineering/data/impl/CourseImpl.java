@@ -2,6 +2,7 @@ package it.univaq.webengineering.data.impl;
 
 import it.univaq.webengineering.data.model.Book;
 import it.univaq.webengineering.data.model.Course;
+import it.univaq.webengineering.data.model.ExternalResource;
 import it.univaq.webengineering.data.model.Image;
 import it.univaq.webengineering.data.model.Teacher;
 import it.univaq.webengineering.framework.data.DataLayerException;
@@ -23,6 +24,15 @@ public class CourseImpl implements Course {
     
     private List<Teacher> teachers = null;
     private List<Book> books = null;
+    private List<ExternalResource> external_resources = null;
+
+    public List<ExternalResource> getExternal_resources() {
+        return external_resources;
+    }
+
+    public void setExternal_resources(List<ExternalResource> external_resources) {
+        this.external_resources = external_resources;
+    }
     
     private List<Course> module = null;
     private List<Course> same_as = null;

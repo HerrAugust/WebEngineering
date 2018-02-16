@@ -91,21 +91,21 @@ public class BE_AddUser extends WebengineeringBaseController {
             t.setPassword(password);
             t.setType(type);
             
-            String text = "";
+            String text = "User added!";
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertTeacher(t);
             if(res) {
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: added teacher %s %s", SecurityLayer.getUser(request), t.getName(), t.getLastname()));
-                response.sendRedirect("be_listusers");
+                response.sendRedirect("be_listusers?message="+text);
+                return;
             }
             else {
                 if(((WebengineeringDataLayer)request.getAttribute("datalayer")).existTeacherByEmail(t.getEmail())) {
-                    text += " Teacher with that email already exists";
+                    text = " Teacher with that email already exists";
                     Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": teacher already exists");
                 }
             }
             
-            request.setAttribute("message", text);
-            response.sendRedirect("be_adduser");
+            response.sendRedirect("be_adduser?message="+text);
             return;
         }
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
@@ -152,7 +152,7 @@ public class BE_AddUser extends WebengineeringBaseController {
             }
             else {
                 if(((WebengineeringDataLayer)request.getAttribute("datalayer")).existTeacherByEmail(t.getEmail())) {
-                    text += " Teacher with that email already exists";
+                    text = " Teacher with that email already exists";
                     Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": teacher already exists");
                 }
             }

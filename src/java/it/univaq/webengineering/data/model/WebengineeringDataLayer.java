@@ -38,7 +38,7 @@ public interface WebengineeringDataLayer extends DataLayer {
     public List<Course> getCoursesByFilters(String name, String language, String semester, String academic_year, String SSD);
     public boolean decouple_course(int course_id, int teacher_id);
     
-    public List<Book> getBooks(Course c);
+    public List<Book> getTextbooks(int courseid);
     public List<Course> getSame_as(Course course);
     public List<Course> getPreparatory(Course course);
     public List<Course> getModule(Course course);
@@ -64,8 +64,6 @@ public interface WebengineeringDataLayer extends DataLayer {
     public boolean insertTextbook(int courseid, String author, String title, String volume, String publisher, String weblink, int year);
 
     public boolean insertExternalResource(int courseid, String name, String description, String weblink);
-
-    public List<Book> getTextbooks(int courseid);
 
     public List<ExternalResource> getExternalResources(int courseid);
 

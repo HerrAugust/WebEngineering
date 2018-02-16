@@ -36,6 +36,7 @@ public class FE_Login extends WebengineeringBaseController {
     private void action_default(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, TemplateManagerException {
         String url = "frontend/login.ftl.html";
         TemplateResult res = new TemplateResult(getServletContext());
+        if(request.getParameter("message") != null) request.setAttribute("message", request.getParameter("message"));
         res.activate(url, request, response);
     }
     

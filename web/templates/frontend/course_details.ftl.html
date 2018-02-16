@@ -6,7 +6,7 @@
 
         <div>
             <h2 class="morebelow">${course.name} (A.Y. ${course.academic_year})</h2>
-            <#if academic_years?? && academic_years?size != 0>
+            <#if academic_years?? && academic_years?size != 1>
             <form class="form-inline" action="fe_courses?action=details_course&coursecode=${course.code}" method="post" id="academic_years_form">
                 <label for="academic_year">This course is available also for the A.Y.s: </label>
                 <select class="form-control moreright" form="academic_years_form" name="academic_year">
@@ -260,7 +260,7 @@
 
         <#if course.books?? && course.books?size != 0>
         <div class="panel panel-default">
-            <div class="panel-heading" role="tab" id="heading7">
+            <div class="panel-heading" role="tab">
                 <h4 class="panel-title">
                     <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse7" aria-expanded="true" aria-controls="collapse7">
                         <i class="more-less glyphicon glyphicon-plus"></i>
@@ -273,6 +273,28 @@
                     <ul>
                         <#list course.books as t>
                         <li><i>${t.title}</i>, ${t.author}, ${t.year}<#if t.volume != ''>, Vol. ${t.volume}</#if>, ${t.publisher} <#if t.weblink != ''>, <a href="${t.weblink}">reference</a></#if></li>
+                        </#list>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        </#if>
+        
+        <#if course.external_resources?? && course.external_resources?size != 0>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse8" aria-expanded="true" aria-controls="collapse8">
+                        <i class="more-less glyphicon glyphicon-plus"></i>
+                        <i class="fas fa-angle-down"></i>  External Resources:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse8" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading7">
+                <div class="panel-body">
+                    <ul>
+                        <#list course.external_resources as t>
+                        <li><i>${t.name}</i><#if t.description != ''>, (${t.description})</#if> <#if t.weblink != ''>, <a href="${t.weblink}">reference</a></#if></li>
                         </#list>
                     </ul>
                 </div>

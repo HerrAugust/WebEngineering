@@ -5,9 +5,13 @@
     <h2 class="subtitle">Edit course of <i>${course.name}</i></h2>
     <p class="subtitle">Academic Year: Current (${academic_year})</p>
 
-    <div id="alert" class="alert alert-danger hidden" role="alert">
-      ${message!""}
+    <#if message??>
+    <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
+        ${message}
     </div>
+    <#else>
+    <div id="alert" class="alert alert-danger hidden" role="alert"></div>
+    </#if>
 
     <h3 class="subtitle">Insert the <b>basic information:</b></h3>
     <form id="form_adduser" class="subtitle moreabove" method="post" action="be_editcourse?action=coursebase">

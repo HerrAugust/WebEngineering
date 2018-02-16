@@ -5,9 +5,13 @@
     <h2 class="subtitle">Edit course of <i>${course.name}</i></h2>
     <p class="subtitle">Academic Year: Current (${academic_year})</p>
 
-    <div id="alert" class="alert alert-danger hidden" role="alert">
-      ${message!""}
+    <#if message??>
+    <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
+        ${message}
     </div>
+    <#else>
+    <div id="alert" class="alert alert-danger hidden" role="alert"></div>
+    </#if>
     
     <span id="courseid" class="hidden">${course.id}</span>
 
@@ -132,9 +136,9 @@
         </div>
 
         <div class="morebelow">
-            <form method="get" action="be_homepage">
+            <form method="post" action="fe_courses?action=details_course&coursecode=${course.code}">
                 <input id="button_back" type="button" class="btn btn-danger" value="Back to course description"/>
-                <input type="submit" class="btn btn-success" value="Finish"/>
+                <input type="submit" class="btn btn-success" value="Finish (discarting unsaved resources)"/>
             </form>
         </div>
         

@@ -659,23 +659,6 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
         }
         return r;
     }
-    
-    public List<Book> getBooks(Course course) {
-        List<Book> books = new LinkedList<>();
-        try {
-            sBooksByCourse.setInt(1, course.getId());
-            try (ResultSet rs = sBooksByCourse.executeQuery()) {
-                while (rs.next()) {
-                    books.add(createBook(rs));
-                }
-            }
-            sBooksByCourse.close();
-        }
-        catch(SQLException ex) {
-            Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return books;
-    }
 
     @Override
     public List<Course> getSame_as(Course course) {

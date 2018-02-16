@@ -107,4 +107,8 @@ public interface Course {
     public void setPreparatory(List<Course> c);
     
     public void setModule(List<Course> c);
+    
+    public List<ExternalResource> getExternal_resources();
+
+    public void setExternal_resources(List<ExternalResource> external_resources);
 }

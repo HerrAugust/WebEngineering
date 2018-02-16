@@ -5,9 +5,11 @@
     <h2 class="subtitle"><#if edit_user?? && edit_user>Edit<#else>Add</#if> User</h2>
 
     <#if message??>
-    <div id="alert" class="alert alert-danger" role="alert">
-      ${message}
+    <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
+        ${message}
     </div>
+    <#else>
+    <div id="alert" class="alert alert-danger hidden" role="alert"></div>
     </#if>
 
     <form id="form_adduser" class="centered moreabove" method="post" <#if teacher??>action="be_adduser?action=edituser"<#else>action="be_adduser?action=adduser"</#if> >

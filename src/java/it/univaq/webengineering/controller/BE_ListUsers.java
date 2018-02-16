@@ -57,6 +57,7 @@ public class BE_ListUsers extends WebengineeringBaseController {
         request.setAttribute("switchlang", switchlang);
         Teacher teacher = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher((String)session.getAttribute("username"));
         request.setAttribute("isAdmin", teacher.isAdmin());
+        if(request.getParameter("message") != null) request.setAttribute("message", request.getParameter("message"));
         res.activate(url, request, response);
     }
     
@@ -68,6 +69,7 @@ public class BE_ListUsers extends WebengineeringBaseController {
             int userid = Integer.parseInt(request.getParameter("userid"));
             Teacher teacher = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(userid);
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteTeacher(userid);
+            String text = "";
             
             // delete user's image
             if(teacher.getPhoto() != null) {
@@ -76,22 +78,28 @@ public class BE_ListUsers extends WebengineeringBaseController {
             }
             
             if(res) {
-                
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: delete user %d", SecurityLayer.getUser(request), userid));
-                action_default(request, response);
+                text = "User " + teacher.getLastname() + " " + teacher.getName() + " deleted";
             }
+            else
+                text = "Error deleting user " + teacher.getLastname() + " " + teacher.getName();
+            response.sendRedirect("be_listusers?message="+text);
             return;
         }
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
     }
     
-    private void action_edituser(HttpServletRequest request, HttpServletResponse response) throws TemplateManagerException {
+    private void action_edituser(HttpServletRequest request, HttpServletResponse response) throws TemplateManagerException, IOException {
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: %s.%s",SecurityLayer.getUser(request), Thread.currentThread().getStackTrace()[1].getClassName(), Thread.currentThread().getStackTrace()[1].getMethodName()));
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             int userid = Integer.parseInt(request.getParameter("userid"));
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: edits user %d", SecurityLayer.getUser(request), userid));
             new BE_UpdateProfile().editUser_Admin(request, response, userid, getServletContext());
+            
+            request.setAttribute("message", "User updated");
+            response.sendRedirect("fe_courses?action=details_teacher&id=" + userid);
+            
             return;
         }
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");

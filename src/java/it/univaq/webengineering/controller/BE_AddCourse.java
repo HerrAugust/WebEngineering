@@ -64,6 +64,7 @@ public class BE_AddCourse extends WebengineeringBaseController {
         request.setAttribute("teachers", teachers);
         request.setAttribute("switchlang", switchlang);
         request.setAttribute("isAdmin", user.isAdmin());
+        if(request.getParameter("message") != null) request.setAttribute("message", request.getParameter("message"));
         res.activate(url, request, response);
     }
     
@@ -73,7 +74,7 @@ public class BE_AddCourse extends WebengineeringBaseController {
         HttpSession session = SecurityLayer.checkSession(request);
         if(session != null) {
             String name = request.getParameter("name");
-            String code = request.getParameter("code");
+            String code = request.getParameter("code").toUpperCase();
             int teacherid = Integer.parseInt(request.getParameter("teacherid"));
             
             Course t = new CourseImpl(null);
@@ -92,18 +93,16 @@ public class BE_AddCourse extends WebengineeringBaseController {
                     res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).assignCourse(t, teacher);
                 }
                 if(res) {
-                    text = "ok";
+                    text = "Course created";
                     Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + " adds course " + name + " (" + code + ").");
                 }
             }
             else {
-                text += " Course with that code and name already exists. Change one of them.";
+                text = " Course with that code and name already exists. Change one of them.";
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + " can't add course " + name + " (" + code + "), it exists already.");
             }
                 
-            response.setContentType("text/plain");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(text);
+            response.sendRedirect("be_addcourse?message="+text);
             return;
         }
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");

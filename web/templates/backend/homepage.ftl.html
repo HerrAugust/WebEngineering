@@ -4,9 +4,13 @@
 <div id="maincontent">
     <h2 class="subtitle">Courses</h2>
 
-    <div id="alert" class="alert alert-danger hidden" role="alert">
-      ${message!""}
+    <#if message??>
+    <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
+        ${message}
     </div>
+    <#else>
+    <div id="alert" class="alert alert-danger hidden" role="alert"></div>
+    </#if>
     
     <div class="subtitle alert alert-info" role="alert">
         Warning: <b>Assigning a teacher</b> requires <b>JavaScript</b>!

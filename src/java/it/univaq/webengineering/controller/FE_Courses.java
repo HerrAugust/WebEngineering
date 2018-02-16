@@ -120,7 +120,8 @@ public class FE_Courses extends WebengineeringBaseController {
             academic_years.add(cur.getAcademic_year());
         }
         course.setTeachers(((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeachers(course));
-        course.setBooks(((WebengineeringDataLayer)request.getAttribute("datalayer")).getBooks(course));
+        course.setBooks(((WebengineeringDataLayer)request.getAttribute("datalayer")).getTextbooks(course.getId()));
+        course.setExternal_resources(((WebengineeringDataLayer)request.getAttribute("datalayer")).getExternalResources(course.getId()));
         course.setModule(((WebengineeringDataLayer)request.getAttribute("datalayer")).getModule(course));
         course.setSame_as(((WebengineeringDataLayer)request.getAttribute("datalayer")).getSame_as(course));
         course.setPreparatory(((WebengineeringDataLayer)request.getAttribute("datalayer")).getPreparatory(course));

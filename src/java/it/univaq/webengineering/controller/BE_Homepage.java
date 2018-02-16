@@ -72,6 +72,7 @@ public class BE_Homepage extends WebengineeringBaseController {
             }
             request.setAttribute("current_academic_year", super.getCurrentAcademicYear());
             request.setAttribute("isAdmin", user.isAdmin());
+            if(request.getParameter("message") != null) request.setAttribute("message", request.getParameter("message"));
             res.activate(url, request, response);
         }
         else { // user not logged in
@@ -101,7 +102,7 @@ public class BE_Homepage extends WebengineeringBaseController {
 
                 ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteCourse(coursecode);
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: deleted course %s", SecurityLayer.getUser(request), coursecode));
-                response.sendRedirect("be_listcourses");
+                response.sendRedirect("be_listcourses?message=Course deleted");
                 return;
             }
         }
@@ -131,15 +132,11 @@ public class BE_Homepage extends WebengineeringBaseController {
             }
             else
                 text = "Error while assigning course.";
-            response.setContentType("text/plain");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(text);
+            response.sendRedirect("be_homepage?message="+text);
             return;
         }
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("You must be authorized and logged in for this.");
+        response.sendRedirect("fe_login?message=You must be authorized and logged in for this.");
     }
 
     @Override

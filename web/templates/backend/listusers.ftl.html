@@ -7,9 +7,13 @@
         <input type="search" placeholder="Search..."/>
     </div>
 
-    <div id="alert" class="alert alert-danger hidden" role="alert">
-      ${message!""}
+    <#if message??>
+    <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
+        ${message}
     </div>
+    <#else>
+    <div id="alert" class="alert alert-danger hidden" role="alert"></div>
+    </#if>
     
     <div class="subtitle alert alert-info" role="alert">
         Warning: <b>Search</b> requires <b>JavaScript</b>!
