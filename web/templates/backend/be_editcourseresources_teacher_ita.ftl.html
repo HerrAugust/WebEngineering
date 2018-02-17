@@ -1,0 +1,155 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <h2 class="subtitle">Modifica il corso di <i>${course.name}</i></h2>
+    <p class="subtitle">Anno accademico: Currente (${academic_year})</p>
+
+    <#if message??>
+    <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
+        ${message}
+    </div>
+    <#else>
+    <div id="alert" class="alert alert-danger hidden" role="alert"></div>
+    </#if>
+    
+    <span id="courseid" class="hidden">${course.id}</span>
+
+    <h3 class="subtitle">Inserisci le <b>risorse:</b></h3>
+    <div class="subtitle">
+        <div>
+            <h4 class="morebelow">Letteratura</h4>
+            <#list textbooks as textbook>
+            <form id="formtextbook${textbook?index+1}" class="morebelow" method="post" action="be_editcourse?action=delete_textbook&lang=ITA">
+                <h5>Libro #${textbook?index+1}</h5>
+                <input type="hidden" name="courseid" value="${course.id}"/>
+                <input type="hidden" name="inputtextid" value="${textbook.id}"/>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputtextauthor">Autore: </label>
+                        <input type="text" value="${textbook.author}" class="form-control" name="inputtextauthor" placeholder="Author's name">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputtextpublisher">Editore: </label>
+                        <input type="text" value="${textbook.publisher}" class="form-control" name="inputtextpublisher" placeholder="Publisher">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label for="inputtextvolume">Volume: </label>
+                        <input type="text" value="${textbook.volume}" class="form-control" name="inputtextvolume" placeholder="Vol. 1">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputtextyear">Anno: </label>
+                        <input type="number" value="${textbook.year}" class="form-control" name="inputtextyear" placeholder="2017">
+                    </div>
+                    <div class="form-group col-md-8">
+                        <label for="inputtexturl">Website: </label>
+                        <input type="url" class="form-control" value="${textbook.weblink}" name="inputtexturl" placeholder="http://www.example.com">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="inputtexttitle">Titolo: </label>
+                        <input type="text" required value="${textbook.title}" class="form-control" name="inputtexttitle" placeholder="Title of book">
+                    </div>
+                </div>
+                <input type='submit' class="btn btn-danger" value="Delete textbook" />
+            </form>
+            </#list>
+            <form id="formtextbook${textbooks?size+1}" class="morebelow" method="post" action="be_editcourse?action=textbook&lang=ITA">
+                <h5>Libro #${textbooks?size+1}</h5>
+                <input type="hidden" name="courseid" value="${course.id}"/>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputtextauthor">Autore: </label>
+                        <input type="text" class="form-control" name="inputtextauthor" placeholder="Author's name">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputtextpublisher">Editore: </label>
+                        <input type="text" class="form-control" name="inputtextpublisher" placeholder="Publisher">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label for="inputtextvolume">Volume: </label>
+                        <input type="text" class="form-control" name="inputtextvolume" placeholder="Vol. 1">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputtextyear">Anno: </label>
+                        <input type="number" class="form-control" name="inputtextyear" placeholder="2017">
+                    </div>
+                    <div class="form-group col-md-8">
+                        <label for="inputtexturl">Website: </label>
+                        <input type="url" class="form-control" name="inputtexturl" placeholder="http://www.example.com">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="inputtexttitle">Titolo: </label>
+                        <input type="text" required class="form-control" name="inputtexttitle" placeholder="Title of book">
+                    </div>
+                </div>
+                <input type='submit'  class="btn btn-info" value="Save and add another textbook" />
+            </form>
+        </div>
+
+        <div class="morebelow">
+            <h4>Risorse esterne</h4>
+            <#list resources as resource>
+            <form id="formresource${resource?index+1}" class="morebelow" method="post" action="be_editcourse?action=delete_external_resource&lang=ITA">
+                <h5>Resource #${resource?index+1}</h5>
+                <input type="hidden" name="courseid" value="${course.id}"/>
+                <input type="hidden" name="inputresourceid" value="${resource.id}"/>
+                <div class="form-row">
+                    <label for="inputresourcename">Nome della risorsa: </label>
+                    <input type="text" required  value="${resource.name}" class="form-control" name="inputresourcename" placeholder="Summary of lecture 1" />
+                </div>
+                <div class="form-row">
+                    <label for="inputresourcedescription">Descrizione della risorsa: </label>
+                    <input type="text"  value="${resource.description}" class="form-control" name="inputresourcedescription" placeholder="Description" />
+                </div>
+                <div class="form-row">
+                    <label for="inputresourceweblink">Weblink: </label><br/>
+                    <input type="text" value="${resource.weblink}" class="form-control" name="inputresourceweblink"  placeholder="http://www.example.com" />
+                </div>
+                <input type="submit" class="morebelow btn btn-danger" value="Delete resource" />
+            </form>
+            </#list>
+            <form id="formresource${resources?size+1}" class="morebelow" method="post" action="be_editcourse?action=external_resource&lang=ITA">
+                <h5>Resource #${resources?size+1}</h5>
+                <input type="hidden" name="courseid" value="${course.id}"/>
+                <div class="form-row">
+                    <label for="inputresourcename">Nome della risorsa: </label>
+                    <input type="text" required class="form-control" name="inputresourcename" placeholder="Summary of lecture 1" />
+                </div>
+                <div class="form-row">
+                    <label for="inputresourcedescription">Descrizione della risorsa: </label>
+                    <input type="text" class="form-control" name="inputresourcedescription" placeholder="Description" />
+                </div>
+                <div class="form-row">
+                    <label for="inputresourceweblink">Weblink: </label><br/>
+                    <input type="text" class="form-control" name="inputresourceweblink"  placeholder="http://www.example.com" />
+                </div>
+                <input type='submit' class="morebelow btn btn-info" value="Save and add another resource" />
+            </form>
+        </div>
+
+        <div class="morebelow moreabove">
+            <form class="inline" method="post" action="be_editcourse?action=showBe_EditCourseDescription_teacher&lang=ITA&courseid=${course.id}">
+                <input id="button_back" type="submit" class="btn btn-danger" value="Back to course description"/>
+            </form>
+            <form class="inline" method="post" action="fe_courses?action=details_course&coursecode=${course.code}&lang=ITA">
+                <input type="submit" class="btn btn-success" value="Finish (discarting unsaved resources)"/>
+            </form>
+        </div>
+        
+    </div>
+</div>
+</#macro>
+
+<#macro script>
+
+</#macro>
+
+<@display_page/>

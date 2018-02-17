@@ -1,0 +1,218 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <div>
+        <h2 class="subtitle">Modifica il corso di <i>${course.name}</i></h2>
+        <p class="subtitle">Anno accademico: Currente (${academic_year})</p>
+
+        <#if message??>
+        <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
+            ${message}
+        </div>
+        <#else>
+        <div id="alert" class="alert alert-danger hidden" role="alert"></div>
+        </#if>
+
+        <div class="subtitle alert alert-info" role="alert">
+            Attenzione: <b>Questa pagina</b> richiede <b>JavaScript</b>!
+        </div>
+    
+        <div class="left percent50">
+            <h3 class="subtitle"><b>Course description and notes:</b></h3>
+            <form id="left" class="subtitle moreabove">
+                <input type="hidden" name="courseid" id="courseid" value="${course.id}"/>
+                <input type="hidden" name="coursecode" id="coursecode" value="${course.code}"/>
+                <div class="form-group">
+                    <label for="prerequisites">Prerequisites:</label>
+                    <textarea rows="25" class="form-control" name="prerequisites">${course.prerequisites}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="learning_outcomes">Learning outcomes:</label>
+                    <textarea rows="25" class="form-control" name="learning_outcomes">${course.learning_outcomes}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="assessment_method">Assessment method:</label>
+                    <textarea rows="25" class="form-control" name="assessment_method">${course.assessment_method}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="teaching_method">Teaching method:</label>
+                    <textarea rows="25" class="form-control" name="teaching_method">${course.teaching_method}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes:</label>
+                    <textarea rows="25" class="form-control" name="notes">${course.notes}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="syllabus">Syllabus: </label>
+                    <textarea rows="25" class="form-control" name="syllabus">${course.syllabus}</textarea>
+                </div>
+            </form>
+        </div>
+        <div class="right percent50">
+            <h3 class="subtitle"><b>Descrizione del corso e note:</b></h3>
+            <form id="right" class="subtitle moreabove">
+                <div class="form-group">
+                    <label for="prerequisites_ita">Prerequisiti:</label>
+                    <textarea rows="25" class="form-control" name="prerequisites_ita">${course.prerequisites_ita}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="learning_outcomes_ita">Risultati del corso:</label>
+                    <textarea rows="25" class="form-control" name="learning_outcomes_ita">${course.learning_outcomes_ita}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="assessment_method_ita">Modalit&agrave; d'esame:</label>
+                    <textarea rows="25" class="form-control" name="assessment_method_ita">${course.assessment_method_ita}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="teaching_method_ita">Modalit&agrave; d'insegnamento:</label>
+                    <textarea rows="25" class="form-control" name="teaching_method_ita">${course.teaching_method_ita}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="notes_ita">Note:</label>
+                    <textarea rows="25" class="form-control" name="notes_ita">${course.notes_ita}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="syllabus_ita">Sillabo: </label>
+                    <textarea rows="25" class="form-control" name="syllabus_ita">${course.syllabus_ita}</textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="morebelow subtitle">
+        <h4>Official resources</h4>
+        <form id="formofficialresources">
+            <div class="form-row">
+                <label for="homepage">Homepage del corso: </label>
+                <input type="url" value="${course.homepage}" class="form-control" name="homepage" id="homepage" placeholder="http://univaq.it/mycourse.html" />
+            </div>
+            <div class="form-row">
+                <label for="forum">Forum&frasl;e-learning del corso: </label>
+                <input type="url" value="${course.forum}" class="form-control" name="forum" id="forum" placeholder="http://univaq.it/mycourse.html" />
+            </div>
+        </form>
+    </div>
+    
+    <div class="subtitle">
+        <form id="form_images">
+            <div class="morebelow">
+                <h4>Immagini</h4>
+                <div class="form-group">
+                    <label for="images">Immagini del corso (le nuove sovrascrivono quelle gi&agrave; inserite): </label><br/>
+                    <input type="file" accept="image/*" name="images" id="images" multiple />
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <div style="margin-left: 105px" class="moreabove">
+        <button id="button_back" class="btn btn-danger">Indietro alle informazioni di base</button>
+        <button id="button_submit" class="btn btn-success">Salva e continua</button>
+    </div>
+    
+</div>
+</#macro>
+
+<#macro script>
+$(document).ready(function(){
+    let alert = $('#alert');
+
+    function showAlert(message, color, tobeshown) {
+        alert.removeClass("alert-warning").removeClass("alert-success").removeClass("alert-danger").removeClass("alert-info");
+        let newtype = "alert-warning";
+        switch(color) {
+            case "green": newtype = "alert-success"; break;
+            case "blue": newtype = "alert-info"; break;
+            case "red": newtype = "alert-danger"; break;
+            default: newtype = "alert-warning"; break;
+        }
+        alert.addClass(newtype);
+        
+        alert.html(message);
+        
+        if(tobeshown) {
+            alert.removeClass("hidden");
+        }
+        else {
+            alert.addClass("hidden");
+        }
+        
+        window.scrollTo(0,0);
+    }
+    
+    $('#button_back').click(function(e) {
+        history.go(-1);
+    });
+    
+    // I doubt this is achievable without JS
+    $('#button_submit').click(function(e) {
+        e.preventDefault();
+        showAlert("",'red',false);
+        var errorWidthHeight = false;
+        
+        var formdata = new FormData($('form')[0]);
+        console.log(formdata);
+        formdata.append('learning_outcomes_ita', $('textarea[name=learning_outcomes_ita]')[0].value);
+        formdata.append('prerequisites_ita', $('textarea[name=prerequisites_ita]')[0].value);
+        formdata.append('assessment_method_ita', $('textarea[name=assessment_method_ita]')[0].value);
+        formdata.append('teaching_method_ita', $('textarea[name=teaching_method_ita]')[0].value);
+        formdata.append('notes_ita', $('textarea[name=notes_ita]')[0].value);
+        formdata.append('syllabus_ita',$('textarea[name=syllabus_ita]')[0].value);
+        formdata.append('lang','ITA');
+        // homepage, forum
+        formdata.append('homepage', $('#homepage').val());
+        formdata.append('forum', $('#forum').val());
+        var _URL = window.URL || window.webkitURL; // necessary for images check
+        jQuery.each($('#images').get(0).files, function(i, file) {
+            // check: images width = height
+            img = new Image();
+            img.onerror = function() {
+                alert( "not a valid file: " + file.type);
+            };
+            img.src = _URL.createObjectURL(file);
+            if(img.width != img.height) {
+                errorWidthHeight = true;
+                showAlert("Images must have the same width and height",'red',true);
+
+                document.body.scrollTop = 0; // For Safari
+                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+            }
+            else {
+                formdata.append('file-'+i, file);
+            }
+        });
+        console.log(formdata);
+        
+        // error: images must have the same width and height?
+        console.log(errorWidthHeight);
+        if(errorWidthHeight) {
+            return;
+        }
+
+        let url = "be_editcourse?action=coursedescription";
+        
+        $.ajax({
+            url:    url,
+            method: "POST",
+            cache: false,
+            contentType:"application/x-javascript; charset:ISO-8859-1",
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
+            data: formdata
+        })
+        .fail(function(res) {
+            showAlert(res, 'red', true);
+        })
+        .done(function(loc) {
+            let courseid = $('#courseid').val();
+            let nexturl = 'be_editcourse?action=showBe_EditCourseResources_teacher&courseid='+courseid;
+            window.location = nexturl;
+        });
+    });
+    
+    
+});
+</#macro>
+
+<@display_page/>

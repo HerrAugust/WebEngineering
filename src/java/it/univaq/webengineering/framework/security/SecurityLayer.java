@@ -1,5 +1,7 @@
 package it.univaq.webengineering.framework.security;
 
+import it.univaq.webengineering.data.model.Teacher;
+import it.univaq.webengineering.data.model.WebengineeringDataLayer;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Calendar;
@@ -206,6 +208,13 @@ public class SecurityLayer {
             username = (String) session.getAttribute("username");
         }
         return username;
+    }
+    
+    public static Teacher getTeacher(HttpServletRequest r) {
+        String username = SecurityLayer.getUser(r);
+        if(username.equals("??"))
+            return null;
+        return ((WebengineeringDataLayer)r.getAttribute("datalayer")).getTeacher(username);
     }
 
     public static String canonizeItalian(String parameter) {

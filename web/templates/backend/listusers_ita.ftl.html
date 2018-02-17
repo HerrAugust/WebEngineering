@@ -3,8 +3,8 @@
 <#macro page_body>
 <div id="maincontent">
     <div class="title_search">
-        <h2 class="subtitle">My courses</h2>
-        <input type="search" placeholder="Search..."/>
+        <h2 class="subtitle">Utenti</h2>
+        <input type="search" placeholder="Cerca..."/>
     </div>
 
     <#if message??>
@@ -16,32 +16,36 @@
     </#if>
     
     <div class="subtitle alert alert-info" role="alert">
-        Warning: <b>Search</b> requires <b>JavaScript</b>!
+        Attenzione: <b>La ricerca</b> richiede <b>JavaScript</b>!
     </div>
 
-    <#if courses?? && courses?size != 0>
-    <table class="table" id="be_homepage_table">
+    <#if users??>
+    <table class="table moreabove" id="table_listusers">
       <thead>
         <tr>
-          <th>Code</th>
-          <th>Name</th>
-          <th>SSD</th>
-          <th>Academic Year</th>
-          <th>Actions</th>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Cognome</th>
+          <th>Lingua</th>
+          <th>Tipo</th>
+          <th>Email</th>
+          <th>Azioni</th>
         </tr>
       </thead>
       <tbody>
 
-            <#list courses as course>
+            <#list users as user>
             <tr>
-              <th scope="row">${course.code}</th>
-              <td>${course.name}</td>
-              <td>${course.SSD}</td>
-              <td>${course.academic_year}</td>
+              <th scope="row">${user.id}</th>
+              <td>${user.name}</td>
+              <td>${user.lastname}</td>
+              <td><#if user.language == "eng">English<#else>Italiano</#if></td>
+              <td>${user.type}</td>
+              <td>${user.email}</td>
               <td>
                   <ul class="ul_no_dots">
-                      <#if course.academic_year == current_academic_year><li><a href="be_editcourse?courseid=${course.id}"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a></li></#if>
-                      <li><a href="fe_courses?action=details_course&coursecode=${course.code}"><i class="fa fa-trash-o" aria-hidden="true"></i> Show details</a></li>
+                      <li><a href="be_listusers?action=edituser&userid=${user.id!"-1"}"><i class="fa fa-pencil" aria-hidden="true"></i> Modifica</a></li>
+                      <li><a href="be_listusers?action=deleteuser&userid=${user.id!"-1"}"><i class="fa fa-trash-o" aria-hidden="true"></i> Rimuovi</a></li>
                   </ul>
               </td>
             </tr>
@@ -50,8 +54,8 @@
       </tbody>
     </table>
     <#else>
-    <div class="morebelow subtitle alert alert-info" role="alert">
-        No course assigned yet
+    <div class="alert alert-info" role="alert">
+        Nessun utente inserito
     </div>
     </#if>
 </div>
@@ -93,6 +97,7 @@ $(document).ready(function(){
         
         $('table thead tr').show();
     });
+    
 });
 </#macro>
 

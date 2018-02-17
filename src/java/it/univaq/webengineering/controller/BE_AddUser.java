@@ -48,13 +48,13 @@ public class BE_AddUser extends WebengineeringBaseController {
         TemplateResult res = new TemplateResult(getServletContext());
         String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
         Teacher user = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
-        if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
+        if(user.isItalian() || request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
             url = "backend/adduser_ita.ftl.html";
             switchlang = "ENG";
         }
         else { 
             // if user hasn't forced the language of the page, check his language and use it
-            if(user.getLanguage().toLowerCase().equals("ita")) {
+            if(user.isItalian()) {
                 url = "backend/adduser_ita.ftl.html";
                 switchlang = "ENG"; 
             }
@@ -78,7 +78,10 @@ public class BE_AddUser extends WebengineeringBaseController {
             String type = request.getParameter("type") != null ? "admin" : "teacher";
                         
             if(password.equals(password2) == false) {
-                request.setAttribute("message", "Password missmatch");
+                String text = "Password missmatch";
+                if(SecurityLayer.getTeacher(request).isItalian())
+                    text = "Password non uguali";
+                request.setAttribute("message", text);
                 response.sendRedirect("be_adduser");
                 return;
             }
@@ -92,6 +95,8 @@ public class BE_AddUser extends WebengineeringBaseController {
             t.setType(type);
             
             String text = "User added!";
+            if(SecurityLayer.getTeacher(request).isItalian())
+                text = "Utente creato!";
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertTeacher(t);
             if(res) {
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: added teacher %s %s", SecurityLayer.getUser(request), t.getName(), t.getLastname()));
@@ -101,6 +106,8 @@ public class BE_AddUser extends WebengineeringBaseController {
             else {
                 if(((WebengineeringDataLayer)request.getAttribute("datalayer")).existTeacherByEmail(t.getEmail())) {
                     text = " Teacher with that email already exists";
+                    if(SecurityLayer.getTeacher(request).isItalian())
+                        text = " Professore con la stessa email esistente";
                     Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": teacher already exists");
                 }
             }
@@ -130,7 +137,10 @@ public class BE_AddUser extends WebengineeringBaseController {
             int id = Integer.parseInt(request.getParameter("id"));
             
             if(password.equals(password2) == false) {
-                request.setAttribute("message", "Password missmatch");
+                String text = "Password missmatch";
+                if(SecurityLayer.getTeacher(request).isItalian())
+                    text = "Password non uguali";
+                request.setAttribute("message", text);
                 response.sendRedirect("be_adduser");
                 return;
             }
@@ -153,6 +163,8 @@ public class BE_AddUser extends WebengineeringBaseController {
             else {
                 if(((WebengineeringDataLayer)request.getAttribute("datalayer")).existTeacherByEmail(t.getEmail())) {
                     text = " Teacher with that email already exists";
+                    if(SecurityLayer.getTeacher(request).isItalian())
+                        text = " Professore con la stessa email esistente";
                     Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": teacher already exists");
                 }
             }

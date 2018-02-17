@@ -49,7 +49,7 @@ public class BE_ListUsers extends WebengineeringBaseController {
         TemplateResult res = new TemplateResult(getServletContext());
         //add to the template a wrapper object that allows to call the stripslashes function
         //request.setAttribute("strip_slashes", new SplitSlashesFmkExt());
-        if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
+        if(SecurityLayer.getTeacher(request).isItalian() || request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
             url = "backend/listusers_ita.ftl.html";
             switchlang = "ENG";
         }
@@ -80,9 +80,14 @@ public class BE_ListUsers extends WebengineeringBaseController {
             if(res) {
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: delete user %d", SecurityLayer.getUser(request), userid));
                 text = "User " + teacher.getLastname() + " " + teacher.getName() + " deleted";
+                if(SecurityLayer.getTeacher(request).isItalian())
+                    text = String.format("Utente %s %s eliminato", teacher.getLastname(), teacher.getName());
             }
-            else
+            else {
                 text = "Error deleting user " + teacher.getLastname() + " " + teacher.getName();
+                if(SecurityLayer.getTeacher(request).isItalian())
+                    text = String.format("Errore nella cancellazione utente %s %s", teacher.getLastname(), teacher.getName());
+            }
             response.sendRedirect("be_listusers?message="+text);
             return;
         }
@@ -97,7 +102,10 @@ public class BE_ListUsers extends WebengineeringBaseController {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: edits user %d", SecurityLayer.getUser(request), userid));
             new BE_UpdateProfile().editUser_Admin(request, response, userid, getServletContext());
             
-            request.setAttribute("message", "User updated");
+            String text = "User updated";
+            if(SecurityLayer.getTeacher(request).isItalian())
+                text = "Utente aggiornato";
+            request.setAttribute("message", text);
             //response.sendRedirect("fe_courses?action=details_teacher&id=" + userid);
             
             return;

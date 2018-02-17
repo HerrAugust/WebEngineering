@@ -1,0 +1,315 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<!-- Page Content -->
+    <div id="maincontent" class="container">
+
+        <div>
+            <h2 class="morebelow">${course.name} (A.A. ${course.academic_year})</h2>
+            <#if academic_years?? && academic_years?size != 1>
+            <form class="form-inline" action="fe_courses?action=details_course&coursecode=${course.code}&lang=ITA" method="post" id="academic_years_form">
+                <label for="academic_year">Il corso &egrave; dispobile anche per gli A.A.: </label>
+                <select class="form-control moreright" form="academic_years_form" name="academic_year">
+                    <#list academic_years as academic_year>
+                    <option value="${academic_year}">${academic_year}</option>
+                    </#list>
+                </select>
+                <input value="0K" type="submit" class="form-control moreright success">
+            </form>
+            <#else>
+            (A.A. ${course.academic_year})
+            </#if>
+        </div>
+        <#if imagessrc?? && imagessrc?size != 0>
+        <div id="carousel" class="carousel slide" data-ride="carousel" data-interval="4000">
+            <ol class="carousel-indicators">
+              <#list imagessrc as i>
+              <li data-target="#carouselExampleIndicators" data-slide-to="${i?index}" <#if i?index == 0>class="active"</#if>></li>
+              </#list>
+            </ol>
+            <div class="carousel-inner">
+                <#list imagessrc as imagesrc>
+                <div class="carousel-item <#if imagesrc?index == 0>active</#if>">
+                  <img class="d-block w-100" src="uploads/${imagesrc.name_on_disk}" alt="Image of course">
+                </div>
+                </#list>
+            </div>
+            <!--<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>-->
+          </div>
+        <#else>
+        <div id="carousel" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <img class="d-block w-100 round" src="uploads/standard_course.jpg" alt="Standard image of course">
+                </div>
+            </div>
+          </div>
+        </#if>
+        
+        <h5>Informazioni di base</h5>
+            <div class="row">
+                <div class="col-3">Codice: </div>
+                <div class="col-3">${course.code}</div>
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+            </div>
+                
+            <div class="row">
+                <div class="col-3">Nome: </div>
+                <div class="col-3">${course.name}</div>
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+            </div>
+            
+            <#if course.SSD?? && course.SSD != "">
+            <div class="row">
+                <div class="col-3">SSD: </div>
+                <div class="col-3">${course.SSD}</div>
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+            </div>
+            </#if>
+        
+            <div class="row">
+                <div class="col-3">Semestre: </div>
+                <div class="col-3">${course.semester} - <#if course.semester == 1>Winter<#else>Summer</#if> semester</div>
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+            </div>
+            
+            <#if course.language?? && course.language != "">
+            <div class="row">
+                <div class="col-3">Lingua: </div>
+                <div class="col-3"><#if course.language == 'ita'>Italian<#else>English</#if></div>
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+            </div>
+            </#if>
+            
+            <div class="row">
+                <div class="col-3">Professore: </div>
+                <div class="col-6">
+                    <#if course.teachers?? && course.teachers?size == 0>
+                    ()
+                    <#else>
+                    <ul>
+                    <#list course.teachers as t>
+                    <li><a href="fe_courses?action=details_teacher&id=${t.id}&lang=ITA">${t.lastname}, ${t.name}</a></li>
+                    </#list>
+                    </ul>
+                    </#if>
+                </div>
+            </div>
+        
+            <#if course.homepage?? && course.homepage != "">
+            <div class="row">
+                <div class="col-3">Homepage del corso: </div>
+                <div class="col-3"><a href="${course.homepage}">Homepage</a></div>
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+            </div>
+            </#if>
+        
+            <#if course.forum?? && course.forum != "">
+            <div class="row">
+                <div class="col-3">Forum del corso: </div>
+                <div class="col-3"><a href="${course.forum}">Forum</a></div>
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+            </div>
+            </#if>
+        
+            <#if course.module?? && course.module?size != 0>
+            <div class="row">
+                <div class="col-3">Modulo con: </div>
+                <div class="col-3">
+                    <ul>
+                    <#list course.module as c>
+                    <li><a href="fe_courses?action=details_course&coursecode=${c.code}&academic_year=${c.academic_year}&lang=ITA">${c.name}</a></li>
+                    </#list>
+                    </ul>
+                </div>
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+            </div>
+            </#if>
+            
+            <#if course.same_as?? && course.same_as?size != 0>
+            <div class="row">
+                <div class="col-3">Sostituisce: </div>
+                <div class="col-3">
+                    <ul>
+                    <#list course.same_as as c>
+                    <li><a href="fe_courses?action=details_course&coursecode=${c.code}&academic_year=${c.academic_year}&lang=ITA">${c.name}</a></li>
+                    </#list>
+                    </ul>
+                </div>
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+            </div>
+            </#if>
+            
+            <#if course.preparatory?? && course.preparatory?size != 0>
+            <div class="row">
+                <div class="col-3">Richiede: </div>
+                <div class="col-3">
+                    <ul>
+                    <#list course.preparatory as c>
+                    <li><a href="fe_courses?action=details_course&coursecode=${c.code}&academic_year=${c.academic_year}&lang=ITA">${c.name}</a></li>
+                    </#list>
+                    </ul>
+                </div>
+                <div class="col-3"></div>
+                <div class="col-3"></div>
+            </div>
+            </#if>
+        
+        <h5 class="morebelow">Descrizione del corso</h5>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="fas fa-angle-down"></i>  Prerequisiti:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                      <#if course.prerequisites == ''>Non disponibile<#else>${course.prerequisites}</#if>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingTwo">
+                <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <i class="fas fa-angle-down"></i>  Conoscenze a fine corso:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                <div class="panel-body">
+                    <#if course.learning_outcomes == ''>Non disponibile<#else>${course.learning_outcomes}</#if>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading3">
+                <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                        <i class="fas fa-angle-down"></i>  Modalit&agrave; d'esame:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading3">
+                <div class="panel-body">
+                    <#if course.assessment_method == ''>Non disponibile<#else>${course.assessment_method}</#if>
+                </div>
+            </div>
+        </div>        
+        
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading4">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse4" aria-expanded="true" aria-controls="collapse4">
+                        <i class="fas fa-angle-down"></i>  Modalit&agrave; d'insegnamento:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading4">
+                <div class="panel-body">
+                      <#if course.teaching_method == ''>Non disponibile<#else>${course.teaching_method}</#if>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading5">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse5" aria-expanded="true" aria-controls="collapse5">
+                        <i class="more-less glyphicon glyphicon-plus"></i>
+                        <i class="fas fa-angle-down"></i>  Sillabo:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading5">
+                <div class="panel-body">
+                      <#if course.syllabus == ''>Non disponibile<#else>${course.syllabus}</#if>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading6">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse6" aria-expanded="true" aria-controls="collapse6">
+                        <i class="more-less glyphicon glyphicon-plus"></i>
+                        <i class="fas fa-angle-down"></i>  Note:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse6" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading6">
+                <div class="panel-body">
+                      <#if course.notes == ''>Non disponibile<#else>${course.notes}</#if>
+                </div>
+            </div>
+        </div>
+
+        <#if course.books?? && course.books?size != 0>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse7" aria-expanded="true" aria-controls="collapse7">
+                        <i class="more-less glyphicon glyphicon-plus"></i>
+                        <i class="fas fa-angle-down"></i>  Letteratura:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse7" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading7">
+                <div class="panel-body">
+                    <ul>
+                        <#list course.books as t>
+                        <li><i>${t.title}</i>, ${t.author}, ${t.year}<#if t.volume != ''>, Vol. ${t.volume}</#if>, ${t.publisher} <#if t.weblink != ''>, <a href="${t.weblink}">reference</a></#if></li>
+                        </#list>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        </#if>
+        
+        <#if course.external_resources?? && course.external_resources?size != 0>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse8" aria-expanded="true" aria-controls="collapse8">
+                        <i class="more-less glyphicon glyphicon-plus"></i>
+                        <i class="fas fa-angle-down"></i>  Risorse esterne:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse8" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading7">
+                <div class="panel-body">
+                    <ul>
+                        <#list course.external_resources as t>
+                        <li><i>${t.name}</i><#if t.description != ''>, (${t.description})</#if> <#if t.weblink != ''>, <a href="${t.weblink}">reference</a></#if></li>
+                        </#list>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        </#if>
+
+    </div>
+    <!-- /.container -->
+</#macro>
+
+<@display_page/>

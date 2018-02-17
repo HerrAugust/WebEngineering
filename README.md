@@ -25,3 +25,5 @@ Technology: Java Servlet, CSS3, HTML5, Javascript
 ![backend: list courses](preview/be_list_courses.JPG)
 - Backend: add a course
 ![backend: add course](preview/be_add_course.JPG)
+- Standards compliant
+![standard compliance](preview/standards_compliance.JPG)

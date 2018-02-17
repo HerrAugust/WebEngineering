@@ -1,0 +1,34 @@
+<#include "base.ftl.html">
+
+<#macro page_menu>
+<!--no menu-->
+</#macro>
+
+<#macro page_body>
+<!-- Page Content -->
+    <div class="container">
+        <h2 class="textcentered morebelow">Login - Univaq</h2>
+        
+        <#if message??>
+        <div class="alert alert-danger" role="alert">
+            <strong>Ooopsss!</strong> ${message}
+        </div>
+        </#if>
+        
+        <form id="form_login" class="centered moreabove" method="post" action="fe_login?lang=ITA">
+            <div class="form-group">
+                <label for="input_email">Email: </label>
+                <input type="email" autofocus class="form-control" id="input_email" name="input_email" placeholder="email@univaq.it">
+            </div>
+            <div class="form-group">
+                <label for="input_password">Password: </label>
+                <input type="password" pattern="((?=.*[0-9])(?=.*[a-zA-Z]).{8,})" class="form-control" id="input_password" name="input_password" placeholder="Password...">
+            </div>
+            <button type="submit" class="btn btn-success centered moreabove" name="login">Login</button>
+        </form>
+
+    </div>
+    <!-- /.container -->
+</#macro>
+
+<@display_page/>

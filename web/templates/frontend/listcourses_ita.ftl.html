@@ -1,0 +1,102 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <h2 class="subtitle">I nostri corsi</h2>
+
+    <div id="alert" class="alert alert-danger hidden" role="alert">
+      Niente da mostrare
+    </div>
+    
+    <h5>Filtri:</h5>
+    <form id="filterform" action="fe_courses?action=filter&lang=ITA" method="post">
+        <div class="form-row">
+            <div class="col">
+                <label for="input_name">Nome Courso/Prof.: </label>
+                <input type="text" id="input_name" name="name" class="form-control" placeholder="Course/Prof. name">
+            </div>
+            <div class="col">
+                <label for="input_language">Lingua: </label>
+                <select id="input_language" name="language" form="filterform" class="form-control">
+                    <option value="any" selected>Tutti</option>
+                    <option value="ita">Italiano</option>
+                    <option value="eng">Inglese</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="input_semester">Semestre: </label>
+                <select id="input_semester" name="semester" form="filterform" class="form-control">
+                    <option value="any" selected>Tutti</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="input_year">Anno Accademico: </label>
+                <select id="input_year" name="academic_year" form="filterform" class="form-control">
+                    <option value="any" selected>Tutti</option>
+                    <#list academic_years as ay>
+                    <option value="${ay}">${ay}</option>
+                    </#list>
+                </select>
+            </div>
+            <div class="col">
+                <label for="input_SSD">Settore: </label>
+                <select id="input_SSD" name="SSD" form="filterform" class="form-control">
+                    <option value="any" selected>Tutti</option>
+                    <option value="inf-01">INF-01</option>
+                    <option value="bio-09">BIO-09</option>
+                    <option value="eng-02">ENG-02</option>
+                    <option value="eng-05">ENG-05</option>
+                </select>
+            </div>
+            <div class="col">
+                <input value="Filtra" type="submit" class="form-control success">
+            </div>
+        </div>
+    </form>
+
+    <#if courseslist??>
+    <table class="table morebelow" id="fe_courses_table">
+      <thead>
+        <tr>
+          <th>Codice</th>
+          <th>Nome</th>
+          <th>Prof.</th>
+          <th>Lingua</th>
+          <th>Semestre</th>
+          <th>Campo</th>
+          <th>A.A.</th>
+        </tr>
+      </thead>
+      <tbody>
+            <#list courseslist as course>
+            <tr>
+              <th scope="row">${course.code}</th>
+              <td><a href="fe_courses?action=details_course&coursecode=${course.code}&academic_year=${course.academic_year}&lang=ITA">${course.name}</a></td>
+              <td>
+                <#list course.teachers as teacher>
+                <a href="fe_courses?action=details_teacher&id=${teacher.id}&lang=ITA">${teacher.lastname}, ${teacher.name}<br/>
+                </#list>
+              </td>
+              <td>${course.language}</td>
+              <td>${course.semester}</td>
+              <td>${course.SSD}</td>
+              <td>${course.academic_year}</td>
+            </#list>
+
+      </tbody>
+    </table>
+    <#else>
+    <div class="alert alert-info" role="alert">
+        Nessun corso disponibile
+    </div>
+    </#if>
+</div>
+</#macro>
+
+<#macro script>
+
+</#macro>
+
+<@display_page/>

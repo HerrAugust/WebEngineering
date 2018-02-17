@@ -10,28 +10,28 @@
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Components">
           <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseComponents" data-parent="#exampleAccordion">
             <i class="fa fa-fw fa-wrench"></i>
-            <span class="nav-link-text">Courses</span>
+            <span class="nav-link-text"><#if switchlang?? && switchlang == 'ita'>Courses<#else>Corsi</#if></span>
           </a>
           <ul class="sidenav-second-level collapse" id="collapseComponents">
             <li>
-              <a href="be_addcourse">Add course</a>
+              <a href="be_addcourse"><#if switchlang?? && switchlang == 'ita'>Add course<#else>Nuovo corso</#if></a>
             </li>
             <li>
-              <a href="be_listcourses">List of courses</a>
+              <a href="be_listcourses"><#if switchlang?? && switchlang == 'ita'>List of courses<#else>Corsi</#if></a>
             </li>
           </ul>
         </li>
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Components">
           <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseComponentsUsers" data-parent="#exampleAccordion">
             <i class="fa fa-fw fa-wrench"></i>
-            <span class="nav-link-text">Users</span>
+            <span class="nav-link-text"><#if switchlang?? && switchlang == 'ita'>Users<#else>Utenti</#if></span>
           </a>
           <ul class="sidenav-second-level collapse" id="collapseComponentsUsers">
             <li>
-              <a href="be_adduser">Add user</a>
+              <a href="be_adduser"><#if switchlang?? && switchlang == 'ita'>Add user<#else>Nuovo utente</#if></a>
             </li>
             <li>
-              <a href="be_listusers">List of users</a>
+              <a href="be_listusers"><#if switchlang?? && switchlang == 'ita'>List of users<#else>Tutti gli utenti</#if></a>
             </li>
           </ul>
         </li>
@@ -43,7 +43,7 @@
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
           <a class="nav-link" href="be_updateprofile">
-            <i class="fa fa-user"></i>Profile</a>
+            <i class="fa fa-user"></i><#if switchlang?? && switchlang == 'ita'>Profile<#else>Profilo</#if></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="fe_logout">
@@ -89,7 +89,7 @@ Nothing to show
 <body class="fixed-nav sticky-footer" id="page-top">
   <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-dark maincolor fixed-top" id="mainNav">
-    <a class="navbar-brand" href="#">Welcome!</a>
+    <a class="navbar-brand" href="#"><#if switchlang?? && switchlang == 'ita'>Welcome<#else>Benvenuto</#if>!</a>
     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

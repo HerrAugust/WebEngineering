@@ -3,8 +3,8 @@
 <#macro page_body>
 <div id="maincontent">
     <div class="title_search">
-        <h2 class="subtitle">My courses</h2>
-        <input type="search" placeholder="Search..."/>
+        <h2 class="subtitle">I miei corsi</h2>
+        <input type="search" placeholder="Cerca..."/>
     </div>
 
     <#if message??>
@@ -16,18 +16,18 @@
     </#if>
     
     <div class="subtitle alert alert-info" role="alert">
-        Warning: <b>Search</b> requires <b>JavaScript</b>!
+        Attenzione: <b>la ricerca</b> richiede <b>JavaScript</b>!
     </div>
 
     <#if courses?? && courses?size != 0>
     <table class="table" id="be_homepage_table">
       <thead>
         <tr>
-          <th>Code</th>
-          <th>Name</th>
+          <th>Codice</th>
+          <th>Nome</th>
           <th>SSD</th>
-          <th>Academic Year</th>
-          <th>Actions</th>
+          <th>A.A.</th>
+          <th>Azioni</th>
         </tr>
       </thead>
       <tbody>
@@ -40,8 +40,8 @@
               <td>${course.academic_year}</td>
               <td>
                   <ul class="ul_no_dots">
-                      <#if course.academic_year == current_academic_year><li><a href="be_editcourse?courseid=${course.id}"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a></li></#if>
-                      <li><a href="fe_courses?action=details_course&coursecode=${course.code}"><i class="fa fa-trash-o" aria-hidden="true"></i> Show details</a></li>
+                      <#if course.academic_year == current_academic_year><li><a href="be_editcourse?courseid=${course.id}"><i class="fa fa-pencil" aria-hidden="true"></i> Modifica</a></li></#if>
+                      <li><a href="fe_courses?action=details_course&coursecode=${course.code}&lang=ITA"><i class="fa fa-trash-o" aria-hidden="true"></i> Mostra dettagli</a></li>
                   </ul>
               </td>
             </tr>
@@ -51,7 +51,7 @@
     </table>
     <#else>
     <div class="morebelow subtitle alert alert-info" role="alert">
-        No course assigned yet
+        Nessun corso assegnato
     </div>
     </#if>
 </div>

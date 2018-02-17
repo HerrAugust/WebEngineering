@@ -1,0 +1,45 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <h2 class="subtitle">Nuovo corso</h2>
+
+    <#if message??>
+    <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
+        ${message}
+    </div>
+    <#else>
+    <div id="alert" class="alert alert-danger hidden" role="alert"></div>
+    </#if>
+
+    <form id="form_adduser" class="centered moreabove" method="post" action="be_addcourse?action=addcourse&lang=ITA">
+        <div class="form-group">
+            <label for="code">Codice</label>
+            <input type="text" class="form-control" id="code" name="code" placeholder="DT0912" required/>
+        </div>
+        <div class="form-group">
+            <label for="name">Nome</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Web Engineering" required/>
+        </div>
+        <div class="form-group">
+            <label for="teacher">Professore</label>
+            <select name="teacherid" class="form-control">
+                <option value="-1">Nessuno</option>
+                <#if teachers??>
+                <#list teachers as teacher>
+                <option value="${teacher.id}">${teacher.lastname}, ${teacher.name}</option>
+                </#list>
+                </#if>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-success centered moreabove">Crea</button>
+    </form>
+</div>
+</#macro>
+
+<#macro script>
+
+</#macro>
+
+<@display_page/>

@@ -93,4 +93,8 @@ public class TeacherImpl implements Teacher {
         this.photo = i;
     }
     
+    public boolean isItalian() {
+        return this.getLanguage().equals("ita");
+    }
+    
 }

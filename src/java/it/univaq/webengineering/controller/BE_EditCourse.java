@@ -65,7 +65,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         TemplateResult res = new TemplateResult(getServletContext());
         String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
         Teacher user = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
-        if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
+        if(user.isItalian() || request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
             url = "backend/be_editcoursebase_teacher_ita.ftl.html";
             if(pagenumber == 2) url = "backend/be_editcoursedescription_teacher.ftl.html";
             if(pagenumber == 3) url = "backend/be_editcourseresources_teacher.ftl.html";
@@ -73,7 +73,7 @@ public class BE_EditCourse extends WebengineeringBaseController {
         }
         else { 
             // if user hasn't forced the language of the page, check his language and use it
-            if(user.getLanguage().toLowerCase().equals("ita")) {
+            if(user.isItalian()) {
                 url = "backend/be_editcoursebase_teacher_ita.ftl.html";
                 if(pagenumber == 2) url = "backend/be_editcoursedescription_teacher_ita.ftl.html";
                 if(pagenumber == 3) url = "backend/be_editcourseresources_teacher_ita.ftl.html";
@@ -241,6 +241,8 @@ public class BE_EditCourse extends WebengineeringBaseController {
             
             
             String text = "Error while saving basic info.";
+            if(SecurityLayer.getTeacher(request).isItalian())
+                text = "Errore salvataggio informazioni base";
             if(res) {
                 text = "ok";
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: saved base info of course %s", SecurityLayer.getUser(request), t.getName()));
@@ -359,6 +361,8 @@ public class BE_EditCourse extends WebengineeringBaseController {
             String text = "ok";
             if(!res) {
                 text = "Error while saving the description of the course.";
+                if(SecurityLayer.getTeacher(request).isItalian())
+                    text = "Errore nel salvataggio della descrizione del corso";
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: error saving description of course %s", SecurityLayer.getUser(request), t.getName()));
             }
             
@@ -397,7 +401,10 @@ public class BE_EditCourse extends WebengineeringBaseController {
             boolean success = ((WebengineeringDataLayer)request.getAttribute("datalayer")).decouple_course(course_id, teacher_id);
             
             if(!success) {
-                request.setAttribute("message", "Error while decoupling teacher and course");
+                String text = "Error while decoupling teacher and course";
+                if(SecurityLayer.getTeacher(request).isItalian())
+                    text = "Errore nel disaccoppiamento professore-corso";
+                request.setAttribute("message", text);
                 action_error(request,response);
                 return;
             }
@@ -424,8 +431,13 @@ public class BE_EditCourse extends WebengineeringBaseController {
         
         boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertTextbook(courseid, author, title, volume, publisher, weblink, year);
         String text = "Problems while saving textbook";
-        if(res)
+        if(SecurityLayer.getTeacher(request).isItalian()) // I know, but it's fast...
+            text = "Problemi nel salvataggio del libro";
+        if(res) {
             text = "Textbook saved";
+            if(SecurityLayer.getTeacher(request).isItalian()) // I know, but it's fast...
+                text = "Libro salvato";
+        }
         response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid+"&message="+text);
     }
 
@@ -437,8 +449,13 @@ public class BE_EditCourse extends WebengineeringBaseController {
         
         boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertExternalResource(courseid, name, description, weblink);
         String text = "Problems while saving resource";
-        if(res)
+        if(SecurityLayer.getTeacher(request).isItalian())
+            text = "Problemi nel salvataggio della risorsa";
+        if(res) {
             text = "Resource saved";
+            if(SecurityLayer.getTeacher(request).isItalian())
+                text = "Risorsa salvata";
+        }
         response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid+"&message="+text);
     }
     
@@ -450,8 +467,13 @@ public class BE_EditCourse extends WebengineeringBaseController {
             res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteExternalResource(courseid, Integer.parseInt(inputresourceid));
         
         String text = "Problems while deleting resource";
-        if(res)
+        if(SecurityLayer.getTeacher(request).isItalian())
+            text = "Problemi nel cancellare la risorsa";
+        if(res) {
             text = "Resource deleted";
+            if(SecurityLayer.getTeacher(request).isItalian())
+                text = "Risorsa cancellata";
+        }
         response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid+"&message="+text);
     }
 
@@ -463,8 +485,13 @@ public class BE_EditCourse extends WebengineeringBaseController {
             res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteTextbook(courseid, Integer.parseInt(inputtextid));
         
         String text = "Problems while deleting textbook";
-        if(res)
+        if(SecurityLayer.getTeacher(request).isItalian())
+            text = "Problemi nel cancellare il libro";
+        if(res) {
             text = "Textbook deleted";
+            if(SecurityLayer.getTeacher(request).isItalian())
+                text = "Libro cancellato";
+        }
         response.sendRedirect("be_editcourse?action=showBe_EditCourseResources_teacher&courseid="+courseid+"&message="+text);
     }
 

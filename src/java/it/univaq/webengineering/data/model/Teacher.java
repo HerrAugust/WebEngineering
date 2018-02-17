@@ -35,4 +35,6 @@ public interface Teacher {
     void setPhoto(Image i);
     
     Image getPhoto();
+    
+    public boolean isItalian();
 }

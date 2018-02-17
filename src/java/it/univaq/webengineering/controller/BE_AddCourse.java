@@ -50,7 +50,7 @@ public class BE_AddCourse extends WebengineeringBaseController {
         TemplateResult res = new TemplateResult(getServletContext());
         String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
         Teacher user = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
-        if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
+        if(user.isItalian() || request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
             url = "backend/addcourse_ita.ftl.html";
             switchlang = "ENG";
         }
@@ -83,6 +83,8 @@ public class BE_AddCourse extends WebengineeringBaseController {
             t.setAcademic_year(super.getCurrentAcademicYear());
             
             String text = "Error while creating new course.";
+            if(SecurityLayer.getTeacher(request).isItalian())
+                text = "Errore nel creare il nuovo corso";
             if(((WebengineeringDataLayer)request.getAttribute("datalayer")).existCourse(t) == false) {
                 boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertCourse(t);
                 t = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(code, super.getCurrentAcademicYear());
@@ -94,11 +96,15 @@ public class BE_AddCourse extends WebengineeringBaseController {
                 }
                 if(res) {
                     text = "Course created";
+                    if(SecurityLayer.getTeacher(request).isItalian())
+                        text = "Corso creato";
                     Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + " adds course " + name + " (" + code + ").");
                 }
             }
             else {
                 text = " Course with that code and name already exists. Change one of them.";
+                if(SecurityLayer.getTeacher(request).isItalian())
+                    text = " Corso con quel codice e nome esistente. Cambiare uno dei due";
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + " can't add course " + name + " (" + code + "), it exists already.");
             }
                 
@@ -114,7 +120,7 @@ public class BE_AddCourse extends WebengineeringBaseController {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
         request.setAttribute("context", "be_addcourse");
-        request.setAttribute("page_title", "Add new course");
+        request.setAttribute("page_title", "New course");
 
         try {
             if(request.getParameter("action") != null && request.getParameter("action").equals("addcourse")) {

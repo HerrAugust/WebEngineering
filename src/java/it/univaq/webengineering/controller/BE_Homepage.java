@@ -56,7 +56,7 @@ public class BE_Homepage extends WebengineeringBaseController {
                 request.setAttribute("teachers", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeachers());
                 request.setAttribute("switchlang", switchlang);
                 
-                if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
+                if(user.isItalian() || (request.getParameter("lang") != null && request.getParameter("lang").equals("ITA"))) {
                     url = "backend/homepage_ita.ftl.html";
                     switchlang = "ENG";
                 }
@@ -65,7 +65,7 @@ public class BE_Homepage extends WebengineeringBaseController {
                 url = "backend/homepage_teacher.ftl.html";
                 request.setAttribute("courses", ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCoursesByTeacher(user));
                 
-                if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
+                if(user.isItalian() || (request.getParameter("lang") != null && request.getParameter("lang").equals("ITA"))) {
                     url = "backend/homepage_teacher_ita.ftl.html";
                     switchlang = "ENG";
                 }
@@ -102,7 +102,10 @@ public class BE_Homepage extends WebengineeringBaseController {
 
                 ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteCourse(coursecode);
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: deleted course %s", SecurityLayer.getUser(request), coursecode));
-                response.sendRedirect("be_listcourses?message=Course deleted");
+                String text = "Course deleted";
+                if(t.isItalian())
+                    text = "Corso eliminato";
+                response.sendRedirect("be_listcourses?message="+text);
                 return;
             }
         }
@@ -118,7 +121,10 @@ public class BE_Homepage extends WebengineeringBaseController {
             if(!SecurityLayer.isNumberic(teacherid)) {
                 response.setContentType("text/plain");
                 response.setCharacterEncoding("UTF-8");
-                response.getWriter().write("Teacher id must be a number (-1 if none)");
+                String text = "Teacher's id must be a number (-1 if none)";
+                if(SecurityLayer.getTeacher(request).isItalian())
+                    text = "L\'ID del professore deve essere un numero (-1 se inesistente)";
+                response.getWriter().write(text);
             }
             
             // Get course and teacher
@@ -130,8 +136,11 @@ public class BE_Homepage extends WebengineeringBaseController {
                 text = "ok";
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: assign course %s to teacher %s", SecurityLayer.getUser(request), c.getName(), t.getName()));
             }
-            else
+            else {
                 text = "Error while assigning course.";
+                if(SecurityLayer.getTeacher(request).isItalian())
+                    text = "Errore durante l\'assegnamento del corso";
+            }
             response.setContentType("text/plain");  // Set content type of the response so that jQuery knows what it can expect.
             response.setCharacterEncoding("UTF-8"); // You want world domination, huh?
             response.getWriter().write(text); 

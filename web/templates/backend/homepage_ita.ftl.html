@@ -1,16 +1,146 @@
 <#include "base.ftl.html">
 
 <#macro page_body>
-<!-- Page Content -->
-    <div class="container">
-
-        <h2 class="textcentered morebelow">Benvenuto nel Sito Ufficiale di</h2>
-        <h1 class="textcentered">Univaq</h1>
-        <image id="logo" src="images/logo.png" alt="Logo of Univaq"/>
-        <button type="button" class="btn btn-success centered moreabove">Tutti i corsi</button>
-
+<div id="maincontent">
+    <div class="title_search">
+        <h2 class="subtitle">Coursi</h2>
+        <input type="search" placeholder="Cerca..."/>
     </div>
-    <!-- /.container -->
+
+    <#if message??>
+    <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
+        ${message}
+    </div>
+    <#else>
+    <div id="alert" class="subtitle alert alert-danger hidden moreabove" role="alert"></div>
+    </#if>
+    
+    <div class="subtitle alert alert-info" role="alert">
+        Attenzione: <b>Assegnare un professore</b> e <b>Cerca</b> richiedono <b>JavaScript</b>!
+    </div>
+
+    <#if courses??>
+    <table class="table" id="be_homepage_table">
+      <thead>
+        <tr>
+          <th>Codice</th>
+          <th>Nome</th>
+          <th>A.A.</th>
+          <th>Professore</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+            <#list courses as course>
+            <tr>
+              <th scope="row">${course.code}</th>
+              <td>${course.name}</td>
+              <td>${course.academic_year}</td>
+              <td>
+                <#list course.teachers as t>
+                <a href="be_editcourse?action=decouple_teacher&teacher_id=${t.id}&course_id=${course.id}&lang=ITA"><i class="fa fa-trash" aria-hidden="true"></i></a>  <a href="fe_courses?action=details_teacher&id=${t.id}&lang=ITA">${t.lastname}, ${t.name}</a>
+                <br/>
+                </#list>
+                  <div class="row">
+                    <select class="form-control col-md-6">
+                        <option value="-1" selected>Nessuno</option>
+                        <#if teachers??>
+                        <#list teachers as teacher>
+                        <option value="${teacher.id}">${teacher.lastname}, ${teacher.name}</option>
+                        </#list>
+                        </#if>
+                    </select>
+                    <button class="button_assign form-control btn btn-success col-md-6" type="button">Add</button>
+                  </div>
+              </td>
+              <td>
+                  <ul class="ul_no_dots">
+                      <li><i class="fa fa-eye" aria-hidden="true"></i> <a href="fe_courses?action=details_course&coursecode=${course.code}&academic_year=${course.academic_year}&lang=ITA">Vedi</a></li>
+                      <#if course.academic_year == current_academic_year><li><i class="fa fa-pencil" aria-hidden="true"></i> <a href="be_editcourse?courseid=${course.id}&lang=ITA">Modifica</a></li></#if>
+                      <li><i class="fa fa-trash-o" aria-hidden="true"></i> <a href="deletecourse?action=deletecourse&lang=ITA&coursecode=${course.code!"none"}">Elimina</a></a></li>
+                  </ul>
+              </td>
+            </tr>
+            </#list>
+
+      </tbody>
+    </table>
+    <#else>
+    <div class="alert alert-info" role="alert">
+        Nessun corso inserito
+    </div>
+    </#if>
+</div>
+</#macro>
+
+<#macro script>
+$(document).ready(function(){
+    let alert = $('#alert');
+    
+    function showAlert(message, color, tobeshown) {
+        alert.removeClass("alert-warning").removeClass("alert-success").removeClass("alert-danger").removeClass("alert-info");
+        let newtype = "alert-warning";
+        switch(color) {
+            case "green": newtype = "alert-success"; break;
+            case "blue": newtype = "alert-info"; break;
+            case "red": newtype = "alert-danger"; break;
+            default: newtype = "alert-warning"; break;
+        }
+        alert.addClass(newtype);
+        
+        alert.html(message);
+        
+        if(tobeshown) {
+            alert.removeClass("hidden");
+        }
+        else {
+            alert.addClass("hidden");
+        }
+    }
+    
+    // Button Assign clicked: assign course to teacher
+    $(".button_assign").click(function(){
+        showAlert("","",false);
+        let coursecode = "";
+        let teacherid = -1;
+        let academic_year = "";
+        
+        // find course code and academic year
+        console.log($(this));
+        q = $(this);
+        coursecode = $(this).parent().parent().parent().children().get(0).innerHTML;
+        academic_year = $(this).parent().parent().parent().children().get(2).innerHTML;
+        
+        // find teacher's id
+        teacherid = $(this).parent().parent().parent().children().get(3).children[0].children[0].selectedOptions[0].attributes.value.value;
+        
+        $.post( "be_homepage", {'action': 'assigncourseteacher', 'coursecode': coursecode, 'academic_year': academic_year, 'teacherid': teacherid })
+        .done(function(res) {
+            let text = res;
+            if(res == "ok")
+                text = "Course "+ coursecode + " assigned to teacher";
+            showAlert(text, res == "ok" ? "green" : "red", true);
+        })
+        .fail(function() {
+            showAlert( "error", red, true );
+        });
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    });
+    
+    // Search
+    var $rows = $('table tr');
+    $('input[type=search]').keyup(function() {
+        let val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+        
+        $rows.show().filter(function() {
+            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+            return !~text.indexOf(val);
+        }).hide();
+        
+        $('table thead tr').show();
+    });
+});
 </#macro>
 
 <@display_page/>

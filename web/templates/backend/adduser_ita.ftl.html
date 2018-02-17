@@ -1,0 +1,59 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <h2 class="subtitle"><#if edit_user?? && edit_user>Modifica<#else>Add</#if> Utente</h2>
+
+    <#if message??>
+    <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
+        ${message}
+    </div>
+    <#else>
+    <div id="alert" class="alert alert-danger hidden" role="alert"></div>
+    </#if>
+
+    <form id="form_adduser" class="centered moreabove" method="post" <#if teacher??>action="be_adduser?action=edituser&lang=ITA"<#else>action="be_adduser?action=adduser&lang=ITA"</#if> >
+        <#if teacher??>
+        <input type="hidden" name="id" value="${teacher.id}" />
+        </#if>
+        <div class="form-group">
+            <label for="name">Nome:</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Giuseppe" required <#if teacher??>value="${teacher.name}"</#if> />
+        </div>
+        <div class="form-group">
+            <label for="lastname">Cognome:</label>
+            <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Della Penna" required <#if teacher??>value="${teacher.lastname}"</#if> />
+        </div>
+        <div class="form-group">
+            <label for="language">Lingua:</label>
+            <select class="form-control" name="language">
+                <option value="ita" <#if teacher?? && teacher.language == "ita">selected"</#if> >Italiano</option>
+                <option value="eng" <#if teacher?? && teacher.language == "eng">selected</#if> >English</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="checkbox" id="type" name="type" <#if teacher?? && teacher.type == "admin">checked</#if> />
+            <label for="type">Admin?</label>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="email@univaq.it" required <#if teacher??>value="${teacher.email}"</#if> />
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" pattern="((?=.*[0-9])(?=.*[a-zA-Z]).{8,})" class="form-control" id="password" name="password" placeholder="Password..." required/>
+        </div>
+        <div class="form-group">
+            <label for="password2">Ripetere password:</label>
+            <input type="password" pattern="((?=.*[0-9])(?=.*[a-zA-Z]).{8,})" class="form-control" id="password2" name="password2" placeholder="Password..." required/>
+        </div>
+        <button type="submit" class="btn btn-success centered moreabove" name="login">Confermare</button>
+    </form>
+</div>
+</#macro>
+
+<#macro script>
+
+</#macro>
+
+<@display_page/>

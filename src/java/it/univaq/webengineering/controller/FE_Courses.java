@@ -47,7 +47,7 @@ public class FE_Courses extends WebengineeringBaseController {
        
         TemplateResult res = new TemplateResult(getServletContext());
         if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
-            url = "backend/listcourses_ita.ftl.html";
+            url = "frontend/listcourses_ita.ftl.html";
             switchlang = "ENG";
             title = "Corsi";
         }

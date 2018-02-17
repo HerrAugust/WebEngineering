@@ -2,7 +2,10 @@
 
 <#macro page_body>
 <div id="maincontent">
-    <h2 class="subtitle">Courses</h2>
+    <div class="title_search">
+        <h2 class="subtitle">Courses</h2>
+        <input type="search" placeholder="Search..."/>
+    </div>
 
     <#if message??>
     <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
@@ -13,7 +16,7 @@
     </#if>
     
     <div class="subtitle alert alert-info" role="alert">
-        Warning: <b>Assigning a teacher</b> requires <b>JavaScript</b>!
+        Warning: <b>Assigning a teacher</b> and <b>Search</b> require <b>JavaScript</b>!
     </div>
 
     <#if courses??>
@@ -123,6 +126,19 @@ $(document).ready(function(){
         });
         document.body.scrollTop = 0; // For Safari
         document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    });
+    
+    // Search
+    var $rows = $('table tr');
+    $('input[type=search]').keyup(function() {
+        let val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+        
+        $rows.show().filter(function() {
+            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+            return !~text.indexOf(val);
+        }).hide();
+        
+        $('table thead tr').show();
     });
 });
 </#macro>

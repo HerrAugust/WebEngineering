@@ -1,7 +1,7 @@
 <#macro page_menu>
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top maincolor">
-  <div class="container" id="maincontent">
+  <div class="container">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -16,7 +16,7 @@
             <a class="nav-link " href="#">|</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="fe_courses">${courses!"Courses"}</a>
+          <a class="nav-link" href="fe_courses"><#if switchlang?? && switchlang == 'ITA'>Courses<#else>Corsi</#if></a>
         </li>
         <li class="nav-item menu_divider">
             <a class="nav-link " href="#">|</a>

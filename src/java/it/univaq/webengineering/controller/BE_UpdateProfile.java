@@ -65,13 +65,13 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
         // get info about the requester
         String email = (String)SecurityLayer.checkSession(request).getAttribute("username");
         Teacher curUser  = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
-        if(request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
+        if(curUser.isItalian() || request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
             url = "backend/profile_ita.ftl.html";
             switchlang = "ENG";
         }
         else {
             // if user hasn't forced the language of the page, check his language and use it
-            if(curUser.getLanguage().toLowerCase().equals("ita")) {
+            if(curUser.isItalian()) {
                 url = "backend/profile_ita.ftl.html";
                 switchlang = "ENG";
             }
@@ -113,7 +113,10 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
                         int width          = bimg.getWidth();
                         int height         = bimg.getHeight();
                         if(width != height) {
-                            request.setAttribute("message", "Error: image height and width are not the same");
+                            String txt = "Error: image height and width are not the same";
+                            if(SecurityLayer.getTeacher(request).isItalian())
+                                txt = "Errore: dimensioni immagine non uguali";
+                            request.setAttribute("message", txt);
                             this.action_default(request, response);
                             return;
                         }
@@ -167,6 +170,8 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
 
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).updateTeacher(t);
             text = "Error while updating info of Teacher.";
+            if(SecurityLayer.getTeacher(request).isItalian())
+                text = "Errore aggiornamento professore";
 
             // Delete old image from DB and disk
             if(oldImage != null) {

@@ -1,0 +1,121 @@
+<#include "base.ftl.html">
+
+<#macro page_body>
+<div id="maincontent">
+    <h2 class="subtitle">Modifica corso di <i>${course.name}</i></h2>
+    <p class="subtitle">Anno accademico: Currente (${academic_year})</p>
+
+    <#if message??>
+    <div id="alert" class="subtitle alert alert-info moreabove" role="alert">
+        ${message}
+    </div>
+    <#else>
+    <div id="alert" class="alert alert-danger hidden" role="alert"></div>
+    </#if>
+
+    <h3 class="subtitle">Inserisci le <b>informationi di base:</b></h3>
+    <form id="form_adduser" class="subtitle moreabove" method="post" action="be_editcourse?action=coursebase&lang=ITA">
+        <input type="hidden" name="courseid" value="${course.id}"/>
+        <input type="hidden" name="coursecode" value="${course.code}"/>
+        <div class="form-group">
+            <label for="ssd">SSD:</label>
+            <select name="ssd" id="ssd" class="form-control" >
+                <#if course.SSD??>
+                <option value="${course.SSD}" selected>${course.SSD}</option>
+                </#if>
+                <option value="INF-01">INF-01</option>
+                <option value="BIO-09">BIO-09</option>
+                <option value="ENG-02">ENG-02</option>
+                <option value="ENG-05">ENG-05</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="language">Lingua:</label>
+            <select name="language" id="language" class="form-control" >
+                <option value="ita" <#if course.language?? && course.language != "" && course.language == "ita">selected</#if>>Italiano</option>
+                <option value="eng" <#if course.language?? && course.language != "" && course.language == "eng">selected</#if>>English</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="semester">Semestre:</label>
+            <select name="semester" class="form-control" id="semester">
+                <option value="1" <#if course.semester?? && course.semester == 1>selected="selected"</#if>>1 - Inverno</option>
+                <option value="2" <#if course.semester?? && course.semester == 2>selected="selected"</#if>>2 - Estate</option>
+            </select>
+        </div>
+        <#if courses??>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="fa fa-angle-down"></i>  Richiede i seguenti corsi:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <#list courses as c>
+                    <#if c.id != course.id>
+                    <input type="checkbox" name="preparatory[]" <#list course.preparatory as m><#if m?? && m.id == c.id>checked</#if></#list> value="${c.id}" />
+                    <label> ${c.name} (${c.code}) </label>
+                    <br/>
+                    </#if>
+                    </#list>
+                </div>
+            </div>
+        </div>
+        </#if>
+        <#if courses??>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading2">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse2" aria-expanded="true" aria-controls="collapse2">
+                        <i class="fa fa-angle-down"></i>  Equivale ai seguenti corsi:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading2">
+                <div class="panel-body">
+                    <#list courses as c>
+                    <#if c.id != course.id>
+                    <input type="checkbox" name="same_as[]" <#list course.same_as as m><#if m?? && m.id == c.id>checked</#if></#list> value="${c.id}" />
+                    <label> ${c.name} (${c.code}) </label>
+                    <br/>                    
+                    </#if>
+                    </#list>
+                </div>
+            </div>
+        </div>
+        </#if>
+        <#if courses??>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading3">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="true" aria-controls="collapse3">
+                        <i class="fa fa-angle-down"></i>  Fa modulo con i seguenti corsi:
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading3">
+                <div class="panel-body">
+                    <#list courses as c>
+                    <#if c.id != course.id>
+                    <input type="checkbox" name="module[]" <#list course.module as m><#if m?? && m.id == c.id>checked</#if></#list> value="${c.id}" />
+                    <label> ${c.name} (${c.code}) </label>
+                    <br/>
+                    </#if>
+                    </#list>
+                </div>
+            </div>
+        </div>
+        </#if>
+        <button type="submit" class="btn btn-success morebelow">Salva e continua</button>
+    </form>
+</div>
+</#macro>
+
+<#macro script>
+<!-- This page must work also without JS -->
+</#macro>
+
+<@display_page/>
