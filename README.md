@@ -13,3 +13,15 @@ Technology: Java Servlet, CSS3, HTML5, Javascript
 - Click Properties
 - Add these downloaded libraries
 - Run the project on your browser
+
+# Preview
+- Homepage
+![homepage](preview/homepage.JPG)
+- Courses
+![courses](preview/courses.JPG)
+- Course details
+![course details](preview/course_details.JPG)
+- Backend: list of courses
+![backend: list courses](preview/be_list_courses.JPG)
+- Backend: add a course
+![backend: add course](preview/be_add_course.JPG)
