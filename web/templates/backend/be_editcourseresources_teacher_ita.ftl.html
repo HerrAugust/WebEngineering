@@ -54,7 +54,7 @@
                         <input type="text" required value="${textbook.title}" class="form-control" name="inputtexttitle" placeholder="Title of book">
                     </div>
                 </div>
-                <input type='submit' class="btn btn-danger" value="Delete textbook" />
+                <input type='submit' class="btn btn-danger" value="Elimina libro" />
             </form>
             </#list>
             <form id="formtextbook${textbooks?size+1}" class="morebelow" method="post" action="be_editcourse?action=textbook&lang=ITA">
@@ -90,7 +90,7 @@
                         <input type="text" required class="form-control" name="inputtexttitle" placeholder="Title of book">
                     </div>
                 </div>
-                <input type='submit'  class="btn btn-info" value="Save and add another textbook" />
+                <input type='submit'  class="btn btn-info" value="Salva e aggiungi un altro libro" />
             </form>
         </div>
 
@@ -98,7 +98,7 @@
             <h4>Risorse esterne</h4>
             <#list resources as resource>
             <form id="formresource${resource?index+1}" class="morebelow" method="post" action="be_editcourse?action=delete_external_resource&lang=ITA">
-                <h5>Resource #${resource?index+1}</h5>
+                <h5>Resorsa #${resource?index+1}</h5>
                 <input type="hidden" name="courseid" value="${course.id}"/>
                 <input type="hidden" name="inputresourceid" value="${resource.id}"/>
                 <div class="form-row">
@@ -113,11 +113,11 @@
                     <label for="inputresourceweblink">Weblink: </label><br/>
                     <input type="text" value="${resource.weblink}" class="form-control" name="inputresourceweblink"  placeholder="http://www.example.com" />
                 </div>
-                <input type="submit" class="morebelow btn btn-danger" value="Delete resource" />
+                <input type="submit" class="morebelow btn btn-danger" value="Elimina risorsa" />
             </form>
             </#list>
             <form id="formresource${resources?size+1}" class="morebelow" method="post" action="be_editcourse?action=external_resource&lang=ITA">
-                <h5>Resource #${resources?size+1}</h5>
+                <h5>Resorsa #${resources?size+1}</h5>
                 <input type="hidden" name="courseid" value="${course.id}"/>
                 <div class="form-row">
                     <label for="inputresourcename">Nome della risorsa: </label>
@@ -131,16 +131,16 @@
                     <label for="inputresourceweblink">Weblink: </label><br/>
                     <input type="text" class="form-control" name="inputresourceweblink"  placeholder="http://www.example.com" />
                 </div>
-                <input type='submit' class="morebelow btn btn-info" value="Save and add another resource" />
+                <input type='submit' class="morebelow btn btn-info" value="Salva e aggiungi altra risorsa" />
             </form>
         </div>
 
         <div class="morebelow moreabove">
             <form class="inline" method="post" action="be_editcourse?action=showBe_EditCourseDescription_teacher&lang=ITA&courseid=${course.id}">
-                <input id="button_back" type="submit" class="btn btn-danger" value="Back to course description"/>
+                <input id="button_back" type="submit" class="btn btn-danger" value="Indietro alla descrizione del corso"/>
             </form>
             <form class="inline" method="post" action="fe_courses?action=details_course&coursecode=${course.code}&lang=ITA">
-                <input type="submit" class="btn btn-success" value="Finish (discarting unsaved resources)"/>
+                <input type="submit" class="btn btn-success" value="Finisci (non salvando le risorse non salvate)"/>
             </form>
         </div>
         

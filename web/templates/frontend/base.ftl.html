@@ -36,7 +36,7 @@
             <a class="nav-link " href="#">|</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="${context}?lang=${switchlang!"ENG"}">${switchlang!"ENG"}</a>
+            <a class="nav-link" href="${context}<#if context?contains('?')>&<#else>?</#if>lang=${switchlang!"ENG"}">${switchlang!"ENG"}</a>
         </li>
       </ul>
     </div>

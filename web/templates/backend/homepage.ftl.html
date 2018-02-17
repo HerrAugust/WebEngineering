@@ -41,17 +41,21 @@
                 <a href="be_editcourse?action=decouple_teacher&teacher_id=${t.id}&course_id=${course.id}"><i class="fa fa-trash" aria-hidden="true"></i></a>  <a href="fe_courses?action=details_teacher&id=${t.id}">${t.lastname}, ${t.name}</a>
                 <br/>
                 </#list>
-                  <div class="row">
-                    <select class="form-control col-md-6">
-                        <option value="-1" selected>Nobody</option>
-                        <#if teachers??>
-                        <#list teachers as teacher>
-                        <option value="${teacher.id}">${teacher.lastname}, ${teacher.name}</option>
-                        </#list>
-                        </#if>
-                    </select>
-                    <button class="button_assign form-control btn btn-success col-md-6" type="button">Add</button>
-                  </div>
+                    <div class="row">
+                        <form class="inline" method="post" action="be_homepage?action=assigncourseteacher">
+                            <select name="teacherid" class="form-control col-md-6">
+                                <option value="-1" selected>Nobody</option>
+                                <#if teachers??>
+                                <#list teachers as teacher>
+                                <option value="${teacher.id}">${teacher.lastname}, ${teacher.name}</option>
+                                </#list>
+                                </#if>
+                            </select>
+                            <input type="hidden" name="coursecode" value="${course.code}"/>
+                            <input type="hidden" name="academic_year" value="${current_academic_year}"/>
+                            <input type="submit" class="button_assign form-control btn btn-success col-md-6" value="Assign"/>
+                        </form>
+                    </div>
               </td>
               <td>
                   <ul class="ul_no_dots">

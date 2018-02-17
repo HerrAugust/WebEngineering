@@ -133,7 +133,7 @@ public class BE_Homepage extends WebengineeringBaseController {
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).assignCourse(c, t);
             String text = "";
             if(res) {
-                text = "ok";
+                text = "Course assigned";
                 Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: assign course %s to teacher %s", SecurityLayer.getUser(request), c.getName(), t.getName()));
             }
             else {
@@ -141,9 +141,7 @@ public class BE_Homepage extends WebengineeringBaseController {
                 if(SecurityLayer.getTeacher(request).isItalian())
                     text = "Errore durante l\'assegnamento del corso";
             }
-            response.setContentType("text/plain");  // Set content type of the response so that jQuery knows what it can expect.
-            response.setCharacterEncoding("UTF-8"); // You want world domination, huh?
-            response.getWriter().write(text); 
+            response.sendRedirect("be_homepage?message="+text);
             return;
         }
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");

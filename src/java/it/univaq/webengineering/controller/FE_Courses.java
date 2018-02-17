@@ -92,6 +92,7 @@ public class FE_Courses extends WebengineeringBaseController {
         request.setAttribute("page_title", title);
         request.setAttribute("teacher", teacher);
         request.setAttribute("switchlang", switchlang);
+        request.setAttribute("context", "fe_courses?action=details_teacher&id="+id);
         res.activate(url, request, response);
     }
     
@@ -134,14 +135,13 @@ public class FE_Courses extends WebengineeringBaseController {
         request.setAttribute("switchlang", switchlang);
         request.setAttribute("academic_years", academic_years);
         request.setAttribute("current_academic_year", academic_year);
+        request.setAttribute("context", "fe_courses?action=details_course&coursecode="+coursecode);
         res.activate(url, request, response);
     }
     
     @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
-        request.setAttribute("context", "fe_courses");
-
         try {
             if(request.getParameter("action") != null && request.getParameter("action").equals("details_course")) {
                 action_details_course(request, response);

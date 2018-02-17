@@ -67,8 +67,8 @@ public class BE_EditCourse extends WebengineeringBaseController {
         Teacher user = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email);
         if(user.isItalian() || request.getParameter("lang") != null && request.getParameter("lang").equals("ITA")) {
             url = "backend/be_editcoursebase_teacher_ita.ftl.html";
-            if(pagenumber == 2) url = "backend/be_editcoursedescription_teacher.ftl.html";
-            if(pagenumber == 3) url = "backend/be_editcourseresources_teacher.ftl.html";
+            if(pagenumber == 2) url = "backend/be_editcoursedescription_teacher_ita.ftl.html";
+            if(pagenumber == 3) url = "backend/be_editcourseresources_teacher_ita.ftl.html";
             switchlang = "ENG";
         }
         else { 

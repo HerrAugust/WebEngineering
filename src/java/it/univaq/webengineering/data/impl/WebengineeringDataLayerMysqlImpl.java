@@ -325,10 +325,8 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
     
     public boolean assignCourse(Course course, Teacher teacher) {
         try {
-            dCourseTeacher.setInt(1, course.getId());
             iCourseTeacher.setInt(1, course.getId());
             iCourseTeacher.setInt(2, teacher.getId());
-            dCourseTeacher.executeUpdate();
             iCourseTeacher.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);

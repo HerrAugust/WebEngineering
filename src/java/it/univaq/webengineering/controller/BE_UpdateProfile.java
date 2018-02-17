@@ -96,16 +96,17 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             String password = request.getParameter("password");
             String password2 = request.getParameter("password2");
             String email = request.getParameter("email");
-            String type = request.getParameter("type");
 
             //store photo
             String photoName = "", randomName = "";
             String filePath = getServletContext().getInitParameter("file-upload");
             boolean multipart = ServletFileUpload.isMultipartContent(request);
+            boolean imageUploaded = false;
             if (multipart) {
                 try {
                     Part item = request.getPart("image");
                     if(item != null && item.getSize() > 0) {
+                        imageUploaded = true;
                         String namefile = item.getSubmittedFileName();
 
                         // check if width and height are the same
@@ -137,7 +138,10 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
             }
 
             if(!password.equals("") && !password.equals(password2))  {
-                request.setAttribute("message", "You did not confirm the new password well.");
+                String txt = "You did not repeat the new password well.";
+                if(SecurityLayer.getTeacher(request).isItalian())
+                    txt = "Non ha ripetuto bene la password";
+                request.setAttribute("message", txt);
                 action_error(request, response);
                 return;
             }
@@ -174,7 +178,7 @@ public class BE_UpdateProfile extends WebengineeringBaseController {
                 text = "Errore aggiornamento professore";
 
             // Delete old image from DB and disk
-            if(oldImage != null) {
+            if(oldImage != null && imageUploaded) {
                 ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteImage(oldImage.getId());
                 new File(oldImage.getPath() + oldImage.getName_on_disk()).delete();
             }
