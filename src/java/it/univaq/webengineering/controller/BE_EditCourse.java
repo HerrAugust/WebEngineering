@@ -223,18 +223,18 @@ public class BE_EditCourse extends WebengineeringBaseController {
             t.setLanguage(language);
             
             boolean res = ((WebengineeringDataLayer)request.getAttribute("datalayer")).updateCourseBaseInfo(t);
+            ((WebengineeringDataLayer)request.getAttribute("datalayer")).deletePreparatory(t);
             if(preparatory != null) {
-                ((WebengineeringDataLayer)request.getAttribute("datalayer")).deletePreparatory(t);
                 for(String p : preparatory)
                     ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertPreparatory(courseid, Integer.parseInt(p));
             }
+            ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteSame_as(t);
             if(same_as != null) {
-                ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteSame_as(t);
                 for(String p : same_as)
                     ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertSame_as(courseid, Integer.parseInt(p));
             }
+            ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteModule(t);
             if(module != null) {
-                ((WebengineeringDataLayer)request.getAttribute("datalayer")).deleteModule(t);
                 for(String p : module)
                     ((WebengineeringDataLayer)request.getAttribute("datalayer")).insertModule(courseid, Integer.parseInt(p));
             }

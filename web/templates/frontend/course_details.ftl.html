@@ -131,8 +131,8 @@
                 <div class="col-3">Module with: </div>
                 <div class="col-3">
                     <ul>
-                    <#list course.same_as as c>
-                    <li><a href="fe_courses?action=details_course&id=${c.id}">${c.name}</a></li>
+                    <#list course.module as c>
+                    <li><a href="fe_courses?action=details_course&coursecode=${c.code}&academic_year=${c.academic_year}">${c.name}</a></li>
                     </#list>
                     </ul>
                 </div>
@@ -147,7 +147,7 @@
                 <div class="col-3">
                     <ul>
                     <#list course.same_as as c>
-                    <li><a href="fe_courses?action=details_course&id=${c.id}">${c.name}</a></li>
+                    <li><a href="fe_courses?action=details_course&coursecode=${c.code}&academic_year=${c.academic_year}">${c.name}</a></li>
                     </#list>
                     </ul>
                 </div>
@@ -162,7 +162,7 @@
                 <div class="col-3">
                     <ul>
                     <#list course.preparatory as c>
-                    <li><a href="fe_courses?action=details_course&id=${c.id}">${c.name}</a></li>
+                    <li><a href="fe_courses?action=details_course&coursecode=${c.code}&academic_year=${c.academic_year}">${c.name}</a></li>
                     </#list>
                     </ul>
                 </div>

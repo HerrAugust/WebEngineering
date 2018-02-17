@@ -54,6 +54,7 @@ public abstract class WebengineeringBaseController extends HttpServlet {
             datalayer.init();
             request.setAttribute("datalayer", datalayer);
             processRequest(request, response);
+            datalayer.destroy(); // relase all resources (i.e., the pre-compiled queries)
         } catch (Exception ex) {
             ex.printStackTrace(); //for debugging only
             (new FailureResult(getServletContext())).activate(
