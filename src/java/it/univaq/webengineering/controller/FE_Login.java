@@ -45,7 +45,7 @@ public class FE_Login extends WebengineeringBaseController {
         
         boolean nologin = false;
         if (request.getParameter("input_email") != null && request.getParameter("input_password") != null) {
-            String email = request.getParameter("input_email");
+            String email = request.getParameter("input_email").toLowerCase();
             String password = request.getParameter("input_password");
             Teacher teacher = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getTeacher(email, password);
             if (teacher != null) {

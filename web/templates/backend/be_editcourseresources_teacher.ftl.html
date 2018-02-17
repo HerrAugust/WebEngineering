@@ -135,9 +135,11 @@
             </form>
         </div>
 
-        <div class="morebelow">
-            <form method="post" action="fe_courses?action=details_course&coursecode=${course.code}">
-                <input id="button_back" type="button" class="btn btn-danger" value="Back to course description"/>
+        <div class="morebelow moreabove">
+            <form class="inline" method="post" action="be_editcourse?action=showBe_EditCourseDescription_teacher&courseid=${course.id}">
+                <input id="button_back" type="submit" class="btn btn-danger" value="Back to course description"/>
+            </form>
+            <form class="inline" method="post" action="fe_courses?action=details_course&coursecode=${course.code}">
                 <input type="submit" class="btn btn-success" value="Finish (discarting unsaved resources)"/>
             </form>
         </div>
@@ -147,11 +149,7 @@
 </#macro>
 
 <#macro script>
-$(document).ready(function(){
-    $('#button_back').click(function(e) {
-        history.go(-1);
-    });
-});
+
 </#macro>
 
 <@display_page/>

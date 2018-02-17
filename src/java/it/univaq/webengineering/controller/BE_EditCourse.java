@@ -98,39 +98,91 @@ public class BE_EditCourse extends WebengineeringBaseController {
         // If the course doesn't have a field, take the one belonging to the closest past year
         WebengineeringDataLayer dl = (WebengineeringDataLayer)request.getAttribute("datalayer");
         if(course.getSSD().equals(""))
-            course.setSSD(dl.getCloserCourseProperty(course.getCode(), "SSD").getSSD());
-        if(course.getNotes_ita().equals(""))
-            course.setNotes_ita(dl.getCloserCourseProperty(course.getCode(), "notes_ita").getNotes_ita());
-        if(course.getAssessment_method().equals(""))
-            course.setAssessment_method(dl.getCloserCourseProperty(course.getCode(), "assessment_method").getAssessment_method());
-        if(course.getLanguage().equals(""))
-            course.setLanguage(dl.getCloserCourseProperty(course.getCode(), "language").getLanguage());
-        if(course.getPrerequisites().equals(""))
-            course.setPrerequisites(dl.getCloserCourseProperty(course.getCode(), "prerequisites").getPrerequisites());
-        if(course.getLearning_outcomes().equals(""))
-            course.setLearning_outcomes(dl.getCloserCourseProperty(course.getCode(), "learning_outcomes").getLearning_outcomes());
-        if(course.getLearning_outcomes_ita().equals(""))
-            course.setLearning_outcomes_ita(dl.getCloserCourseProperty(course.getCode(), "learning_outcomes_ita").getLearning_outcomes_ita());
-        if(course.getPrerequisites_ita().equals(""))
-            course.setPrerequisites_ita(dl.getCloserCourseProperty(course.getCode(), "prerequisites_ita").getPrerequisites_ita());
-        if(course.getAssessment_method_ita().equals(""))
-            course.setAssessment_method_ita(dl.getCloserCourseProperty(course.getCode(), "assessment_method_ita").getAssessment_method_ita());
-        if(course.getTeaching_method_ita().equals(""))
-            course.setTeaching_method_ita(dl.getCloserCourseProperty(course.getCode(), "teaching_method_ita").getTeaching_method_ita());
-        if(course.getAssessment_method().equals(""))
-            course.setAssessment_method(dl.getCloserCourseProperty(course.getCode(), "assessment_method").getAssessment_method());
-        if(course.getTeaching_method().equals(""))
-            course.setTeaching_method(dl.getCloserCourseProperty(course.getCode(), "teaching_method").getTeaching_method());
-        if(course.getSyllabus().equals(""))
-            course.setSyllabus(dl.getCloserCourseProperty(course.getCode(), "syllabus").getSyllabus());
-        if(course.getSyllabus_ita().equals(""))
-            course.setSyllabus_ita(dl.getCloserCourseProperty(course.getCode(), "syllabus_ita").getSyllabus_ita());
-        if(course.getHomepage().equals(""))
-            course.setHomepage(dl.getCloserCourseProperty(course.getCode(), "homepage").getHomepage());
-        if(course.getForum().equals(""))
-            course.setForum(dl.getCloserCourseProperty(course.getCode(), "forum").getForum());
-        if(course.getNotes().equals(""))
-            course.setNotes(dl.getCloserCourseProperty(course.getCode(), "notes").getNotes());
+        {
+            Course t = dl.getCloserCourseProperty(course.getCode(), "SSD");
+            if(t != null)
+                course.setSSD(t.getSSD());
+        }
+        if(course.getNotes_ita().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "notes_ita");
+            if(t != null)
+            course.setNotes_ita(t.getNotes_ita());
+        }
+        if(course.getAssessment_method().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "assessment_method");
+            if(t != null)
+            course.setAssessment_method(t.getAssessment_method());
+        }
+        if(course.getLanguage().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "language");
+            if(t != null)
+            course.setLanguage(t.getLanguage());
+        }
+        if(course.getPrerequisites().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "prerequisites");
+            if(t != null)
+            course.setPrerequisites(t.getPrerequisites());
+        }
+        if(course.getLearning_outcomes().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "learning_outcomes");
+            if(t != null)
+            course.setLearning_outcomes(t.getLearning_outcomes());
+        }
+        if(course.getLearning_outcomes_ita().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "learning_outcomes_ita");
+            if(t != null)
+            course.setLearning_outcomes_ita(t.getLearning_outcomes_ita());
+        }
+        if(course.getPrerequisites_ita().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "prerequisites_ita");
+            if(t != null)
+            course.setPrerequisites_ita(t.getPrerequisites_ita());
+        }
+        if(course.getAssessment_method_ita().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "assessment_method_ita");
+            if(t != null)
+            course.setAssessment_method_ita(t.getAssessment_method_ita());
+        }
+        if(course.getTeaching_method_ita().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "teaching_method_ita");
+            if(t != null)
+            course.setTeaching_method_ita(t.getTeaching_method_ita());
+        }
+        if(course.getAssessment_method().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "assessment_method");
+            if(t != null)
+            course.setAssessment_method(t.getAssessment_method());
+        }
+        if(course.getTeaching_method().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "teaching_method");
+            if(t != null)
+            course.setTeaching_method(t.getTeaching_method());
+        }
+        if(course.getSyllabus().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "syllabus");
+            if(t != null)
+            course.setSyllabus(t.getSyllabus());
+        }
+        if(course.getSyllabus_ita().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "syllabus_ita");
+            if(t != null)
+            course.setSyllabus_ita(t.getSyllabus_ita());
+        }
+        if(course.getHomepage().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "homepage");
+            if(t != null)
+            course.setHomepage(t.getHomepage());
+        }
+        if(course.getForum().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "forum");
+            if(t != null)
+            course.setForum(t.getForum());
+        }
+        if(course.getNotes().equals("")){
+            Course t = dl.getCloserCourseProperty(course.getCode(), "notes");
+            if(t != null)
+            course.setNotes(t.getNotes());
+        }
         if(course.getExternal_resources() == null || course.getExternal_resources().isEmpty())
             course.setExternal_resources(dl.getCloserExternal_resources(course.getCode()));
         if(course.getBooks()== null || course.getBooks().isEmpty())

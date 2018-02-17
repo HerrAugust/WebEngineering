@@ -98,7 +98,7 @@ public class BE_ListUsers extends WebengineeringBaseController {
             new BE_UpdateProfile().editUser_Admin(request, response, userid, getServletContext());
             
             request.setAttribute("message", "User updated");
-            response.sendRedirect("fe_courses?action=details_teacher&id=" + userid);
+            //response.sendRedirect("fe_courses?action=details_teacher&id=" + userid);
             
             return;
         }

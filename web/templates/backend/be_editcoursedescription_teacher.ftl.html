@@ -99,14 +99,14 @@
             <div class="morebelow">
                 <h4>Images</h4>
                 <div class="form-group">
-                    <label for="images">Course images: </label><br/>
+                    <label for="images">Course images (the new ones overwrite the once you attached before): </label><br/>
                     <input type="file" accept="image/*" name="images" id="images" multiple />
                 </div>
             </div>
         </form>
     </div>
     
-    <div style="margin-left: 105px">
+    <div style="margin-left: 105px" class="moreabove">
         <button id="button_back" class="btn btn-danger">Back to base course info</button>
         <button id="button_submit" class="btn btn-success">Save and continue</button>
     </div>
@@ -157,7 +157,7 @@ $(document).ready(function(){
         formdata.append('prerequisites_ita', $('textarea[name=prerequisites_ita]')[0].value);
         formdata.append('assessment_method_ita', $('textarea[name=assessment_method_ita]')[0].value);
         formdata.append('teaching_method_ita', $('textarea[name=teaching_method_ita]')[0].value);
-        formdata.append('notes_ita',$('textarea[name=notes_ita]')[0].value);
+        formdata.append('notes_ita', $('textarea[name=notes_ita]')[0].value);
         formdata.append('syllabus_ita',$('textarea[name=syllabus_ita]')[0].value);
         // homepage, forum
         formdata.append('homepage', $('#homepage').val());
@@ -195,6 +195,7 @@ $(document).ready(function(){
             url:    url,
             method: "POST",
             cache: false,
+            contentType:"application/x-javascript; charset:ISO-8859-1",
             processData: false,  // tell jQuery not to process the data
             contentType: false,  // tell jQuery not to set contentType
             data: formdata

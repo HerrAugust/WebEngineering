@@ -107,7 +107,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             sBooksByCourse = connection.prepareStatement("SELECT * FROM book JOIN uses ON uses.book_id = book.id WHERE uses.course_id = ?");
             sCoursesPreparatory = connection.prepareStatement("SELECT course.* FROM preparatory JOIN course ON preparatory.requires = course.id WHERE preparatory.course_id = ?");
             sCoursesSame_as = connection.prepareStatement("SELECT course.* FROM same_as JOIN course ON same_as.same_as_course_id = course.id WHERE same_as.course_id = ? OR same_as.same_as_course_id = ?");
-            sCourseModule = connection.prepareStatement("select course.* from module join course on module.module_course_id = course.id WHERE module.course_id = ? UNION select course.* from module join course on module.course_id = course.id WHERE module.module_course_id = ?");
+            sCourseModule = connection.prepareStatement("select course.* from same_as join course on same_as.same_as_course_id = course.id WHERE same_as.course_id = ? UNION select course.* from same_as join course on same_as.course_id = course.id WHERE same_as.same_as_course_id = ?");
             sImage = connection.prepareStatement("SELECT * FROM image WHERE id = ?");
             sImageByTeacher = connection.prepareStatement("SELECT image.* FROM teacher JOIN image ON teacher.photo = image.id WHERE teacher.id = ?");
             sImagesByCourse = connection.prepareStatement("SELECT image.* FROM image JOIN course ON image.course_id = course.id WHERE course.id = ?");
@@ -132,7 +132,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             dTeach = connection.prepareStatement("DELETE FROM teach WHERE course_id = ? and teacher_id = ?");
             dImage = connection.prepareStatement("DELETE FROM image WHERE id = ?");
             dModule = connection.prepareStatement("DELETE FROM module WHERE course_id = ? OR module_course_id = ?");
-            dPreparatory = connection.prepareStatement("DELETE FROM preparatory WHERE course_id = ? OR preparatory_course_id = ?");
+            dPreparatory = connection.prepareStatement("DELETE FROM preparatory WHERE course_id = ? OR requires = ?");
             dSame_as = connection.prepareStatement("DELETE FROM same_as WHERE course_id = ? OR same_as_course_id = ?");
             dExternalResource = connection.prepareStatement("DELETE FROM external_resource WHERE id=?");
             dTextbook = connection.prepareStatement("DELETE FROM book WHERE id=?");
@@ -1081,7 +1081,7 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
                 case "semester": 
                 case "academic_year": 
                 case "prerequisites":
-                case "learning outcomes":
+                case "learning_outcomes":
                 case "learning_outcomes_ita":
                 case "prerequisites_ita":
                 case "assessment_method_ita":
@@ -1109,6 +1109,8 @@ public class WebengineeringDataLayerMysqlImpl extends DataLayerMysqlImpl impleme
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        if(courses.isEmpty())
+            return null;
         return courses.get(0);
     }
 

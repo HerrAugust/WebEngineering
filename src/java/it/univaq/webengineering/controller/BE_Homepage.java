@@ -132,7 +132,9 @@ public class BE_Homepage extends WebengineeringBaseController {
             }
             else
                 text = "Error while assigning course.";
-            response.sendRedirect("be_homepage?message="+text);
+            response.setContentType("text/plain");  // Set content type of the response so that jQuery knows what it can expect.
+            response.setCharacterEncoding("UTF-8"); // You want world domination, huh?
+            response.getWriter().write(text); 
             return;
         }
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");
