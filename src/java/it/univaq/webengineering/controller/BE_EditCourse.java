@@ -27,6 +27,7 @@ import javax.servlet.http.Part;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import it.univaq.webengineering.data.impl.WebengineeringDataLayerMysqlImpl;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -275,12 +276,12 @@ public class BE_EditCourse extends WebengineeringBaseController {
             String syllabus = request.getParameter("syllabus");
             String homepage = request.getParameter("homepage");
             String forum = request.getParameter("forum");
-            String prerequisites_ita = SecurityLayer.canonizeItalian(request.getParameter("prerequisites_ita"));
-            String learning_outcomes_ita = SecurityLayer.canonizeItalian(request.getParameter("learning_outcomes_ita"));
-            String assessment_method_ita = SecurityLayer.canonizeItalian(request.getParameter("assessment_method_ita"));
-            String teaching_method_ita = SecurityLayer.canonizeItalian(request.getParameter("teaching_method_ita"));
-            String notes_ita = SecurityLayer.canonizeItalian(request.getParameter("notes_ita"));
-            String syllabus_ita = SecurityLayer.canonizeItalian(request.getParameter("syllabus_ita"));
+            String prerequisites_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("prerequisites_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
+            String learning_outcomes_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("learning_outcomes_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
+            String assessment_method_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("assessment_method_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
+            String teaching_method_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("teaching_method_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
+            String notes_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("notes_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
+            String syllabus_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("syllabus_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
             int courseid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, super.getCurrentAcademicYear()).getId();
             
             List<String> photoNames = new LinkedList<>(), randomNames = new LinkedList<>();
@@ -409,7 +410,10 @@ public class BE_EditCourse extends WebengineeringBaseController {
                 return;
             }
             Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, String.format("%s: couple teacher-course (%d,%d)", SecurityLayer.getUser(request), teacher_id, course_id));
-            response.sendRedirect("be_homepage?message=Teacher decoupled");
+            String text = "Teacher decoupled";
+            if(SecurityLayer.getTeacher(request).isItalian())
+                text = "Professore disconnesso dal corso";
+            response.sendRedirect("be_homepage?message="+text);
             return;
         }
         Logger.getLogger(WebengineeringDataLayerMysqlImpl.class.getName()).log(Level.INFO, SecurityLayer.getUser(request) + ": not logged in.");

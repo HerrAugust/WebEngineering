@@ -40,7 +40,7 @@
             <input type="email" class="form-control" id="email" name="email" placeholder="email@univaq.it" required <#if teacher??>value="${teacher.email}"</#if> />
         </div>
         <div class="form-group">
-            <label for="password">Password:</label>
+            <label for="password">Password (at least an uppercase char. and a number):</label>
             <input type="password" pattern="((?=.*[0-9])(?=.*[a-zA-Z]).{8,})" class="form-control" id="password" name="password" placeholder="Password..." required/>
         </div>
         <div class="form-group">

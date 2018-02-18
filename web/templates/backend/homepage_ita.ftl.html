@@ -41,23 +41,21 @@
                 <a href="be_editcourse?action=decouple_teacher&teacher_id=${t.id}&course_id=${course.id}&lang=ITA"><i class="fa fa-trash" aria-hidden="true"></i></a>  <a href="fe_courses?action=details_teacher&id=${t.id}&lang=ITA">${t.lastname}, ${t.name}</a>
                 <br/>
                 </#list>
-                    <form class="inline" method="post" action="be_homepage?action=assigncourseteacher">
+                    <form method="post" action="be_homepage?action=assigncourseteacher">
                         <input type="hidden" name="coursecode" value="${course.code}"/>
                         <input type="hidden" name="academic_year" value="${current_academic_year}"/>
-                        <div class="row">
-                            <div class="col-md-9">
-                                <select name="teacherid" class="form-control">
-                                    <option value="-1" selected>Nessuno</option>
-                                    <#if teachers??>
-                                    <#list teachers as teacher>
-                                    <option value="${teacher.id}">${teacher.lastname}, ${teacher.name}</option>
-                                    </#list>
-                                    </#if>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <input type="submit" class="button_assign form-control btn btn-success" value="Assegna"/>
-                            </div>
+                        <div class="my-col-md-6 inline">
+                            <select name="teacherid" class="form-control inline percent100">
+                                <option value="-1" selected>Nessuno</option>
+                                <#if teachers??>
+                                <#list teachers as teacher>
+                                <option value="${teacher.id}">${teacher.lastname}, ${teacher.name}</option>
+                                </#list>
+                                </#if>
+                            </select>
+                        </div>
+                        <div class="my-col-md-6 inline">
+                            <input type="submit" class="btn btn-success" style="margin-top: -7px" value="Assegna"/>
                         </div>
                     </form>
               </td>

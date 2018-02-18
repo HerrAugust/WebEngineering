@@ -16,7 +16,7 @@
     </#if>
     
     <div class="subtitle alert alert-info" role="alert">
-        Warning: <b>Assigning a teacher</b> and <b>Search</b> require <b>JavaScript</b>!
+        Warning: <b>Search</b> require <b>JavaScript</b>!
     </div>
 
     <#if courses??>
@@ -41,9 +41,9 @@
                 <a href="be_editcourse?action=decouple_teacher&teacher_id=${t.id}&course_id=${course.id}"><i class="fa fa-trash" aria-hidden="true"></i></a>  <a href="fe_courses?action=details_teacher&id=${t.id}">${t.lastname}, ${t.name}</a>
                 <br/>
                 </#list>
-                    <div class="row">
-                        <form class="inline" method="post" action="be_homepage?action=assigncourseteacher">
-                            <select name="teacherid" class="form-control col-md-6">
+                    <form method="post" action="be_homepage?action=assigncourseteacher">
+                        <div class="my-col-md-6 inline">
+                            <select name="teacherid" class="form-control inline percent100">
                                 <option value="-1" selected>Nobody</option>
                                 <#if teachers??>
                                 <#list teachers as teacher>
@@ -51,11 +51,11 @@
                                 </#list>
                                 </#if>
                             </select>
-                            <input type="hidden" name="coursecode" value="${course.code}"/>
-                            <input type="hidden" name="academic_year" value="${current_academic_year}"/>
-                            <input type="submit" class="button_assign form-control btn btn-success col-md-6" value="Assign"/>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="my-col-md-6 inline">
+                            <input type="submit" class="btn btn-success" style="margin-top: -7px" value="Assegna"/>
+                        </div>
+                    </form>
               </td>
               <td>
                   <ul class="ul_no_dots">
@@ -101,36 +101,6 @@ $(document).ready(function(){
             alert.addClass("hidden");
         }
     }
-    
-    // Button Assign clicked: assign course to teacher
-    $(".button_assign").click(function(){
-        showAlert("","",false);
-        let coursecode = "";
-        let teacherid = -1;
-        let academic_year = "";
-        
-        // find course code and academic year
-        console.log($(this));
-        q = $(this);
-        coursecode = $(this).parent().parent().parent().children().get(0).innerHTML;
-        academic_year = $(this).parent().parent().parent().children().get(2).innerHTML;
-        
-        // find teacher's id
-        teacherid = $(this).parent().parent().parent().children().get(3).children[0].children[0].selectedOptions[0].attributes.value.value;
-        
-        $.post( "be_homepage", {'action': 'assigncourseteacher', 'coursecode': coursecode, 'academic_year': academic_year, 'teacherid': teacherid })
-        .done(function(res) {
-            let text = res;
-            if(res == "ok")
-                text = "Course "+ coursecode + " assigned to teacher";
-            showAlert(text, res == "ok" ? "green" : "red", true);
-        })
-        .fail(function() {
-            showAlert( "error", red, true );
-        });
-        document.body.scrollTop = 0; // For Safari
-        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-    });
     
     // Search
     var $rows = $('table tr');

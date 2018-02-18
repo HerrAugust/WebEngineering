@@ -142,6 +142,7 @@ public class FE_Courses extends WebengineeringBaseController {
     @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
+        request.setAttribute("context", "fe_courses");
         try {
             if(request.getParameter("action") != null && request.getParameter("action").equals("details_course")) {
                 action_details_course(request, response);

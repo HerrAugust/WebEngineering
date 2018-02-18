@@ -72,6 +72,15 @@ footer {
     width: 50%;
 }
 
+.percent100 {
+    width: 100%;
+}
+
+my-col-md-6 {
+    width: 47% !important;
+    float: left;
+}
+
 input[type=submit].success {
     background-color: #28a745;
     color: #fff;

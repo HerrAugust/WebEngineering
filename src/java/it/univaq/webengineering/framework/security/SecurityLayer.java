@@ -231,11 +231,11 @@ public class SecurityLayer {
     }
 
     private static String canonize(String parameter) {
-        parameter = parameter.replace("\"", "&quot;");
-        parameter = parameter.replace("&", "&amp;");
-        parameter = parameter.replace("/", "&frasl;");
-        parameter = parameter.replace(">", "&gt;");
-        parameter = parameter.replace("°", "&deg;");
+        parameter = parameter.replace("&quot;","\"");
+        parameter = parameter.replace("&amp;","&");
+        parameter = parameter.replace("&frasl;","/");
+        parameter = parameter.replace("&gt;",">");
+        parameter = parameter.replace("&deg;","°");
         return parameter;
     }
     

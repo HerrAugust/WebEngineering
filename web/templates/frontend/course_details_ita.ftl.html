@@ -182,7 +182,7 @@
             </div>
             <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
                 <div class="panel-body">
-                      <#if course.prerequisites_ita == ''>Non disponibile<#else>${course.prerequisites_ita}</#if>
+                      <#if course.prerequisites_ita == ''>Non disponibile<#else><@course.prerequisites_ita?interpret/></#if>
                 </div>
             </div>
         </div>
@@ -197,7 +197,7 @@
             </div>
             <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
                 <div class="panel-body">
-                    <#if course.learning_outcomes_ita == ''>Non disponibile<#else>${course.learning_outcomes_ita}</#if>
+                    <#if course.learning_outcomes_ita == ''>Non disponibile<#else><@course.learning_outcomes_ita?interpret/></#if>
                 </div>
             </div>
         </div>
@@ -212,7 +212,7 @@
             </div>
             <div id="collapse3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading3">
                 <div class="panel-body">
-                    <#if course.assessment_method_ita == ''>Non disponibile<#else>${course.assessment_method_ita}</#if>
+                    <#if course.assessment_method_ita == ''>Non disponibile<#else><@course.assessment_method_ita?interpret/></#if>
                 </div>
             </div>
         </div>        
@@ -227,7 +227,7 @@
             </div>
             <div id="collapse4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading4">
                 <div class="panel-body">
-                      <#if course.teaching_method_ita == ''>Non disponibile<#else>${course.teaching_method_ita}</#if>
+                      <#if course.teaching_method_ita == ''>Non disponibile<#else><@course.teaching_method_ita?interpret/></#if>
                 </div>
             </div>
         </div>
@@ -243,7 +243,7 @@
             </div>
             <div id="collapse5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading5">
                 <div class="panel-body">
-                      <#if course.syllabus_ita == ''>Non disponibile<#else>${course.syllabus_ita}</#if>
+                      <#if course.syllabus_ita == ''>Non disponibile<#else><@course.syllabus_ita?interpret/></#if>
                 </div>
             </div>
         </div>
@@ -259,7 +259,7 @@
             </div>
             <div id="collapse6" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading6">
                 <div class="panel-body">
-                      <#if course.notes_ita == ''>Non disponibile<#else>${course.notes_ita}</#if>
+                      <#if course.notes_ita == ''>Non disponibile<#else><@course.notes_ita?interpret/></#if>
                 </div>
             </div>
         </div>
