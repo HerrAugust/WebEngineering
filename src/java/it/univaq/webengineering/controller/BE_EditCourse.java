@@ -276,12 +276,12 @@ public class BE_EditCourse extends WebengineeringBaseController {
             String syllabus = request.getParameter("syllabus");
             String homepage = request.getParameter("homepage");
             String forum = request.getParameter("forum");
-            String prerequisites_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("prerequisites_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
-            String learning_outcomes_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("learning_outcomes_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
-            String assessment_method_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("assessment_method_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
-            String teaching_method_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("teaching_method_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
-            String notes_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("notes_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
-            String syllabus_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("syllabus_ita")).getBytes("iso-8859-1"), StandardCharsets.UTF_8);
+            String prerequisites_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("prerequisites_ita")).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            String learning_outcomes_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("learning_outcomes_ita")).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            String assessment_method_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("assessment_method_ita")).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            String teaching_method_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("teaching_method_ita")).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            String notes_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("notes_ita")).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            String syllabus_ita = new String(SecurityLayer.canonizeItalian(request.getParameter("syllabus_ita")).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
             int courseid = ((WebengineeringDataLayer)request.getAttribute("datalayer")).getCourseByCodeAndAcademic_year(coursecode, super.getCurrentAcademicYear()).getId();
             
             List<String> photoNames = new LinkedList<>(), randomNames = new LinkedList<>();
