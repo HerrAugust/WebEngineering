@@ -27,3 +27,6 @@ Technology: Java Servlet, CSS3, HTML5, Javascript
 ![backend: add course](preview/be_add_course.JPG)
 - Standards compliant
 ![standard compliance](preview/standards_compliance.JPG)
+
+# Known weaknesses
+- I opted out, for my convenience, to always use "((WebengineeringDataLayer)request.getAttribute("datalayer"))", even in the same method, instead of creating a variable. This reduces "readability", but not that much performance on current calculators
